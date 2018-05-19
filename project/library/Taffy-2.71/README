@@ -1,0 +1,46 @@
+## Taffy
+
+Taffy is a powerful mathematical programming language that is very easy to use. Taffy supports calculus (integration and derivation), complex numbers (via the keyword i), matrices, unbounded arithmetic and much more.
+
+Here's a quick example where we simplify the function (x^2 + 2x + 1) / (x + 1):
+
+// define the function
+f(x) = (x^2 + 2x + 1) / (x + 1)
+
+// simplify it, and assign the result to g
+g = [f simplify]
+
+// print the result
+io putLine: "The simplified result is: #[g]"
+
+==> The simplified result is: #F(x) = x + 1
+
+## Building Taffy on Linux, Mac and Cygwin
+
+To build Taffy and Pie (the interactive command-line interpreter), use the **configure** script:
+
+./configure
+
+then build:
+
+make
+
+Then (optionally) install:
+
+(sudo) make install
+
+Taffy has no external library dependencies, besides decNumber (a modified version is included in this distribution). Pie requires either readline or editline.
+
+## Compilation Options
+
+| Option                      | Description                                          |
+| --------------------------- |:----------------------------------------------------:|
+| --enable-pie                | Build Pie (default)                                  |
+| --disable-pie               | Disables Pie compilation                             |
+| --enable-external-io        | Enable external IO (File and Socket) (default)       |
+| --disable-external-io       | Disable external IO                                  |
+| --enable-debug              | Enable debug output                                  |
+| --disable-debug             | Disable debug output (default)                       |
+| --enable-execute-on-system  | Enable system execution via kernel.executeOnSystem:  |
+| --disable-execute-on-system | Disable system execution (default)                   |
+| --enable-tests              | Build Taffy and Pie unit tests (disabled by default) |

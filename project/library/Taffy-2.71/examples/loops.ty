@@ -1,0 +1,43 @@
+///////////////////////////////
+//                           //
+// thread.ty                 //
+//                           //
+// showing off loops         //
+//                           //
+///////////////////////////////
+
+array = [1, 2, 3, 4, 5]
+
+//
+// the for loop
+//
+
+io put: "Using a for loop to print out the values of #[array]:\n"
+
+for (ii = 0; ii < [array size]; ii++)
+{
+    io put: "#[array[ii]]\n"
+}
+
+//
+// the while loop
+//
+
+io put: "Using a while loop to print out the values of #[array]:\n"
+ii = 0
+
+while (ii < [array size])
+{
+    io put: "#[array[ii]]\n"
+    ii++
+}
+
+//
+// the "each:" loop
+//
+
+io put: "Using the \"each:\" method to print out the values of #[array]:\n"
+
+array each: ^{ <object>
+    io put: "#[object]\n"
+}

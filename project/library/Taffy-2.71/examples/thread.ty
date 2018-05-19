@@ -1,0 +1,63 @@
+/////////////////////////////////////////////////////
+//                                                 //
+// thread.ty                                       //
+//                                                 //
+// Calculate the sum of squares between 0 and 1500 //
+// using Threads and Threader                      //
+//                                                 //
+/////////////////////////////////////////////////////
+
+import org.taffy.core.threading.Thread
+import org.taffy.core.threading.Threader
+import org.taffy.core.maths.Series
+
+// define the series
+series = [Series createWithBlock: ^{ <x> x^2 }]
+
+// define the threads
+thread1 = [Thread new: ^{ <series>
+               series[0, 500]
+          }]
+
+thread2 = [Thread new: ^{ <series>
+               series[501, 1000]
+          }]
+
+thread3 = [Thread new: ^{ <series>
+               series[1001, 1500]
+          }]
+
+threads = [thread1, thread2, thread3]
+
+// start the threads
+threads each: ^{ <thread>
+    thread startWith: [series]
+}
+
+result = 0
+
+threads each: ^{ <thread>
+    result += [[thread wait] result]
+}
+
+io putLine: "The sum of squares between 0 and 1500: #[result]"
+
+//
+// Now do the same as above with the Threader class
+//
+block = ^{ <_start, _end>
+    series = [Series createWithBlock: ^{ <x> x^2 }]
+    series[_start, _end]
+}
+
+result = 0
+
+[[Threader startWithBlock: block
+                arguments: [[0, 500],
+                            [501, 1000],
+                            [1001, 1500]]]
+ each: ^{ <_value>
+     result += _value
+ }]
+
+io putLine: "The sum of squares between 0 and 1500 is, using Threader: #[result]"

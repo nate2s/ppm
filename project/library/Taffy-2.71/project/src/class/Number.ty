@@ -1,0 +1,404 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.maths
+
+import org.taffy.core.maths.ComplexNumber
+import org.taffy.core.exception.*
+
+atomic class Number
+{
+    (@@) number: _numberString base: _base
+    {
+        if (_base < 0 or _base > 16)
+        {
+            throw [IndexOutOfBoundsException index: _base]
+        }
+
+        base = 1
+        result = 0
+        const hexMap = ("0" => 0,
+                        "1" => 1,
+                        "2" => 2,
+                        "3" => 3,
+                        "4" => 4,
+                        "5" => 5,
+                        "6" => 6,
+                        "7" => 7,
+                        "8" => 8,
+                        "9" => 9,
+                        "A" => 10,
+                        "a" => 10,
+                        "B" => 11,
+                        "b" => 11,
+                        "C" => 12,
+                        "c" => 12,
+                        "D" => 13,
+                        "d" => 13,
+                        "E" => 14,
+                        "e" => 14,
+                        "F" => 15,
+                        "f" => 15)
+
+        for (a = [_numberString length] - 1; a >= 0; a--)
+        {
+            value = hexMap[_numberString[a]]
+
+            if (value == nil)
+            {
+                throw [IndexOutOfBoundsException index: value]
+            }
+
+            result += value * base
+            base *= _base
+        }
+
+        return result
+    }
+
+    (@@) withDigitLimit: _limit
+                     do: _block
+    #breakthrough
+    {
+        // we really need == false
+        if ([Number pushDigitLimit: _limit] == false)
+        {
+            return false
+        }
+
+        __result = [_block call]
+        Number popDigitLimit
+        return (__result)
+    }
+
+    (@@) formattedNumber: _number
+    {
+        return [Number formattedNumber: _number style: 'american]
+    }
+
+    (@@) formattedNumber: _number style: _style
+    {
+        dotSplits = nil
+
+        if (_style == 'american)
+        {
+            dotSplits = [_number split: "."]
+        }
+        else if (_style == 'british)
+        {
+            dotSplits = [_number split: ","]
+        }
+        else
+        {
+            throw [InvalidFormattedNumberException newWithNumber: _number
+                                                           style: _style]
+        }
+
+        if ([dotSplits size] > 2)
+        {
+            throw [InvalidFormattedNumberException newWithNumber: _number
+                                                           style: _style]
+        }
+
+        left = dotSplits[0]
+        right = nil
+
+        // check past the decimal point
+        if ([dotSplits size] == 2)
+        {
+            right = dotSplits[1]
+
+            if (! [right isNumeric])
+            {
+                throw [InvalidFormattedNumberException newWithNumber: _number
+                                                               style: _style]
+            }
+        }
+
+        // now split the left
+        lefts = nil
+
+        if (_style == 'american)
+        {
+            lefts = [left split: ","]
+        }
+        else
+        {
+            lefts = [left split: "."]
+        }
+
+        if ([lefts[0] length] > 3)
+        {
+           throw [InvalidFormattedNumberException newWithNumber: _number
+                                                          style: _style]
+        }
+
+        size = [lefts size]
+
+        for (a = 1; a < size; a++)
+        {
+            if ([lefts[a] length] != 3)
+            {
+                throw [InvalidFormattedNumberException newWithNumber: _number
+                                                               style: _style]
+            }
+        }
+
+        numberString = ""
+
+        lefts each: ^{ <_left>
+            numberString += _left
+        }
+
+        if (right != nil)
+        {
+            numberString += "." + right
+        }
+
+        return [kernel eval: numberString]
+    }
+
+    (@) #operator(^): _other
+    #synchronizedRead,
+    #const
+    {
+        if ([_other class] == ComplexNumber)
+        {
+            real = [_other real]
+            imaginary = [_other imaginary]
+
+            return (self^real
+                    * (cos(imaginary * ln(self))
+                       + i * sin(imaginary * ln(self))))
+        }
+        else if (self < 0
+                 and [_other class] == Number
+                 and ((_other < 1
+                      and _other > 0)
+                     or ! [_other isWhole]))
+        {
+            left = [ComplexNumber createFromNumber: self]
+            right = [ComplexNumber createFromNumber: _other]
+            return (left^right)
+        }
+        else if (self < 0
+                 and [_other class] == Number
+                 and _other < 0)
+        {
+            return (1 / (self^(-1 * _other)))
+        }
+        else
+        {
+            return ([self raise: _other])
+        }
+    }
+
+    (@) #operator(~=): _arguments
+    #synchronizedRead
+    {
+        other = _arguments[0]
+
+        if ([other class] == ComplexNumber)
+        {
+            real = [other real]
+            imaginary = [other imaginary]
+
+            if (self == NaN and (real == NaN or imaginary == NaN))
+            {
+                return (true)
+            }
+            else if (! (imaginary ~= 0))
+            {
+                return (false)
+            }
+
+            newArguments = [real, _arguments[1]]
+            return ([self deltaEquals: newArguments])
+        }
+        else
+        {
+            return ([self deltaEquals: _arguments])
+        }
+    }
+
+    (@) #operator(==): _other
+    #synchronizedRead,
+    #const
+    {
+        if ([_other class] == Number)
+        {
+            return ([self trulyEquals: _other])
+        }
+        else if ([_other class] == ComplexNumber)
+        {
+            real = [_other real]
+            imaginary = [_other imaginary]
+
+            if (self == NaN and (real == NaN or imaginary == NaN))
+            {
+                return (true)
+            }
+            else if (imaginary == 0)
+            {
+                return ([self trulyEquals: real])
+            }
+            else
+            {
+                return (false)
+            }
+        }
+        else
+        {
+            return ([self trulyEquals: _other])
+        }
+    }
+
+    (@) testComplexOperation: _realOperation
+                         for: _value
+    #synchronizedRead
+    {
+        if ([_value class] == ComplexNumber)
+        {
+            real = [_value real]
+            imaginary = [_value imaginary]
+
+            return ([self perform: _realOperation with: [real]]
+                    + ([self perform: _realOperation with: [imaginary]]) * i)
+        }
+        else
+        {
+            return ([self perform: _realOperation with: [_value]])
+        }
+    }
+
+    (@) #operator(%): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realModulus:"
+                                       for: _other])
+    }
+
+    (@) #operator(<<): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realLeftShift:"
+                                       for: _other])
+    }
+
+    (@) #operator(>>): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realRightShift:"
+                                       for: _other])
+    }
+
+    (@) #operator(&): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realBitAnd:"
+                                       for: _other])
+    }
+
+    (@) #operator(|): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realBitOr:"
+                                       for: _other])
+    }
+
+    (@) #operator(^^): _other
+    #synchronizedRead
+    {
+        return ([self testComplexOperation: "realBitXOr:"
+                                       for: _other])
+    }
+
+    (@) asBase: _base
+    #const,
+    #synchronizedRead
+    {
+        if (! [_base isWhole])
+        {
+            throw [NeedIntegerException newObject: _base]
+        }
+
+        if (! [self isWhole])
+        {
+            throw [NeedIntegerException newObject: self]
+        }
+
+        if (_base < 0 or _base > 16)
+        {
+            throw [IndexOutOfBoundsException index: _base]
+        }
+
+        digitLimit = [self digitLimit]
+
+        if (digitLimit == 0)
+        {
+            digitLimit = 24
+        }
+
+        const hexMap = (0 => "0",
+                        1 => "1",
+                        2 => "2",
+                        3 => "3",
+                        4 => "4",
+                        5 => "5",
+                        6 => "6",
+                        7 => "7",
+                        8 => "8",
+                        9 => "9",
+                        10 => "A",
+                        11 => "B",
+                        12 => "C",
+                        13 => "D",
+                        14 => "E",
+                        15 => "F")
+        result = ""
+
+        Number withDigitLimit: digitLimit do: ^{
+            left = upSelf
+
+            while (left > 0)
+            {
+                 result = "#[hexMap[floor(left % _base)]]" + result
+                 left = floor(left / _base)
+            }
+
+            if (result == "")
+            {
+                result = "0"
+            }
+        }
+
+        return result
+    }
+
+    (@) asBinary
+    #const
+    {
+        return "0b" + [self asBase: 2]
+    }
+
+    (@) asHex
+    #const
+    {
+        return "0x" + [self asBase: 16]
+    }
+}

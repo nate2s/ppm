@@ -1,0 +1,43 @@
+#ifndef __DC_PARSER_INCLUDES_H__
+#define __DC_PARSER_INCLUDES_H__
+
+#include <stdio.h>
+#include <errno.h>
+#include <ctype.h>
+
+#include "dcDefines.h"
+
+void dcParser_initialize(void);
+void dcParser_deinitialize(void);
+
+struct dcNode_t *dcParser_parseString(const char *_string,
+                                      const char *_fileName,
+                                      bool _handleParseError);
+
+// the main parser entry point
+struct dcNode_t *dcParser_parse
+    (struct dcLexer_t *_lexer,
+     bool _handleParseError,
+     dcPieLineEvaluatorOutFlag *_outFlags); // nullable
+
+// the lexer uses this to get itself
+struct dcLexer_t *dcParser_getLexer(void);
+
+struct dcNode_t *dcParser_createParenthesesOperatorFunctionCall
+    (struct dcNode_t *_identifier,
+     struct dcArray_t *_arguments);
+
+struct dcNode_t *dcParser_synchronizedParse
+    (struct dcLexer_t *_lexer,
+     bool _handleParseError,
+     dcPieLineEvaluatorOutFlag *_outFlags); // nullable
+
+void dcParser_lock(void);
+void dcParser_unlock(void);
+
+// the lexer sets this when a comment is read
+void dcParser_setGotComment();
+
+struct dcNode_t *dcParser_createFunctionFromGuts(struct dcNode_t *_arithmetic);
+
+#endif

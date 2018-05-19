@@ -1,0 +1,16 @@
+package src.tests.TestDirectory
+
+import org.taffy.core.container.*
+import src.tests.TestDirectory.TestClassDeu
+
+class TestClass
+{
+    @x, @rw
+    @y, @rw
+
+    (@) init
+    {
+        @x = new List
+        @y = new TestClassDeu
+    }
+}

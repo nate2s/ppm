@@ -1,0 +1,29 @@
+///////////////////////////////
+//                           //
+// sin_cos.ty                //
+//                           //
+// a sin and cos example     //
+//                           //
+///////////////////////////////
+
+// print 11 values of sin(x), cos(x), and sin(x)^2 + cos(x)^2,
+// between 0 and 2PI, at 2PI / 5 intervals
+
+top = 5
+
+squared(x) = sin(x)^2 + cos(x)^2
+
+0 upTo: top do: ^{ <ii>
+    value = 2PI * ii / top
+
+    io put: "theta = " + "2PI * #[ii] / #[top] = #[value]" + "\n"
+    io put: "sin(theta) = " + sin(value) + "\n"
+    io put: "cos(theta) = " + cos(value) + "\n"
+    io put: "sin(theta)^2 + cos(theta)^2 ~=<4> 1 ? "
+    io put: "#[squared(value) ~=<4> 1]\n"
+
+    if (ii < top)
+    {
+        io put: "\n"
+    }
+}

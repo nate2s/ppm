@@ -1,0 +1,76 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.container
+
+abstract class Container
+{
+    (@) hash
+    #const,
+    #containerLoop
+    {
+        result = 0
+
+        [self each: ^{ <value>
+            result += [value hash]
+        }]
+
+        return (result)
+    }
+
+    (@) isEmpty?
+    #const,
+    #synchronized
+    {
+        return ([self size] == 0)
+    }
+
+    (@) contains?: _block
+    #const,
+    #breakthrough
+    {
+        result = no
+
+        [self each: ^{ <__my_value__>
+            if ([_block callWith: [__my_value__]])
+            {
+                result = true
+                break
+            }
+        }]
+
+        return (result)
+    }
+
+    (@) find: _block
+    #const,
+    #breakthrough
+    {
+        result = nil
+
+        [self each: ^{ <value>
+            if ([_block callWith: [value]])
+            {
+                result = value
+                break
+            }
+        }]
+
+        return (result)
+    }
+}

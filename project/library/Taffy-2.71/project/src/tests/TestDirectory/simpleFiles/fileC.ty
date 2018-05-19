@@ -1,0 +1,9 @@
+package src.tests.TestDirectory.simpleFiles
+
+class fileC
+{
+    (@@) getIt
+    {
+        return (3)
+    }
+}

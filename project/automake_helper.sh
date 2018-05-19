@@ -1,0 +1,7 @@
+# help automake out a bit
+
+touch INSTALL NEWS README AUTHORS COPYING
+
+automake
+
+rm INSTALL NEWS README AUTHORS COPYING

@@ -1,0 +1,83 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.maths
+
+import org.taffy.core.container.Array
+
+class Math
+{
+    @sinCoefficients
+    @sinExponents
+
+    (@) initialize
+    {
+        memorySize = 100
+        Number pushDigitLimit: 500
+
+        @sinCoefficients = [Array createWithSize: memorySize]
+        @sinExponents = [Array createWithSize: memorySize]
+
+        for (n = 0; n < memorySize; n++)
+        {
+            @sinCoefficients[n] = (-1)^n / (2n + 1)!
+            @sinExponents[n] = 2n + 1
+        }
+
+        Number popDigitLimit
+        return (self)
+    }
+
+    (@) log: _logValue
+       base: _baseValue
+    #const
+    {
+        return (log10(_logValue) / log10(_baseValue))
+    }
+
+    (@) lg: _logValue
+    #const
+    {
+        return (log10(_logValue) / log10(2))
+    }
+
+    (@) choose: _n and: _k
+    {
+        result = 1
+        bottom = 1
+        doBottom = false
+
+        while (bottom <= _k)
+        {
+            if (doBottom)
+            {
+                result /= bottom
+                doBottom = false
+                bottom++
+            }
+            else
+            {
+                result *= _n
+                doBottom = true
+                _n--
+            }
+        }
+
+        return ([result chomp])
+    }
+}

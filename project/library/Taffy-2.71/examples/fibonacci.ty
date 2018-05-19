@@ -1,0 +1,37 @@
+//////////////////////////////////
+//                              //
+// function.ty                  //
+//                              //
+// simple function example that //
+// utilizes Function memory and //
+// Number storage               //
+//                              //
+//////////////////////////////////
+
+import org.taffy.core.maths.Number
+
+Number pushDigitLimit: 256
+
+//
+// define a fibonacci function
+//
+
+// the function
+f(n) = f(n - 1) + f(n - 2)
+
+// the base cases
+f(0) = 0
+f(1) = 1
+
+f setMemorySize: 2
+
+top = 1000
+
+io put: "The first #[top] values of the fibonacci function: #[f]\n\n"
+
+//
+// print out the first 1000 values
+//
+0 upTo: (top - 1) do: ^{ <n>
+    io putLine: f(n)
+}

@@ -1,0 +1,62 @@
+///////////////////////////////
+//                           //
+// hash.ty                   //
+//                           //
+// simple hash example       //
+//                           //
+///////////////////////////////
+
+//
+// define the hash
+//
+hash = (1 => 'one,
+        2 => "two",
+        3 => 3,
+        4 => [4],
+        5 => (5=>5))
+
+//
+// print out the elements in the hash
+//
+io put: "The hash:\n"
+
+hash each: ^{ <pair>
+    io put: "" + [pair left] + " => " + [pair right] + "\n"
+}
+
+io put: "\n"
+
+//
+// print out the keys
+//
+io put: "The keys:\n"
+
+hash eachKey: ^{ <key>
+    io put: "" + key + "\n"
+}
+
+io put: "\n"
+
+//
+// print the values
+//
+io put: "The values:\n"
+
+hash eachValue: ^{ <value>
+    io put: "" + value + "\n"
+}
+
+io put: "\n"
+
+//
+// remove most objects
+//
+hash remove: 4
+hash remove: 5
+hash remove: 1
+
+io put: "The hash after decimating it:\n"
+
+hash each: ^{ <pair>
+    io put: "" + [pair left] + " => " + [pair right] + "\n"
+}

@@ -1,0 +1,84 @@
+////////////////////////////
+//                        //
+// list.ty                //
+//                        //
+// a list example         //
+//                        //
+////////////////////////////
+
+import org.taffy.core.container.List
+
+list = new List
+
+//
+// append to the list
+//
+list push: 1
+list push: 2
+list push: 3
+list push: 4
+list push: 5
+list push: 6
+list push: 7
+list push: 8
+list push: 9
+list push: 10
+list push: 11
+
+//
+// print it
+//
+io putLine: "The list is: #[list]\n"
+
+//
+// pop the last
+//
+list pop
+io putLine: "After pop the list is: #[list]\n"
+
+//
+// check it out
+//
+io put: "List's size: #[list size]\n"
+io put: "List's head: #[list head]\n"
+io put: "List's tail: #[list tail]\n\n"
+
+//
+// print it
+//
+io put: "List's values, vertically:\n"
+
+list each: ^{ <value>
+    io put: "" + value + "\n"
+}
+
+//
+// find values that are divisible by 2
+//
+values = [list select: ^{ <value> value % 2 == 0 }]
+io put: "\nList's values that are dividible by 2: #[values]\n\n"
+
+//
+// show how reject works
+//
+io put: "List after removing all even numbers, vertically:\n"
+
+[[list reject: ^{ <value>
+    value % 2 == 0
+}] each: ^{ <value>
+    io put: "" + value + "\n"
+}]
+
+io putLine: ("\nList after removing all odd numbers: "
+             + "#[list reject: ^{ <value> value % 2 == 1 }]")
+
+//
+// show how collect works
+//
+io put: "\nFinding values that are less than 5 in #[list]:\n"
+
+[[list collect: ^{ <value>
+    value < 5
+}] each: ^{ <value>
+    io put: "" + value + "\n"
+}]

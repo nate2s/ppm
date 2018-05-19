@@ -1,0 +1,27 @@
+///////////////////////////////
+//                           //
+// matrix.ty                 //
+//                           //
+// a matrix example          //
+//                           //
+///////////////////////////////
+
+//
+// This program rotates the vector (1, 0) about the (0, 0) axis
+// via the angle 2PI / 50
+//
+
+rotations = 50
+myAngle = 2PI / rotations
+
+rotator(theta) = ||cos(theta), -sin(theta)
+                   sin(theta), cos(theta)||
+vector = ||1 ; 0||
+
+io put: "Rotating the vector: " + vector + " about the (0, 0) "
+io put: "axis via the angle 2PI / 50, #[rotations] times\n"
+
+0 upTo: rotations - 1 do: ^{ <ii>
+    vector = rotator(myAngle) * vector
+    io put: "[#[ii + 1]/#[rotations]] #[vector]\n"
+}

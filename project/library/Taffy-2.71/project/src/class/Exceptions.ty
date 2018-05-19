@@ -1,0 +1,685 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.exception
+
+class AbortException(Exception)
+{
+    @text, @rw
+
+    (@@) newWithText: _text
+    {
+        exception = new AbortException
+        exception setText: _text
+        exception setData: _text
+        return (exception)
+    }
+}
+
+class UserGeneratedAbortSignalException(AbortException)
+{
+    @text, @rw
+
+    (@@) newWithText: _text
+    {
+        exception = new UserGeneratedAbortSignalException
+        exception setText: _text
+        exception setData: "user generated abort exception: #[_text]"
+        return (exception)
+    }
+}
+
+class LocalToGlobalConversionException(Exception)
+{
+    @objectName, @rw
+
+    (@@) createObjectWithName: _objectName
+    {
+        exception = new LocalToGlobalConversionException
+        exception setObjectName: _objectName
+        exception setData: "local variable converted to global: #[_objectName]"
+        return (exception)
+    }
+}
+
+class UnidentifiedObjectException(Exception)
+{
+    @objectName, @rw
+    @reason, @rw
+
+    (@@) createObject: _objectName
+    {
+        exception = new UnidentifiedObjectException
+        exception setObjectName: _objectName
+        exception setData: "unidentified object: #[_objectName]"
+        return (exception)
+    }
+
+    (@@) createObject: _objectName reason: _reason
+    {
+        exception = new UnidentifiedObjectException
+        exception setObjectName: _objectName
+        exception setReason: _reason
+        exception setData: "unidentified object: #[_objectName] (#[_reason])"
+        return (exception)
+    }
+}
+
+class AbstractClassInstantiationException(Exception)
+{
+    @objectName, @rw
+
+    (@@) createObject: _objectName
+    {
+        exception = new AbstractClassInstantiationException
+        exception setObjectName: _objectName
+        exception setData: ("object #[_objectName] is abstract and cannot "
+                            + "be instantiated with 'new'")
+        return (exception)
+    }
+}
+
+class ConstantRedefinitionException(Exception)
+{
+    @objectName, @rw
+
+    (@@) createObject: _objectName
+    {
+        exception = new ConstantRedefinitionException
+        exception setObjectName: _objectName
+        exception setData: ("object #[_objectName] is constant and "
+                            + "cannot be redefined")
+        return (exception)
+    }
+}
+
+class NonConstantUseOfConstantException(Exception)
+{
+    @objectName, @rw
+
+    (@@) createObject: _objectName
+    {
+        exception = new NonConstantUseOfConstantException
+        exception setObjectName: _objectName
+        exception setData: ("a non-constant method cannot follow a constant "
+                            + "method for class #[_objectName]")
+        return (exception)
+    }
+}
+
+class DivideByZeroException(Exception)
+{
+    (@@) create
+    {
+        exception = new DivideByZeroException
+        exception setData: "divide by zero"
+        return (exception)
+    }
+}
+
+class EmptyListException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "Empty List"
+    }
+}
+
+class FileOpenException(Exception)
+{
+    @filename, @rw
+
+    (@@) new: _filename
+    {
+        exception = new FileOpenException
+        exception setFilename: _filename
+        exception setData: "unable to open file: #[_filename]"
+        return (exception)
+    }
+}
+
+class FileWriteException(Exception)
+{
+    @filename, @rw
+    @error, @rw
+
+    (@@) new: _filename error: _error
+    {
+        exception = new FileWriteException
+        exception setFilename: _filename
+        exception setError: _error
+        exception setData: "unable to write to file: #[_filename] error: #[_error]"
+        return (exception)
+    }
+}
+
+class InvalidCastException(Exception)
+{
+    @from, @rw
+    @to, @rw
+
+    (@@) newFrom: _from to: _to
+    {
+        exception = new InvalidCastException
+        exception setFrom: _from
+        exception setTo: _to
+        exception setData: "invalid cast from: #[_from] to: #[_to]"
+        return (exception)
+    }
+}
+
+class InvalidComparisonResultException(Exception)
+{
+    @value, @rw
+
+    (@@) new: _value
+    {
+        exception = new InvalidComparisonResultException
+        exception setValue: _value
+        exception setData: "invalid comparison result: #[_value]"
+        return (exception)
+    }
+}
+
+class InvalidHashValueException(Exception)
+{
+    @value, @rw
+
+    (@@) newWithValue: _value
+    {
+        exception = new InvalidHashValueException
+        exception setValue: _value
+        exception setData: "invalid hash value: #[_value] (a positive scalar is needed)"
+        return (exception)
+    }
+}
+
+class InvalidIndexesException(Exception)
+{
+    @indexes, @rw
+
+    (@@) new: _indexes
+    {
+        exception = new InvalidIndexesException
+        exception setIndexes: _indexes
+        exception setData: "invalid indexes: #[_indexes]"
+        return (exception)
+    }
+}
+
+class IndexOutOfBoundsException(Exception)
+{
+    @index, @rw
+
+    (@@) index: _index
+    {
+        exception = new IndexOutOfBoundsException
+        exception setIndex: _index
+        exception setData: "index out of bounds: #[_index]"
+        return (exception)
+    }
+}
+
+class InvalidLibraryException(Exception)
+{
+    @libraryName, @rw
+
+    (@@) newWithLibraryName: _libraryName
+    {
+        exception = new InvalidLibraryException
+        exception setLibraryName: _libraryName
+        exception setData: "invalid library: #[_libraryName]"
+        return (exception)
+    }
+}
+
+class InvalidMarshalledDataException(Exception)
+{
+    (@@) newObject
+    {
+        exception = new InvalidMarshalledDataException
+        exception setData: "there are no registered connectors"
+        return (exception)
+    }
+}
+
+class InvalidMatrixSizeException(Exception)
+{
+    @wantedRows, @rw
+    @wantedColumns, @rw
+    @haveRows, @rw
+    @haveColumns, @rw
+
+    (@@) wantedRows: _wantedRows
+      wantedColumns: _wantedColumns
+           haveRows: _haveRows
+        haveColumns: _haveColumns
+    {
+        exception = new InvalidMatrixSizeException
+        exception setWantedRows: _wantedRows
+        exception setWantedColumns: _wantedColumns
+        exception setHaveRows: _haveRows
+        exception setHaveColumns: _haveColumns
+        exception setData: ("wanted: #[_wantedRows]x#[_wantedColumns] "
+                            + "have: #[_haveRows]x#[_haveColumns]")
+        return (exception)
+    }
+}
+
+class NeedVectorException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "A vector is needed for this operation"
+    }
+}
+
+class OperationOnFunctionOfNoArgumentsException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "Operation on function of no arguments"
+    }
+}
+
+class InvalidNumberArgumentsException(Exception)
+{
+    @expected, @rw
+    @given, @rw
+
+    (@@) expected: _expected given: _given
+    {
+        exception = new InvalidNumberArgumentsException
+        exception setExpected: _expected
+        exception setGiven: _given
+        exception setData: ("invalid number arguments, expected: #[_expected] "
+                            + "given: #[_given]")
+        return (exception)
+    }
+}
+
+class InvalidReturnValueException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new InvalidReturnValueException
+        exception setValue: _value
+        exception setData: "invalid return value: #[_value]"
+        return (exception)
+    }
+}
+
+class NeedByteException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new NeedByteException
+        exception setValue: _value
+        exception setData: ("a byte (0-255) is needed but was given: #[_value]"
+                            + " of type: #[_value className]")
+        return (exception)
+    }
+}
+
+class NeedIntegerException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new NeedIntegerException
+        exception setValue: _value
+        exception setData: ("an integer is needed but was given: #[_value]"
+                            + " of type: #[_value className]")
+        return (exception)
+    }
+}
+
+class NeedDoubleException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new NeedDoubleException
+        exception setValue: _value
+        exception setData: ("a double is needed but was given: #[_value]"
+                            + " of type: #[_value className]")
+        return (exception)
+    }
+}
+
+class NeedPositiveIntegerException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new NeedPositiveIntegerException
+        exception setValue: _value
+        exception setData: ("a positive integer is needed but was "
+                            + "given: #[_value] of type: #[_value className]")
+        return (exception)
+    }
+}
+
+class NoRegisteredConnectorsException(Exception)
+{
+    (@@) newObject
+    {
+        exception = new NoRegisteredConnectorsException
+        exception setData: "there are no registered connectors"
+        return (exception)
+    }
+}
+
+class MoreThanOnePackageException(Exception)
+{
+    @packageName, @rw
+
+    (@@) newObject: _packageName
+    {
+        exception = new MoreThanOnePackageException
+        exception setPackageName: _packageName
+        exception setData: ("more than one package was "
+                            + "defined at: #[_packageName]")
+        return (exception)
+    }
+}
+
+class PrecisionTooSmallException(Exception)
+{
+    @precision, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new PrecisionTooSmallException
+        exception setPrecision: _value
+        exception setData: "given precision is too small: #[_value]"
+        return (exception)
+    }
+}
+
+class StackOverflowException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "stack overflow"
+    }
+}
+
+class SocketSendFailureException(Exception)
+{
+    (@@) create
+    {
+        exception = new SocketSendFailureException
+        exception setData: "send failure"
+        return (exception)
+    }
+}
+
+class UnidentifiedMethodException(Exception)
+{
+    @exceptionMethodName, @rw
+    @exceptionClassName, @rw
+
+    (@@) methodName: _methodName className: _className
+    {
+        exception = new UnidentifiedMethodException
+        exception setExceptionMethodName: _methodName
+        exception setExceptionClassName: _className
+        exception setData: ("unidentified method: #[_methodName] for "
+                            + "class: #[_className]")
+        return (exception)
+    }
+}
+
+class UnmarshallFailureException(Exception)
+{
+    @value, @rw
+
+    (@@) newObject: _value
+    {
+        exception = new UnmarshallFailureException
+        exception setValue: _value
+        exception setData: "unmarshall failure for: #[_value]"
+        return (exception)
+    }
+}
+
+class CInputException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "C Input Exception"
+    }
+}
+
+class DerivationException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "invalid derivation operation"
+    }
+}
+
+class NeedSliceException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "a slice is needed for this operation"
+    }
+}
+
+class FinalClassUpdateException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: "a class deemed final may not be updated"
+    }
+}
+
+class InvalidSuperClassException(Exception)
+{
+    @superName, @rw
+
+    (@@) newWithSuperName: _name
+    {
+        exception = new InvalidSuperClassException
+        exception setSuperName: _name
+        exception setData: "class #[_name] is final and cannot be extended"
+        return (exception)
+    }
+}
+
+class InconsistentClassUpdateException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: ("A class update must keep its flags. "
+                       + "For example, an abstract class can only be updated "
+                       + "by an abstract class, and a slice can only be "
+                       + "updated by a slice.")
+    }
+}
+
+class ImportFailedException(Exception)
+{
+    @packageName, @rw
+
+    (@@) newWithPackageName: _packageName
+    {
+        result = new ImportFailedException
+        result setPackageName: _packageName
+        result setData: "Cannot find package named: #[_packageName]"
+        return (result)
+    }
+}
+
+class ReturnWithNoCallStackException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: ("this return exists with no call stack")
+    }
+}
+
+class BreakWithoutALoopException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: ("this break exists without a loop")
+    }
+}
+
+class NeedMetaClassException(Exception)
+{
+    (@) init
+    {
+        super init
+        self setData: ("a meta class is needed")
+    }
+}
+
+class UnidentifiedClassException(Exception)
+{
+    @className, @rw
+
+    (@@) newWithName: _name
+    {
+        result = new UnidentifiedClassException
+        result setClassName: _name
+        result setData: "Can't find class with name #[_name]"
+        return (result)
+    }
+}
+
+class PluginInstantiationException(Exception)
+{
+    @reason, @rw
+
+    (@@) newWithReason: _reason
+    {
+        result = new PluginInstantiationException
+        result setReason: _reason
+        result setData: "Unable to instantiate plugin: #[_reason]"
+        return (result)
+    }
+}
+
+class SingletonInstantiationException(Exception)
+{
+    @className, @rw
+
+    (@@) newWithClassName: _className
+    {
+        result = new SingletonInstantiationException
+        result setClassName: _className
+        result setData: "Cannot instantiate singleton class: #[_className]"
+        return (result)
+    }
+}
+
+class UnsupportedMathOperationException(Exception)
+{
+    @reason, @rw
+
+    (@@) newWithReason: _reason
+    {
+        result = new UnsupportedMathOperationException
+        result setReason: _reason
+        result setData: "Unsupported math operation: #[_reason]"
+        return (result)
+    }
+}
+
+class FileOperationFailedException(Exception)
+{
+    @name, @rw
+    @reason, @rw
+
+    (@@) newWithName: _name reason: _reason
+    {
+        exception = new FileOperationFailedException
+        exception setName: _name
+        exception setReason: _reason
+        exception setData: "file operation for '#[_name]' failed: #[_reason]"
+        return (exception)
+    }
+}
+
+class InvalidFileModeException(Exception)
+{
+    (@) init
+    {
+        self setData: "invalid file mode, expecting write but found read"
+    }
+}
+
+class DeadlockException(Exception)
+{
+    (@) init
+    {
+        self setData: "deadlock detected"
+    }
+}
+
+class BlockNotSingularException(Exception)
+{
+    (@) init
+    {
+        self setData: "given block is not singular"
+    }
+}
+
+class AssertFailedException(Exception)
+{
+    (@) init
+    {
+        self setData: "an assert failed"
+    }
+}
+
+class InvalidFormattedNumberException(Exception)
+{
+    @numberString, @rw
+
+    (@@) newWithNumber: _number
+                 style: _style
+    {
+        exception = new InvalidFormattedNumberException
+        exception setNumberString: _number
+        exception setData: "Invalid formatted number: #[_number] for style: #[_style]"
+        return (exception)
+    }
+}

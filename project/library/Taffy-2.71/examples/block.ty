@@ -1,0 +1,43 @@
+////////////////////////////
+//                        //
+// block.ty               //
+//                        //
+// a block example        //
+//                        //
+////////////////////////////
+
+//
+// define a block that takes no arguments
+//
+block = ^{
+    io put: "I'm inside of a block\n"
+}
+
+//
+// call the block
+//
+block call
+
+//
+// redefine the block with two arguments, left, and right
+//
+block = ^{ <left, right>
+    io put: "left argument: #[left], right: #[right]\n"
+}
+
+//
+// call the block with two arguments
+//
+block callWith: [31338, 31339]
+
+//
+// blocks have parent-scope access
+// in that they can access their parent's scope
+//
+value = "dandy"
+
+block = ^{
+    io put: "Taffy is #[value]\n"
+}
+
+block call

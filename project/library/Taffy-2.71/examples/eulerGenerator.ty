@@ -1,0 +1,35 @@
+////////////////////////////
+//                        //
+// eulerGenerator.ty      //
+//                        //
+// generate Euler values  //
+//                        //
+////////////////////////////
+
+import org.taffy.core.maths.Series
+import org.taffy.core.maths.Number
+Number pushDigitLimit: 2048
+
+innerSeries = [Series createWithBlock: ^{ <j>
+                  (choose(k, j) * ((-1)^j*(k-2j)^(2n + 1))
+                   / (2^k * i^k * k))
+              }]
+outerSeries = [Series createWithBlock: ^{ <k>
+                  innerSeries[0, k]
+              }]
+
+innerSeries setUseMemory: false
+outerSeries setUseMemory: true
+
+euler(n) = i * outerSeries[1, 2n + 1]
+
+io put: "global eulerArray = ["
+
+for (a = 0; a < 200; a++)
+{
+    io put: "#[euler(a)], // #[a]\n    "
+}
+
+io putLine: "]"
+
+Number popDigitLimit

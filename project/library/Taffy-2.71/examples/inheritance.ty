@@ -1,0 +1,65 @@
+///////////////////////////////
+//                           //
+// inheritance.ty            //
+//                           //
+// an inheritance example    //
+//                           //
+///////////////////////////////
+
+abstract class Employee
+{
+    @pay, @rw
+
+    (@) init
+    {
+        // initialize to 20000
+        @pay = 20000
+    }
+}
+
+class Boss(Employee)
+{
+    (@) init
+    {
+        @pay = 60000
+    }
+}
+
+class Peon(Employee)
+{
+    (@) init
+    {
+        @pay = 2000
+    }
+}
+
+class CEO(Employee)
+{
+    (@) init
+    {
+        @pay = 12000000
+    }
+}
+
+class Secretary(Employee)
+{
+}
+
+class Main
+{
+    (@) printPay: employee
+    {
+        io put: "A #[employee className] makes #[employee pay] a year" + "\n"
+    }
+
+    (@) main
+    {
+        self printPay: new Boss
+        self printPay: new Peon
+        self printPay: new CEO
+        self printPay: new Secretary
+    }
+}
+
+// go
+[(new Main) main]

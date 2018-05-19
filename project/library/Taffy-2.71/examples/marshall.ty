@@ -1,0 +1,38 @@
+///////////////////////////////
+//                           //
+// marshall.ty               //
+//                           //
+// a marshalling example     //
+//                           //
+///////////////////////////////
+
+//
+// marshall an array
+//
+array = [1, 2, 3, 4, 5, 6, 7, "eight"]
+marshalled = [kernel marshall: array]
+unmarshalled = [kernel unmarshall: marshalled]
+
+io put: "# Array #\n"
+io put: "array: " + array + "\n"
+io put: "array marshalled: " + marshalled + "\n"
+io put: "array unmarshalled: " + unmarshalled + "\n"
+io put: "\n"
+
+//
+// marshall a block of code
+//
+block = ^{
+    a = 1 + 1
+    a++
+}
+
+marshalled = [kernel marshall: block]
+unmarshalled = [kernel unmarshall: marshalled]
+
+io put: "# Block #\n"
+io put: "block: " + block + "\n"
+io put: "block marshalled: " + marshalled + "\n"
+io put: "block unmarshalled: " + unmarshalled + "\n"
+io put: "block result: #[block call]\n"
+io put: "unmarshalled result: #[unmarshalled call]\n"

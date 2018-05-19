@@ -1,0 +1,7 @@
+package src.tests.TestDirectory
+
+import src.tests.TestDirectory.ClassWithParseError
+
+class ClassThatImportsClassWithParseError
+{
+}

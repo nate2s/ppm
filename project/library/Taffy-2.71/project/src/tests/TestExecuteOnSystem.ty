@@ -1,0 +1,59 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+import org.taffy.core.exception.Exception
+import org.taffy.core.io.File
+
+class Tester
+{
+    (@) testProgram: program expected: expected
+    {
+        kernel executeOnSystem: "./taffy -c \"#[program]\" > output"
+
+        file = [File openForRead: "output"]
+        all = [file getAll]
+
+        if (all != expected)
+        {
+            io putLine: "expected: '#[expected]'"
+            io putLine: "but got:  '#[all]'"
+            throw 31338
+        }
+        else
+        {
+            io putLine: "PASS"
+        }
+    }
+}
+
+tester = new Tester
+
+try
+{
+    tester testProgram: "1 + 1"  expected: "==> 2\n"
+    tester testProgram: "sin(0)" expected: "==> 0\n"
+    [tester testProgram: "io putLine: \\\"hi there\\\""
+               expected: "hi there\n==> #IO\n"]
+    [tester testProgram: "a = \\\"hi there\\\" + 1; io putLine: a"
+               expected: "hi there1\n==> #IO\n"]
+}
+catch (Exception exception)
+{
+    io putLine: "Got exception: #[exception]"
+    kernel exit: -1
+}

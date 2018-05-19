@@ -1,0 +1,9 @@
+package src.tests.TestDirectory.ImplicitImport
+
+class ImplicitImportC
+{
+    (@) init
+    {
+        ImplicitImportA
+    }
+}
