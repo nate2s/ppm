@@ -18,8 +18,6 @@ Example:
 
 `ppm --font ivrit --color grouped "tan(y) / x"`
 
-![alt text](doc/img/tan_smaller.png)
-
 ### Building
 
 Run `build.sh` to create the <b>ppm</b> executable.<br>
