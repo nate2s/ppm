@@ -18,7 +18,7 @@ Example:
 
 `ppm --font ivrit --color grouped "tan(y) / x"`
 
-![alt text](doc/img/tan_smaller.png)
+![alt text](doc/img/tan.png)
 
 ### Building
 
