@@ -1,0 +1,233 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.container
+
+import org.taffy.core.String
+
+class Hash(Container)
+{
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash # #operator(==):
+    //
+    // Tests the equality of two hashes. Returns false if either argument is not
+    // a Hash
+    //
+    // h1 = (1=>"one", 2=>"two")
+    // h2 = (1=>"one", 2=>"two")
+    // h3 = (1=>"one")
+    //
+    // h1 == h2
+    // ==> yes
+    //
+    // h2 == h3
+    // ==> no
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) #operator(==): _other
+    #const,
+    #synchronizedRead
+    {
+        result = false
+
+        if ([_other kindOf?: Hash]
+            and [self size] == [_other size])
+        {
+            result = true
+
+            [self eachKey: ^{ <key>
+                if ([_other objectForKey: key]
+                    != [self objectForKey: key])
+                {
+                    result = false
+                    break
+                }
+            }]
+        }
+
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"as flat Array"
+    //
+    // Converts self to an Array of single objects
+    //
+    // h1 = (1=>"one", 2=>"two")
+    // h1 as Array
+    // ==> [1, "one", 2, "two"]
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) asFlatArray
+    #const,
+    #synchronizedRead
+    {
+        result = [Array createWithSize: [self size] * 2]
+        k = 0
+
+        [self each: ^{ <pair>
+            result[k] = [pair left]
+            result[k + 1] = [pair right]
+            k += 2
+        }]
+
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"as Array"
+    //
+    // Converts self to an Array of Pairs
+    //
+    // h1 = (1=>"one", 2=>"two")
+    // h1 as Array
+    // ==> [<1,"one">,<2,"two">]
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) asArray
+    #const,
+    #synchronizedRead
+    {
+        result = [Array createWithSize: [self size]]
+        k = 0
+
+        [self each: ^{ <pair>
+            result[k] = pair
+            k++
+        }]
+
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"asStringInitialized"
+    //
+    // Returns a String representation of the initialized hash
+    //
+    // h1 = (1=>"one")
+    // h1 asStringInitialized
+    // ==> "#Hash(1=>"one")"
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) asStringInitialized
+    #const,
+    #synchronizedRead
+    {
+        result = "#Hash("
+        a = 0
+        size = [self size]
+
+        [self each: ^{ <pair>
+            result += ("#[[String prettyPrint: [pair left]]]"
+                       + "=>#[[String prettyPrint: [pair right]]]")
+
+            if (a < size - 1)
+            {
+                result += ", "
+            }
+
+            a++
+        }]
+
+        result += ")"
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"hash"
+    //
+    // Returns the hashed value of this hash
+    //
+    // h = (1=>"one", 2=>"two")
+    // h hash
+    // ==> 2165800
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) hash
+    #const,
+    #synchronizedRead
+    {
+        result = 0
+        a = 0
+
+        [self each: ^{ <pair>
+            result += ([pair hash] << (a + 10))
+            result = mod(result, 0xFFFFFFFF)
+            a++
+        }]
+
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"values"
+    //
+    // Returns the values of the hash
+    //
+    // h = (1=>"one", 2=>"two")
+    // h values
+    // ==> ["one","two"]
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) values
+    #const,
+    #synchronizedRead
+    {
+        result = [Array createWithSize: [self size]]
+        k = 0
+
+        [self eachValue: ^{ <value>
+            result[k] = value
+            k++
+        }]
+
+        return (result)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Hash#"keys"
+    //
+    // Returns the keys of the hash
+    //
+    // h = (1=>"one", 2=>"two")
+    // h keys
+    // ==> [1,2]
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    (@) keys
+    #const,
+    #synchronizedRead
+    {
+        result = [Array createWithSize: [self size]]
+        k = 0
+
+        [self eachKey: ^{ <key>
+            result[k] = key
+            k++
+        }]
+
+        return (result)
+    }
+}

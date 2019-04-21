@@ -1,0 +1,29 @@
+package org.taffy.core.tests
+
+class VariableTestClass
+{
+    @@metaVariableA, @rw
+    @@metaVariableB, @rw
+
+    @variableA, @rw
+    @variableB, @rw
+
+    @variableC, @rw
+
+    (@@) init
+    {
+        @@metaVariableA = 0
+        @@metaVariableB = 0
+    }
+
+    (@) init
+    {
+        @@metaVariableA++
+        @@metaVariableB++
+
+        @variableA = @@metaVariableA
+        @variableB = @@metaVariableB
+
+        @variableC = 1
+    }
+}

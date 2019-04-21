@@ -1,0 +1,424 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D06D5A24-D8F4-4DCB-B43B-05EE039B0460}</ProjectGuid>
+    <RootNamespace>taffy</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\..\..\src\global;..\..\..\src\third_party\decNumber;..\..\..\src\container;..\..\..\src\class;..\..\..\src\graph;..\..\..\src\evaluator;..\..\..\src\scope;..\..\..\src\io;..\..\..\src\maths;..\..\..\src\taffy;..\..\..\src\taffy\text;..\..\..\src\class\special;..\..\..\src\class\org\taffy\core\exception;..\..\..\src\org\taffy\help;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <UndefinePreprocessorDefinitions>_HAS_CPP0X</UndefinePreprocessorDefinitions>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\class\CompiledArray.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledComplexNumber.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledContainer.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledExceptions.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledFunction.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledFuture.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledHash.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledHeap.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledInvalidArraySizeException.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledIO.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledKernel.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledLineContainer.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledList.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledMath.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledMathConstants.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledMatrix.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledNil.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledNumber.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledPair.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledReentrantMutex.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledSequence.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledSeries.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledString.h" />
+    <ClInclude Include="..\..\..\src\class\CompiledThreader.h" />
+    <ClInclude Include="..\..\..\src\class\dcArrayClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcBlockClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcClassManager.h" />
+    <ClInclude Include="..\..\..\src\class\dcClassTemplate.h" />
+    <ClInclude Include="..\..\..\src\class\dcComplexNumberClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcConditionClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcConstantClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcContainerClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcDateClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcEquationClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcExceptionClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcExceptions.h" />
+    <ClInclude Include="..\..\..\src\class\dcFunctionClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcFunctionRepeater.h" />
+    <ClInclude Include="..\..\..\src\class\dcFutureClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcHashClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcHeapClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcIOClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcKernelClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcLineContainerClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcListClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcMainClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcMathClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcMatrixClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcMutexClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcNilClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcNoClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcNumberClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcObjectClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcPackageContents.h" />
+    <ClInclude Include="..\..\..\src\class\dcPairClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcProcedureClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcSequenceClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcSeriesClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcStringClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcSymbolClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcThreadClass.h" />
+    <ClInclude Include="..\..\..\src\class\dcYesClass.h" />
+    <ClInclude Include="..\..\..\src\class\org\taffy\core\exception\dcParseErrorExceptionClass.h" />
+    <ClInclude Include="..\..\..\src\class\special\dcSuppliedArgumentClass.h" />
+    <ClInclude Include="..\..\..\src\class\special\dcWildClass.h" />
+    <ClInclude Include="..\..\..\src\container\dcArray.h" />
+    <ClInclude Include="..\..\..\src\container\dcAVLTree.h" />
+    <ClInclude Include="..\..\..\src\container\dcBinarySearchTree.h" />
+    <ClInclude Include="..\..\..\src\container\dcContainers.h" />
+    <ClInclude Include="..\..\..\src\container\dcHash.h" />
+    <ClInclude Include="..\..\..\src\container\dcHeap.h" />
+    <ClInclude Include="..\..\..\src\container\dcList.h" />
+    <ClInclude Include="..\..\..\src\container\dcPair.h" />
+    <ClInclude Include="..\..\..\src\container\dcTree.h" />
+    <ClInclude Include="..\..\..\src\evaluator\dcCallStackData.h" />
+    <ClInclude Include="..\..\..\src\evaluator\dcFileEvaluator.h" />
+    <ClInclude Include="..\..\..\src\evaluator\dcNodeEvaluator.h" />
+    <ClInclude Include="..\..\..\src\evaluator\dcPieLineEvaluator.h" />
+    <ClInclude Include="..\..\..\src\evaluator\dcStringEvaluator.h" />
+    <ClInclude Include="..\..\..\src\global\dcBootstrapClasses.h" />
+    <ClInclude Include="..\..\..\src\global\dcCFunctionArgument.h" />
+    <ClInclude Include="..\..\..\src\global\dcCondition.h" />
+    <ClInclude Include="..\..\..\src\global\dcDefines.h" />
+    <ClInclude Include="..\..\..\src\global\dcDoubleVoid.h" />
+    <ClInclude Include="..\..\..\src\global\dcError.h" />
+    <ClInclude Include="..\..\..\src\global\dcFilePackageData.h" />
+    <ClInclude Include="..\..\..\src\global\dcFutureManager.h" />
+    <ClInclude Include="..\..\..\src\global\dcGarbageCollector.h" />
+    <ClInclude Include="..\..\..\src\global\dcGlobalConfig.h" />
+    <ClInclude Include="..\..\..\src\global\dcLog.h" />
+    <ClInclude Include="..\..\..\src\global\dcMarshaller.h" />
+    <ClInclude Include="..\..\..\src\global\dcMemory.h" />
+    <ClInclude Include="..\..\..\src\global\dcMutex.h" />
+    <ClInclude Include="..\..\..\src\global\dcNode.h" />
+    <ClInclude Include="..\..\..\src\global\dcObjectStack.h" />
+    <ClInclude Include="..\..\..\src\global\dcObjectStackList.h" />
+    <ClInclude Include="..\..\..\src\global\dcReadline.h" />
+    <ClInclude Include="..\..\..\src\global\dcReadWriteLock.h" />
+    <ClInclude Include="..\..\..\src\global\dcRootMarkFunction.h" />
+    <ClInclude Include="..\..\..\src\global\dcStringCache.h" />
+    <ClInclude Include="..\..\..\src\global\dcStringManager.h" />
+    <ClInclude Include="..\..\..\src\global\dcSystem.h" />
+    <ClInclude Include="..\..\..\src\global\dcTaffy.h" />
+    <ClInclude Include="..\..\..\src\global\dcTaffyCMethodPointer.h" />
+    <ClInclude Include="..\..\..\src\global\dcTaffyCMethodWrapper.h" />
+    <ClInclude Include="..\..\..\src\global\dcThread.h" />
+    <ClInclude Include="..\..\..\src\global\dcThreadId.h" />
+    <ClInclude Include="..\..\..\src\global\dcThreadInclude.h" />
+    <ClInclude Include="..\..\..\src\global\dcThreadWindows.h" />
+    <ClInclude Include="..\..\..\src\global\dcVoid.h" />
+    <ClInclude Include="..\..\..\src\global\dcVoidContainer.h" />
+    <ClInclude Include="..\..\..\src\graph\dcAnd.h" />
+    <ClInclude Include="..\..\..\src\graph\dcAssignment.h" />
+    <ClInclude Include="..\..\..\src\graph\dcBool.h" />
+    <ClInclude Include="..\..\..\src\graph\dcBreak.h" />
+    <ClInclude Include="..\..\..\src\graph\dcCatchBlock.h" />
+    <ClInclude Include="..\..\..\src\graph\dcCharacterGraph.h" />
+    <ClInclude Include="..\..\..\src\graph\dcExit.h" />
+    <ClInclude Include="..\..\..\src\graph\dcFalse.h" />
+    <ClInclude Include="..\..\..\src\graph\dcFlatArithmetic.h" />
+    <ClInclude Include="..\..\..\src\graph\dcFor.h" />
+    <ClInclude Include="..\..\..\src\graph\dcFunctionUpdate.h" />
+    <ClInclude Include="..\..\..\src\graph\dcGraphData.h" />
+    <ClInclude Include="..\..\..\src\graph\dcGraphDataNode.h" />
+    <ClInclude Include="..\..\..\src\graph\dcGraphDatas.h" />
+    <ClInclude Include="..\..\..\src\graph\dcGraphDataTree.h" />
+    <ClInclude Include="..\..\..\src\graph\dcIdentifier.h" />
+    <ClInclude Include="..\..\..\src\graph\dcIf.h" />
+    <ClInclude Include="..\..\..\src\graph\dcImport.h" />
+    <ClInclude Include="..\..\..\src\graph\dcIn.h" />
+    <ClInclude Include="..\..\..\src\graph\dcLexer.h" />
+    <ClInclude Include="..\..\..\src\graph\dcMath.h" />
+    <ClInclude Include="..\..\..\src\graph\dcMethodCall.h" />
+    <ClInclude Include="..\..\..\src\graph\dcMethodHeader.h" />
+    <ClInclude Include="..\..\..\src\graph\dcNew.h" />
+    <ClInclude Include="..\..\..\src\graph\dcNil.h" />
+    <ClInclude Include="..\..\..\src\graph\dcNotEqualCall.h" />
+    <ClInclude Include="..\..\..\src\graph\dcOr.h" />
+    <ClInclude Include="..\..\..\src\graph\dcPackage.h" />
+    <ClInclude Include="..\..\..\src\graph\dcParser.h" />
+    <ClInclude Include="..\..\..\src\graph\dcReturn.h" />
+    <ClInclude Include="..\..\..\src\graph\dcSelf.h" />
+    <ClInclude Include="..\..\..\src\graph\dcString.h" />
+    <ClInclude Include="..\..\..\src\graph\dcSuper.h" />
+    <ClInclude Include="..\..\..\src\graph\dcSymbol.h" />
+    <ClInclude Include="..\..\..\src\graph\dcSynchronized.h" />
+    <ClInclude Include="..\..\..\src\graph\dcThrow.h" />
+    <ClInclude Include="..\..\..\src\graph\dcTrue.h" />
+    <ClInclude Include="..\..\..\src\graph\dcTryBlock.h" />
+    <ClInclude Include="..\..\..\src\graph\dcUpSelf.h" />
+    <ClInclude Include="..\..\..\src\graph\dcWhile.h" />
+    <ClInclude Include="..\..\..\src\io\dcCommandLineArgument.h" />
+    <ClInclude Include="..\..\..\src\io\dcCommandLineArguments.h" />
+    <ClInclude Include="..\..\..\src\io\dcFileManagement.h" />
+    <ClInclude Include="..\..\..\src\io\dcSocket.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\maths\dcComplexNumber.h" />
+    <ClInclude Include="..\..\..\src\maths\dcDecNumber.h" />
+    <ClInclude Include="..\..\..\src\maths\dcFloat.h" />
+    <ClInclude Include="..\..\..\src\maths\dcInt32.h" />
+    <ClInclude Include="..\..\..\src\maths\dcMatrix.h" />
+    <ClInclude Include="..\..\..\src\maths\dcNumber.h" />
+    <ClInclude Include="..\..\..\src\maths\dcUnsignedInt32.h" />
+    <ClInclude Include="..\..\..\src\maths\dcUnsignedInt64.h" />
+    <ClInclude Include="..\..\..\src\scope\dcScope.h" />
+    <ClInclude Include="..\..\..\src\scope\dcScopeData.h" />
+    <ClInclude Include="..\..\..\src\taffy\dcTaffyApplication.h" />
+    <ClInclude Include="..\..\..\src\taffy\dcTaffyCommandLineArguments.h" />
+    <ClInclude Include="..\..\..\src\taffy\text\CompiledTaffyUsage.h" />
+    <ClInclude Include="..\..\..\src\taffy\text\CompiledTaffyVersion.h" />
+    <ClInclude Include="..\..\..\src\third_party\decNumber\decContext.h" />
+    <ClInclude Include="..\..\..\src\third_party\decNumber\decNumber.h" />
+    <ClInclude Include="..\..\..\src\third_party\decNumber\decNumberLocal.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="taffy.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\class\CompiledArray.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledComplexNumber.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledContainer.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledExceptions.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledFunction.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledFuture.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledHash.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledHeap.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledInvalidArraySizeException.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledIO.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledKernel.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledLineContainer.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledList.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledMath.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledMathConstants.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledMatrix.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledNil.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledNumber.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledPair.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledReentrantMutex.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledSequence.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledSeries.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledString.c" />
+    <ClCompile Include="..\..\..\src\class\CompiledThreader.c" />
+    <ClCompile Include="..\..\..\src\class\dcArrayClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcBlockClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcClassManager.c" />
+    <ClCompile Include="..\..\..\src\class\dcClassTemplate.c" />
+    <ClCompile Include="..\..\..\src\class\dcComplexNumberClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcConditionClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcConstantClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcContainerClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcDateClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcEquationClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcExceptionClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcExceptions.c" />
+    <ClCompile Include="..\..\..\src\class\dcFunctionClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcFunctionRepeater.c" />
+    <ClCompile Include="..\..\..\src\class\dcFutureClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcHashClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcHeapClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcIOClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcKernelClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcLineContainerClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcListClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcMainClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcMathClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcMatrixClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcMutexClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcNilClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcNoClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcNumberClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcObjectClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcPackageContents.c" />
+    <ClCompile Include="..\..\..\src\class\dcPairClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcProcedureClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcSequenceClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcSeriesClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcStringClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcSymbolClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcThreadClass.c" />
+    <ClCompile Include="..\..\..\src\class\dcYesClass.c" />
+    <ClCompile Include="..\..\..\src\class\org\taffy\core\exception\dcParseErrorExceptionClass.c" />
+    <ClCompile Include="..\..\..\src\class\special\dcSuppliedArgumentClass.c" />
+    <ClCompile Include="..\..\..\src\class\special\dcWildClass.c" />
+    <ClCompile Include="..\..\..\src\container\dcArray.c" />
+    <ClCompile Include="..\..\..\src\container\dcAVLTree.c" />
+    <ClCompile Include="..\..\..\src\container\dcBinarySearchTree.c" />
+    <ClCompile Include="..\..\..\src\container\dcHash.c" />
+    <ClCompile Include="..\..\..\src\container\dcHeap.c" />
+    <ClCompile Include="..\..\..\src\container\dcList.c" />
+    <ClCompile Include="..\..\..\src\container\dcPair.c" />
+    <ClCompile Include="..\..\..\src\container\dcTree.c" />
+    <ClCompile Include="..\..\..\src\evaluator\dcCallStackData.c" />
+    <ClCompile Include="..\..\..\src\evaluator\dcFileEvaluator.c" />
+    <ClCompile Include="..\..\..\src\evaluator\dcNodeEvaluator.c" />
+    <ClCompile Include="..\..\..\src\evaluator\dcPieLineEvaluator.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\evaluator\dcStringEvaluator.c" />
+    <ClCompile Include="..\..\..\src\global\dcBootstrapClasses.c" />
+    <ClCompile Include="..\..\..\src\global\dcCFunctionArgument.c" />
+    <ClCompile Include="..\..\..\src\global\dcConditionWindows.c" />
+    <ClCompile Include="..\..\..\src\global\dcDoubleVoid.c" />
+    <ClCompile Include="..\..\..\src\global\dcError.c" />
+    <ClCompile Include="..\..\..\src\global\dcFilePackageData.c" />
+    <ClCompile Include="..\..\..\src\global\dcFutureManager.c" />
+    <ClCompile Include="..\..\..\src\global\dcGarbageCollector.c" />
+    <ClCompile Include="..\..\..\src\global\dcLog.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\global\dcMarshaller.c" />
+    <ClCompile Include="..\..\..\src\global\dcMemory.c" />
+    <ClCompile Include="..\..\..\src\global\dcMutexWindows.c" />
+    <ClCompile Include="..\..\..\src\global\dcNode.c" />
+    <ClCompile Include="..\..\..\src\global\dcObjectStack.c" />
+    <ClCompile Include="..\..\..\src\global\dcObjectStackList.c" />
+    <ClCompile Include="..\..\..\src\global\dcReadWriteLockWindows.c" />
+    <ClCompile Include="..\..\..\src\global\dcRootMarkFunction.c" />
+    <ClCompile Include="..\..\..\src\global\dcStringCache.c" />
+    <ClCompile Include="..\..\..\src\global\dcStringManager.c" />
+    <ClCompile Include="..\..\..\src\global\dcSystem.c" />
+    <ClCompile Include="..\..\..\src\global\dcTaffyCMethodPointer.c" />
+    <ClCompile Include="..\..\..\src\global\dcThreadId.c" />
+    <ClCompile Include="..\..\..\src\global\dcThreadWindows.c" />
+    <ClCompile Include="..\..\..\src\global\dcVoid.c" />
+    <ClCompile Include="..\..\..\src\global\dcVoidContainer.c" />
+    <ClCompile Include="..\..\..\src\graph\dcAnd.c" />
+    <ClCompile Include="..\..\..\src\graph\dcAssignment.c" />
+    <ClCompile Include="..\..\..\src\graph\dcBool.c" />
+    <ClCompile Include="..\..\..\src\graph\dcBreak.c" />
+    <ClCompile Include="..\..\..\src\graph\dcCatchBlock.c" />
+    <ClCompile Include="..\..\..\src\graph\dcCharacterGraph.c" />
+    <ClCompile Include="..\..\..\src\graph\dcExit.c" />
+    <ClCompile Include="..\..\..\src\graph\dcFalse.c" />
+    <ClCompile Include="..\..\..\src\graph\dcFlatArithmetic.c" />
+    <ClCompile Include="..\..\..\src\graph\dcFor.c" />
+    <ClCompile Include="..\..\..\src\graph\dcFunctionUpdate.c" />
+    <ClCompile Include="..\..\..\src\graph\dcGraphData.c" />
+    <ClCompile Include="..\..\..\src\graph\dcGraphDataNode.c" />
+    <ClCompile Include="..\..\..\src\graph\dcGraphDataTree.c" />
+    <ClCompile Include="..\..\..\src\graph\dcIdentifier.c" />
+    <ClCompile Include="..\..\..\src\graph\dcIf.c" />
+    <ClCompile Include="..\..\..\src\graph\dcImport.c" />
+    <ClCompile Include="..\..\..\src\graph\dcIn.c" />
+    <ClCompile Include="..\..\..\src\graph\dcLexer.c" />
+    <ClCompile Include="..\..\..\src\graph\dcMethodCall.c" />
+    <ClCompile Include="..\..\..\src\graph\dcMethodHeader.c" />
+    <ClCompile Include="..\..\..\src\graph\dcNew.c" />
+    <ClCompile Include="..\..\..\src\graph\dcNil.c" />
+    <ClCompile Include="..\..\..\src\graph\dcNotEqualCall.c" />
+    <ClCompile Include="..\..\..\src\graph\dcOr.c" />
+    <ClCompile Include="..\..\..\src\graph\dcPackage.c" />
+    <ClCompile Include="..\..\..\src\graph\dcParser.c" />
+    <ClCompile Include="..\..\..\src\graph\dcReturn.c" />
+    <ClCompile Include="..\..\..\src\graph\dcSelf.c" />
+    <ClCompile Include="..\..\..\src\graph\dcString.c" />
+    <ClCompile Include="..\..\..\src\graph\dcSuper.c" />
+    <ClCompile Include="..\..\..\src\graph\dcSymbol.c" />
+    <ClCompile Include="..\..\..\src\graph\dcSynchronized.c" />
+    <ClCompile Include="..\..\..\src\graph\dcThrow.c" />
+    <ClCompile Include="..\..\..\src\graph\dcTrue.c" />
+    <ClCompile Include="..\..\..\src\graph\dcTryBlock.c" />
+    <ClCompile Include="..\..\..\src\graph\dcUpSelf.c" />
+    <ClCompile Include="..\..\..\src\graph\dcWhile.c" />
+    <ClCompile Include="..\..\..\src\io\dcCommandLineArgument.c" />
+    <ClCompile Include="..\..\..\src\io\dcCommandLineArguments.c" />
+    <ClCompile Include="..\..\..\src\io\dcFileManagement.c" />
+    <ClCompile Include="..\..\..\src\io\dcSocketWindows.c" />
+    <ClCompile Include="..\..\..\src\maths\dcComplexNumber.c" />
+    <ClCompile Include="..\..\..\src\maths\dcDecNumber.c" />
+    <ClCompile Include="..\..\..\src\maths\dcFloat.c" />
+    <ClCompile Include="..\..\..\src\maths\dcInt32.c" />
+    <ClCompile Include="..\..\..\src\maths\dcMatrix.c" />
+    <ClCompile Include="..\..\..\src\maths\dcNumber.c" />
+    <ClCompile Include="..\..\..\src\maths\dcUnsignedInt32.c" />
+    <ClCompile Include="..\..\..\src\maths\dcUnsignedInt64.c" />
+    <ClCompile Include="..\..\..\src\scope\dcScope.c" />
+    <ClCompile Include="..\..\..\src\scope\dcScopeData.c" />
+    <ClCompile Include="..\..\..\src\taffy\dcTaffyApplication.c" />
+    <ClCompile Include="..\..\..\src\taffy\dcTaffyCommandLineArguments.c" />
+    <ClCompile Include="..\..\..\src\taffy\dcTaffyMain.c" />
+    <ClCompile Include="..\..\..\src\taffy\text\CompiledTaffyUsage.c" />
+    <ClCompile Include="..\..\..\src\taffy\text\CompiledTaffyVersion.c" />
+    <ClCompile Include="..\..\..\src\third_party\decNumber\decContext.c" />
+    <ClCompile Include="..\..\..\src\third_party\decNumber\decNumber.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\graph\dcParser.y" />
+    <None Include="..\..\..\src\graph\dcParserPreamble.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,210 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+/////////////////////////////
+//                         //
+// KeywordTest.ty          //
+//                         //
+// unit tests for Keywords //
+//                         //
+/////////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.container.Array
+import org.taffy.core.container.Hash
+import org.taffy.core.container.List
+
+class KeywordTest
+{
+    (@) testAnd
+    {
+        a = yes
+        b = no
+        c = yes
+
+        return (a and !b and c and a)
+    }
+
+    (@) testBreak
+    {
+        a = 1
+
+        //
+        // test #1
+        //
+
+        while (true)
+        {
+            a++
+
+            if (a == 5)
+            {
+                break
+            }
+        }
+
+        //
+        // test #2
+        //
+
+        str = "the quick brown fox"
+        strList = new List
+
+        str eachWord: ^{ <word>
+            strList push: word
+
+            if (word == "quick")
+            {
+                break
+            }
+        }
+
+        //
+        // test #3
+        //
+
+        testArray = [1,2,3,4,5,6,7]
+        testList = new List
+
+        testArray each: ^{ <val>
+            if (val < 3)
+            {
+                testList push: val
+            }
+            else
+            {
+                break
+            }
+        }
+
+        return (a == 5 and
+                [strList size] == 2 and
+                [strList head] == "the" and
+                [strList tail] == "quick" and
+                [testList size] == 2 and
+                [testList head] == 1 and
+                [testList tail] == 2)
+    }
+
+    (@) testOr
+    {
+        a = yes
+        b = no
+
+        return (!a or !b)
+    }
+
+    (@) testThrow
+    {
+        success1 = no
+
+        try
+        {
+            throw (new Array)
+        }
+        catch (Hash _hash)
+        {
+        }
+        catch (Array _array)
+        {
+            success1 = yes
+        }
+        catch (UnidentifiedObjectException _uoe)
+        {
+        }
+
+        success2 = no
+
+        try
+        {
+            try
+            {
+                throw (new Array)
+            }
+            catch (Array _array)
+            {
+                success2 = yes
+            }
+        }
+        catch (Array _array)
+        {
+            success2 = no
+        }
+
+        return (success1 and success2)
+    }
+
+    (@) testWhile
+    {
+        a = 1
+        b = 10
+        c = 5
+
+        while (a < 10)
+        {
+            a++
+        }
+
+        while (b > 0)
+        {
+            b--
+        }
+
+        while (c < 4)
+        {
+            c++
+        }
+
+        return (a == 10 and b == 0 and c == 5)
+    }
+
+    (@) testSelfAndUpSelf
+    {
+        topSelf = self
+        result = true
+
+        array = [1, 2, 3, 4, 5]
+        array each: ^{ <value>
+            if (! result)
+            {
+                break
+            }
+
+            if (self != array
+                or upSelf != topSelf)
+            {
+                result = false
+                break
+            }
+
+            hash = (1 => "one", 2 => "two")
+
+            hash each: ^{ <hashValue>
+                 if (self != hash
+                     or upSelf != topSelf)
+                 {
+                     result = false
+                     break
+                 }
+            }
+        }
+
+        return (result)
+    }
+}

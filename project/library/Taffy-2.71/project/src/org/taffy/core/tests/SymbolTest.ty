@@ -1,0 +1,69 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.Symbol
+
+class SymbolTest
+{
+    (@) testEquals
+    {
+        return ('a == 'a
+                and 'a != 'b
+                and '33 == '33
+                and '33 != '34
+                and 'a3 == 'a3
+                and 'a3 != 'a4
+                and 'thisIsASlightlyLongerSymbolName__thisIsASlightlyLongerSymbolName
+                    == 'thisIsASlightlyLongerSymbolName__thisIsASlightlyLongerSymbolName
+                and '__test3 == '__test3)
+    }
+
+    (@) testSymbolNew
+    {
+        // test symbols with a mixture of letters, numbers, and @
+        return ([Symbol new: "@asdf"] == '@asdf
+                and [Symbol new: "#[3+3]fdsa"] == '6fdsa
+                and [Symbol new: "#[1+1]"] != '3)
+    }
+
+    (@) testAsString
+    {
+        // test symbols with a mixture of letters, numbers, and @
+        return (['la asString] == "'la"
+                and ['la2 asString] == "'la2"
+                and ['@la333a asString] == "'@la333a"
+                and ['@la333a asString] != "'@la333b")
+    }
+
+    (@) testGetString
+    {
+        // test symbols with a mixture of letters, numbers, and @
+        return (['la getString] == "la"
+                and ['la2 getString] == "la2"
+                and ['@la333a getString] == "@la333a"
+                and ['@la333a getString] != "@la333b")
+    }
+
+    (@) testEndInSemicolon
+    {
+        symbol = 'hello;
+        return (symbol == 'hello)
+    }
+}

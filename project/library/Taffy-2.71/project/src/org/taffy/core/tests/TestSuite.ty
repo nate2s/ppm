@@ -1,0 +1,162 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+//////////////////////
+//                  //
+// TestSuite.ty     //
+//                  //
+// Taffy unit tests //
+//                  //
+//////////////////////
+
+import org.taffy.core.tests.*
+import org.taffy.core.exception.Exception
+import org.taffy.core.threading.Thread
+
+package org.taffy.core.tests
+
+global globalVariable = 0
+
+class TestSuite
+{
+    (@)       test: _tests
+            addons: _addonTests
+       doThreading: _doThread
+    {
+        [self testAddons: _addonTests
+             doThreading: _doThread]
+        self test: _tests doThreading: _doThread
+    }
+
+    (@) testAddons: _addonTests
+       doThreading: _doThread
+    {
+        io put: "###############################\n"
+        io put: "##                           ##\n"
+        io put: "##   Testing addon classes   ##\n"
+        io put: "##                           ##\n"
+        io put: "###############################\n"
+        io put: "\n"
+        io put: "Please be patient...\n"
+        io put: "\n"
+        self testClasses: _addonTests doThreading: _doThread
+    }
+
+    (@)       test: _tests
+       doThreading: _doThread
+    {
+        io put: "\n"
+        io put: "##############################\n"
+        io put: "##                          ##\n"
+        io put: "##   Testing base classes   ##\n"
+        io put: "##                          ##\n"
+        io put: "##############################\n"
+        io put: "\n"
+        self testClasses: _tests doThreading: _doThread
+    }
+
+    (@) testClasses: _classes
+        doThreading: _doThreading
+    {
+        tunit = new Tunit
+
+        _classes each: ^{ <test>
+            try
+            {
+                kernel eval: "tunit registerClass: new #[test]"
+            }
+            catch (Exception _exception)
+            {
+                io put: "[FAIL] Skipping library #[test]: #[_exception]"
+            }
+        }
+
+        io put: "\n"
+        tunit performTestsWithThreading: _doThreading
+    }
+}
+
+addonTests = []
+
+const tests =
+    [
+        "ReturnTest",
+        "AndOrTest",
+        "BreakTest",
+        "ArrayTest",
+        "AssignmentTest",
+        "ListTest",
+        "KernelTest",
+        "NilTest",
+        "NoTest",
+        "StringTest",
+        "TryCatchBlockTest",
+        "YesTest",
+        "MatrixTest",
+        "PairTest",
+        "ObjectTest",
+        "OperatorOverloadTest",
+        "ClassTest",
+        "ExceptionTest",
+        "ForTest",
+        "HashTest",
+        "HeapTest",
+        "KeywordTest",
+        "MathTest",
+        "TrigonometryTest",
+        "MarshallTest",
+        "BlockTest",
+        "NumberTest",
+        "ComplexNumberTest",
+        "ParseTestClass",
+        "SeriesTest",
+        "SequenceTest",
+        "SliceTest",
+        "SymbolTest",
+        "FunctionTest",
+        "WhileTest",
+        "IfTest",
+        "FullyQualifiedSuperClassTest",
+        "ImportSingleClassTest",
+        "FutureTest",
+        "DateTest",
+
+        // exceptions //
+        "AbstractClassInstantiationExceptionTest",
+        "ConstantRedefinitionExceptionTest",
+        "FileOpenExceptionTest",
+        "InvalidCastExceptionTest",
+        "InvalidNumberArgumentsExceptionTest",
+        "InvalidReturnValueExceptionTest",
+        "UnidentifiedMethodExceptionTest",
+        "UnidentifiedObjectExceptionTest",
+
+        "ThreadTest"
+    ]
+
+testSuite = new TestSuite
+arguments = [kernel arguments]
+
+if ([arguments size] == 0)
+{
+    [testSuite test: tests addons: addonTests doThreading: false]
+}
+else
+{
+    [testSuite test: arguments addons: [] doThreading: true]
+}

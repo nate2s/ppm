@@ -1,0 +1,100 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+
+class ExceptionHelper
+{
+    (@@) testIndexOutOfBoundsException: _program
+                             withIndex: _value
+    {
+        success = false
+
+        try
+        {
+            _program eval
+        }
+        catch (IndexOutOfBoundsException _exception)
+        {
+            success = ([_exception index] == _value)
+
+            if (! success)
+            {
+                io putLine: "Wanted index: #[_value] but got: #[_exception index]"
+            }
+        }
+        catch (Exception _exception)
+        {
+            io putLine: ("Got exception: #[_exception] but it wasn't "
+                         + "an IndexOutOfBoundsException")
+            // do nothing but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@@) testUnidentifiedObjectException: _program
+                          withObjectName: _name
+    {
+        success = false
+
+        try
+        {
+            _program eval
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == _name)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@@) testNeedIntegerException: _program
+                        withValue: _value
+    {
+        success = false
+
+        try
+        {
+            _program eval
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == _value)
+
+            if (! success)
+            {
+                io putLine: "wanted value: #[_value] but got: #[_exception value]"
+            }
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+            io putLine: "Got exception #[_exception] but wanted NeedIntegerException"
+        }
+
+        return (success)
+    }
+}

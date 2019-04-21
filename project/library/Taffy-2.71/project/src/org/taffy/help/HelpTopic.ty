@@ -1,0 +1,102 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.help
+
+import org.taffy.core.container.Hash
+
+abstract class HelpTopic
+{
+    @title, @r
+    @prettyTitle, @r
+    @description, @r
+    @keyword, @r
+
+    // a hash mapping String => HelpTopic
+    @subtopics, @r
+
+    // an array of HelpTopicS
+    @orderedSubtopics, @r
+
+    (@) init
+    {
+        @subtopics = new Hash
+    }
+
+    (@) loadTitle: _title
+    {
+        @title = _title
+
+        edge = "+"
+        @prettyTitle = ""
+
+        // create the top portion of the box
+        for (a = 0; a < [_title length] + 2; a++)
+        {
+            edge += "-"
+        }
+
+        edge += "+"
+
+        @prettyTitle += edge + "\n"
+        @prettyTitle += "+ #[_title] +\n"
+        @prettyTitle += edge + "\n"
+    }
+
+    (@) loadSubtopics: _subtopics
+    {
+        @orderedSubtopics = _subtopics
+
+        _subtopics each: ^{ <subtopic>
+            @subtopics[[subtopic keyword]] = subtopic
+        }
+    }
+
+    (@) asString
+    {
+        result = ""
+
+        if (@title != nil)
+        {
+            result += "\n#[@prettyTitle]\n"
+        }
+
+        if (@description != nil)
+        {
+            result += @description + "\n"
+        }
+
+        if (@subtopics != nil
+            and [@subtopics size] > 0)
+        {
+            result += "\nTopics:\n\n"
+
+            @orderedSubtopics each: ^{ <topic>
+                if ([topic keyword] == nil)
+                {
+                    throw ("nil keyword for topic: #[topic]!")
+                }
+
+                result += ("    #[[[topic keyword] withWidth: 10]] "
+                           + "-- #[topic title]\n")
+            }
+        }
+
+        return (result)
+    }
+}

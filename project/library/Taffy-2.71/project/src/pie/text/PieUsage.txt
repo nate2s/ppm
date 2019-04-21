@@ -1,0 +1,40 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+Usage: pie [options]
+    Options:
+
+    -v or --version           Display version
+    -i or --include           Search-directories for the 'import' directive. Example:
+                              $ pie -i directory1 directory2 directory3
+    -a or --arguments         Pass arguments into program (accessible via [kernel arguments]). Each argument becomes a string.
+                              Examples:
+
+                              $ pie -a "this is a string"
+                              pie.1> kernel arguments
+                              ==> ["this is a string"]
+
+                              $ pie -a 1 2 3 4 "string"
+                              pie.2> kernel arguments
+                              ==> ["1", "2", "3", "4", "string"]
+
+                              // evaluate an argument
+                              pie.3> kernel eval: [[kernel arguments] objectAtIndex: 0]
+                              ==> 1
+    --set-max-future-threads  Set the max number of future threads (default 10)
+    -h or --help              Display this help

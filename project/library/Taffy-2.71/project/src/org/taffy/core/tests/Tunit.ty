@@ -1,0 +1,148 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.container.*
+import org.taffy.core.threading.Thread
+
+class Tunit
+{
+    @registeredClasses
+
+    // state variables
+    @failedTests
+    @totalTestCount
+    @totalNumberFailed
+
+    (@) init
+    {
+        @registeredClasses = new List
+        @failedTests = new List
+    }
+
+    (@) registerClass: _class
+    {
+        io put: "Tunit: registering class: #[_class className]\n"
+        @registeredClasses push: _class
+    }
+
+    (@) performTest: _testClass
+    {
+        methods = [_testClass methods]
+        testCount = [methods size]
+        className = [_testClass className]
+
+        testWord = "test"
+
+        if (testCount > 1)
+        {
+            testWord += "s"
+        }
+
+        //
+        // output the title
+        //
+        io put: "Performing #[testCount] #[testWord] for class #[className]\n\n"
+
+        a = 1
+        numberFailed = 0
+        @totalTestCount += testCount
+
+        //
+        // iterate over the methods
+        //
+        methods each: ^{ <method>
+            io put: "[#[a]/#[testCount]]: #[method]: "
+            io flush
+
+            // call the method, and store its result //
+            result = [_testClass perform: method]
+            outputString = ""
+
+            if (result)
+            {
+                // the test passed //
+                outputString += "PASS"
+            }
+            else
+            {
+                // the test failed //
+                numberFailed++
+                @totalNumberFailed++
+                outputString += "FAIL"
+                @failedTests push: "#[className].#[method]"
+            }
+
+            io put: outputString + "\n"
+            a++
+        }
+
+        if (numberFailed == 0)
+        {
+            // no failures //
+            io put: "[#[testCount]/#[testCount]] tests PASSED\n\n"
+        }
+        else
+        {
+            // at least one failure //
+            io put: "[#[numberFailed]/#[testCount]] tests FAILED\n\n"
+        }
+    }
+
+    (@) performTestsWithThreading: _doThreading
+    {
+        @totalTestCount = 0
+        @totalNumberFailed = 0
+        @failedTests = new List
+
+        updateMe = self
+
+        //
+        // iterate over the registered classes
+        //
+        @registeredClasses each: ^{ <registeredClass>
+            if (_doThreading)
+            {
+                thread = [Thread new: ^{ <tunit, registeredClass>
+                             tunit performTest: registeredClass
+                         }]
+                thread startWith: [updateMe, registeredClass]
+            }
+            else
+            {
+                updateMe performTest: registeredClass
+            }
+        }
+
+        //
+        // display the final report
+        //
+        io put: "Final report:\n"
+
+        if (@totalNumberFailed == 0)
+        {
+            io put: "[#[@totalTestCount]/#[@totalTestCount]] tests PASSED\n"
+        }
+        else
+        {
+            io put: ("[#[@totalNumberFailed]/#[@totalTestCount]] tests FAILED: "
+                     + "#[@failedTests prettyPrint: ", "]\n")
+        }
+    }
+}

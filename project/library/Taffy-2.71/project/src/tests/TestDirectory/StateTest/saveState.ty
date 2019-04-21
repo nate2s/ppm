@@ -1,0 +1,23 @@
+import org.taffy.core.exception.FileWriteException
+
+a = 1
+b = 2
+c = "hi there"
+
+try
+{
+    kernel saveState: "unwritableFile"
+}
+catch (FileWriteException _exception)
+{
+    io putLine: "success"
+}
+
+try
+{
+    kernel saveState: "myState"
+}
+catch (FileWriteException _exception)
+{
+    io putLine: "fail :("
+}

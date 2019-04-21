@@ -1,0 +1,113 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.maths
+
+import org.taffy.core.container.Array
+import org.taffy.core.exception.*
+
+atomic abstract class Function
+{
+    (@) fillMemoryFrom: _from to: _to
+    {
+        [self fillMemoryFrom: _from to: _to step: 1]
+    }
+
+    (@) fillMemoryFrom: _from to: _to step: _step
+    {
+        self setMemorySize: (abs((_to - _from) + 1) * _step)
+
+        for (a = _from; a != _to; a += _step)
+        {
+            self(a)
+        }
+    }
+
+    (@) integrate: _symbol from: _from to: _to
+    {
+        result = [self integrate: _symbol]
+
+        if (result == 'unfindableIntegral)
+        {
+            return ([self simpsonFrom: _from to: _to intervalCount: 100])
+        }
+        else
+        {
+            result = (result(_to) - result(_from))
+        }
+    }
+
+    (@) simpsonFrom: _a to: _b intervalCount: _n
+    {
+        h = (_b - _a) / _n
+        result = 0
+
+        for (j = 1; j <= (_n / 2); j++)
+        {
+            result += (self(_a + (2*j - 2)*h)
+                       + 4 * self(_a + (2*j - 1) * h)
+                       + self(_a + (2 * j)*h))
+        }
+
+        return (result * (h / 3))
+    }
+
+    (@) derive
+    #breakthrough
+    {
+        [self derive: '__x__]
+    }
+
+    (@) integrate
+    #breakthrough
+    {
+        [self integrate: '__x__]
+    }
+
+    (@) #operator([...]): _indexes
+    #breakthrough
+    {
+        if ([_indexes size] != 2)
+        {
+            throw ([InvalidIndexesException new: _indexes])
+        }
+
+        if (_indexes[0] > _indexes[1])
+        {
+            result = [Array createWithSize: (_indexes[0] - _indexes[1]) + 1]
+
+            for (j = _indexes[0], k = 0; j >= _indexes[1]; j--, k++)
+            {
+                result[k] = self(j)
+            }
+
+            return result
+        }
+        else
+        {
+            result = [Array createWithSize: (_indexes[1] - _indexes[0]) + 1]
+
+            for (j = _indexes[0], k = 0; j <= _indexes[1]; j++, k++)
+            {
+                result[k] = self(j)
+            }
+
+            return result
+        }
+    }
+}

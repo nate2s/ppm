@@ -1,0 +1,128 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.io.File
+import org.taffy.core.exception.InvalidFileModeException
+import org.taffy.core.exception.FileOperationFailedException
+import org.taffy.core.exception.Exception
+
+class FileTest
+{
+    (@) testEachLine
+    {
+        file = [File openForRead: "testFile.txt"]
+        count = 0
+        file eachLine: ^{ <line> count++ }
+        return (count == 4)
+    }
+
+    (@) testOpen
+    {
+        file = [File openForRead: "testFile.txt"]
+        firstLine = [file getLine]
+        secondLine = [file getLine]
+        thirdLine = [file getLine]
+        fourthLine = [file getLine]
+        file close
+
+        return (firstLine == "line 1"
+                and secondLine == "line 2"
+                and thirdLine == ""
+                and fourthLine == "non-blank line")
+    }
+
+    (@) testInvalidFileModeForPuts
+    {
+        file = [File openForRead: "testFile.txt"]
+        success = false
+
+        try
+        {
+            file putLine: "this should fail"
+        }
+        catch (InvalidFileModeException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testInvalidFileModeForGet
+    {
+        file = [File openForWrite: "testFileWrite.txt"]
+        success = false
+
+        try
+        {
+            line = [file getLine]
+        }
+        catch (InvalidFileModeException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testReadWrite
+    {
+        file = [File openForReadWrite: "testInputOutput.txt"]
+        file putLine: "This is line 1"
+        file putLine: "This is line 2"
+        file reset
+
+        firstLine = [file getLine]
+        secondLine = [file getLine]
+
+        file close
+
+        return (firstLine == "This is line 1"
+                and secondLine == "This is line 2")
+    }
+
+    (@) testWrite
+    {
+        file = [File openForWrite: "testOutput.txt"]
+        file putLine: "This is line 1"
+        file putLine: "This is line 2"
+        file put: "Partial "
+        file put: "line"
+        file close
+
+        g = [File openForRead: "testOutput.txt"]
+        firstLine = [g getLine]
+        secondLine = [g getLine]
+        thirdLine = [g getLine]
+        g close
+
+        return (firstLine == "This is line 1"
+                and secondLine == "This is line 2"
+                and thirdLine == "Partial line")
+    }
+}

@@ -1,0 +1,539 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.maths.ComplexNumber
+import org.taffy.core.exception.NeedIntegerException
+
+class ComplexNumberTest
+{
+    (@@) testValues: _values
+         withMethod: _functionName
+    {
+        success = true
+
+        for (a = 0; a < [_values size]; a += 2)
+        {
+            if (_functionName[[_functionName length] - 1] == "!")
+            {
+                left = [_values[a] copy]
+                left perform: _functionName
+
+                if (left != _values[a + 1])
+                {
+                    success = false
+                    break
+                }
+            }
+            else
+            {
+                if ([_values[a] perform: _functionName] != _values[a + 1])
+                {
+                    success = false
+                    break
+                }
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testArithmetic: _values
+             withMethod: _methodName
+                  delta: _delta
+    {
+        success = true
+
+        for (a = 0; a < [_values size]; a += 3)
+        {
+            left = [_values[a] perform: _methodName
+                                  with: [_values[a + 1]]]
+            pass = false
+
+            if (_delta)
+            {
+                pass = (left ~= _values[a + 2])
+            }
+            else
+            {
+                pass = (left == _values[a + 2])
+            }
+
+            if (! pass)
+            {
+                io putLine: "lhs: #[_values[a]] rhs: #[_values[a + 1]]"
+                io putLine: "wanted: #[_values[a + 2]] but got: #[left]"
+                success = false
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testAssignmentArithmetic: _values
+                       withMethod: _methodName
+                            delta: _delta
+    {
+        success = true
+
+        for (a = 0; a < [_values size]; a += 3)
+        {
+            //io putLine: "looking at line:\n#[_values[a]], #[_values[a + 1]], #[_values[a + 2]]"
+            left = _values[a]
+            [left perform: _methodName
+                     with: [_values[a + 1]]]
+
+            pass = false
+
+            if (_delta)
+            {
+                pass = (left ~= _values[a + 2])
+            }
+            else
+            {
+                pass = (left == _values[a + 2])
+            }
+
+            if (! pass)
+            {
+                io putLine: "#[_values[a + 1]] #[_methodName] #[_values[a + 2]]"
+                io putLine: "wanted: #[_values[a + 2]] but got: #[left]"
+                io putLine: "Delta was: #[_delta]"
+                success = false
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testDeltaArithmetic: _values
+                  withMethod: _methodName
+    {
+        success = true
+
+        for (a = 0; a < [_values size]; a += 3)
+        {
+            if (! ([_values[a] perform: _methodName
+                                  with: [_values[a + 1]]]
+                   ~= _values[a + 2]))
+            {
+                io putLine: "#[_values[a + 1]] #[_methodName] #[_values[a + 2]]"
+                io putLine: "wanted: #[_values[a + 2]] but got: #[left]"
+                success = false
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testAssignmentDeltaArithmetic: _values
+                            withMethod: _methodName
+    {
+        success = true
+
+        for (a = 0; a < [_values size]; a += 3)
+        {
+            left = _values[a]
+            [left perform: _methodName
+                     with: [_values[a + 1]]]
+
+            if (! (left ~= _values[a + 2]))
+            {
+                io putLine: "#[_values[a]] #[_methodName] #[_values[a + 1]]"
+                io putLine: "wanted: #[_values[a + 2]] but got: #[left]: #[left ~= _values[a + 2]]"
+                success = false
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@) testConstructWithSpace
+    {
+        return (3 i == 3i
+                and 1 + 2 i == 1 + 2i)
+    }
+
+    (@) testZero
+    {
+        a = 2 + 0i
+        return (a == 2)
+    }
+
+    (@) testRaiseReal
+    {
+        values = [
+            i,       0,    1,
+            i,       1,    i,
+            i,       2,   -1,
+            i,       3,   -i,
+            i,       4,    1,
+            i,       5,    i,
+            2 + 3i,  0,    1,
+            2 + 3i,  1,    2 + 3i,
+            2 + 3i,  2,   -5 + 12i
+        ]
+
+        return ([ComplexNumberTest testAssignmentArithmetic: values
+                                                 withMethod: "#operator(^=):"
+                                                      delta: true]
+                and [ComplexNumberTest testArithmetic: values
+                                           withMethod: "#operator(^):"
+                                                delta: true])
+    }
+
+    (@) testRaiseFractional
+    {
+        return (i^(3/4) ~= (0.3826834323650895 + 0.9238795325112869i)
+                and i^(1/5) ~= (0.951056516 + 0.309016994 i)
+                and i^(-1/5) ~= (0.951056516 - 0.309016994 i)
+                and i^(4.5) ~= (0.707106781 + 0.707106781 i)
+                and sqrt(i) ~= (0.707106781 + 0.707106781 i)
+                and (-1)^(-0.2) ~= (0.8090169943749492 - 0.5877852522924694i)
+                and (-1)^(-0.999) ~= (-0.9999950652018560 - 0.003141587485879687i)
+                and (-1)^(-2.5) ~= -i
+                and (-1)^(-3.5) ~= i
+                and (-2)^(-1.5) ~= 0.3535533905932738i)
+    }
+
+    (@) testAddImaginary
+    {
+        a = 2 + 3i
+        return ((a + 2i) == (2 + 5i))
+    }
+
+    (@) testAdd
+    {
+        values = [
+            i,       i,        2i,
+            1 + i,   i,        1 + 2i,
+            1 + i,   1,        2 + i,
+            i,       -i,       0,
+            1 + i,   -1 - i,   0,
+
+            // conversion
+            i - i,   1,           1,
+            4,       (2 + i) - i, 6
+        ]
+
+        return ([ComplexNumberTest testAssignmentArithmetic: values
+                                                 withMethod: "#operator(+=):"
+                                                      delta: false]
+                and [ComplexNumberTest testArithmetic: values
+                                           withMethod: "#operator(+):"
+                                                delta: false])
+    }
+
+    (@) testSubtract
+    {
+        values = [
+            // subtract real
+            i,       0,        i,
+            i,       1,        -1 + i,
+            i,       -1,       1 + i,
+            i,       -0,       i,
+
+            // subtract imaginary
+            2 + i,   1,        1 + i,
+            2i,      i,        i,
+            1 + i,   i,        1,
+            i,       -i,       2i,
+            1 + i,   -1 - i,   2 + 2i,
+
+            // conversion
+            i - i,   1,           -1,
+            4,       (2 + i) - i, 2
+        ]
+
+        return ([ComplexNumberTest testAssignmentArithmetic: values
+                                                 withMethod: "#operator(-=):"
+                                                      delta: false]
+                and [ComplexNumberTest testArithmetic: values
+                                           withMethod: "#operator(-):"
+                                                delta: false])
+    }
+
+    (@) testMultiply
+    {
+        tests = [
+            // multiply with real
+            1 + i,   2,   2 + 2i,
+            2 + 2i,  -3,  -6 - 6i,
+            i,       4,   4i,
+
+            // multiply with imaginary
+            i,       i,   -1,
+            1 + i,   i,   -1 + i,
+
+            // conversion
+            i - i,   1,           0,
+            4,       (2 + i) - i, 8
+        ]
+
+        return ([ComplexNumberTest testAssignmentArithmetic: tests
+                                                 withMethod: "#operator(*=):"
+                                                      delta: false]
+                and [ComplexNumberTest testArithmetic: tests
+                                           withMethod: "#operator(*):"
+                                                delta: false])
+    }
+
+    (@) testMultiplyWithMatrix
+    {
+        return (3i * ||1, 2|| == ||3i, 6i||
+                and 3i * ||1, 2 ; 3, 4|| == ||3i, 6i ; 9i, 12i||)
+    }
+
+    (@) testMultiplyWithFunction
+    {
+        // multiply with function
+        return (3i * {6i + 3} == {3i * (6i + 3)})
+    }
+
+    (@) testDivideImaginary
+    {
+        a = 5 + 2i
+        b = 7 + 4i
+        return ((a / b) ~=<10> (0.66153846153846153846153846153846 - 0.092307692307692307692307692307692i))
+    }
+
+    (@) testDivide
+    {
+        tests = [
+            // divide with real
+            i,       2,       0.5i,
+            i + 2,   2,       1 + 0.5i,
+
+            // divide with imaginary
+            i,       i,       1,
+            1 + i,   1 + i,   1,
+            i,       -i,      -1,
+            1 + i,   2 + i,   0.6 + 0.2i,
+
+            // conversion
+            i - i,   1,             0,
+            4,       (2 + i) - i,   2,
+
+            // straight up
+            1 + 2i, 3.5 + 5.5i, 0.341176471 + 0.0352941176 i
+        ]
+
+        return ([ComplexNumberTest testAssignmentArithmetic: tests
+                                                 withMethod: "#operator(/=):"
+                                                      delta: true]
+                and [ComplexNumberTest testArithmetic: tests
+                                           withMethod: "#operator(/):"
+                                                delta: true])
+    }
+
+    (@) testRaiseImaginary
+    {
+        values = [
+            i,          i,        0.20787957635,
+            i,          2i,       0.04321391826,
+            i,          1 + i,    0.20787957635i,
+            i,          2 + i,    -0.20787957635,
+            i,          3 + 3i,   -0.00898329102i,
+            2i,         3 + 3i,   0.0627684162 + 0.0349985007i,
+            2 + 3i,     3 + 3i,   2.14140138 + 1.20518796i
+        ]
+
+        return ([ComplexNumberTest testAssignmentDeltaArithmetic: values
+                                                      withMethod: "#operator(^=):"]
+                and [ComplexNumberTest testDeltaArithmetic: values
+                                                withMethod: "#operator(^):"])
+    }
+
+    (@) testReal
+    {
+        values = [
+            1 + 2i,       1,
+            0 + 2i,       0,
+            -1 + 3i,      -1,
+            10000 + 0.5i, 10000
+        ]
+
+        return ([ComplexNumberTest testValues: values
+                                   withMethod: "real"])
+    }
+
+    (@) testImaginary
+    {
+        values = [
+            1 + 2i,       2,
+            0 + 2i,       2,
+            -1 + 3i,      3,
+            -1 + -3i,     -3,
+            10000 + 0.5i, 0.5
+        ]
+
+        return ([ComplexNumberTest testValues: values
+                                   withMethod: "imaginary"])
+    }
+
+    (@@) testLengths: _method
+    {
+        values = [
+            0 + 1i,       1,
+            0 + 2i,       2,
+            0 + 3i,       3,
+            0 - 1i,       1,
+            0 - 2i,       2,
+            0 - 3i,       3
+        ]
+
+        return ([ComplexNumberTest testValues: values
+                                   withMethod: _method])
+    }
+
+    (@) testModulus
+    {
+        return ([ComplexNumberTest testLengths: "modulus"])
+    }
+
+    (@) testLength
+    {
+        return ([ComplexNumberTest testLengths: "length"])
+    }
+
+    (@@) reallyTestConjugate: _method
+    {
+        values = [
+            1 + 2i,       1 - 2i,
+            0 + 2i,       -2i,
+            -1 + 3i,      -1 - 3i,
+            -1 + -3i,     -1 + 3i,
+            10000 + 0.5i, 10000 - 0.5i
+        ]
+
+        return ([ComplexNumberTest testValues: values
+                                   withMethod: _method])
+    }
+
+    (@) testConjugate
+    {
+        return ([ComplexNumberTest reallyTestConjugate: "conjugate"])
+    }
+
+    (@) testConjugateBang
+    {
+        return ([ComplexNumberTest reallyTestConjugate: "conjugate!"])
+    }
+
+    (@) testDeltaEqualNaN
+    {
+        a = NaN
+        b = NaN + i
+        return (a ~= b and b ~= a)
+    }
+
+    (@) testDeltaEqualsNeedIntegerException
+    {
+        success = false
+
+        try
+        {
+            (1 + 2i) ~=<0.2> (1 + 2i)
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 0.2)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testDeltaEqualsCastFailure
+    {
+        return (! ((1 + 2i) ~= "asdf")
+                and ! ((1 + 2i) ~= (1 + 2)))
+    }
+
+    (@) testDeltaEqualInteger
+    {
+        return ((1 + 2i) ~= (1 + 2i)
+                and (1 + 2i) ~=<1> (1 + 2i)
+                and (1 + 2i) ~=<2> (1 + 2i)
+                and (1 + 2i) ~=<3> (1 + 2i)
+                and (1 + 2i) ~=<4> (1 + 2i)
+                and ! ((1 + 2i) ~= (1 + 3i))
+                and ! ((1 + 2i) ~= (2 + 2i)))
+    }
+
+    (@) testDeltaEqualReal
+    {
+        return ((1 + 2i) ~=<1> (1 + 2.1i)
+                and (1 + 2i) ~=<2> (1 + 2.01i)
+                and (1 + 2i) ~=<3> (1 + 2.001i)
+                and ! ((1 + 2i) ~=<2> (1 + 2.1i))
+                and ! ((1 + 2i) ~=<3> (1 + 2.01i))
+                and ! ((1 + 2i) ~= (1 + 2.0001i))
+                and ! ((1 + 2i) ~=<3> (1 + 2.01i)))
+    }
+
+    (@) testDeltaEqualConversion
+    {
+        a = 0.234
+        b = 0.234 + i
+        b -= i
+
+        // now b looks like a Number but is still a ComplexNumber
+        return (b ~= a and a ~= b)
+    }
+
+    (@) testEqualConversion
+    {
+        a = 1
+        b = i + 1
+        b -= i
+
+        return (b == a
+                and a == b
+                and a != (b + i))
+    }
+
+    (@) testConvertToNumber
+    {
+        return ([i * 0 class] == org.taffy.core.maths.Number
+                and [sqrt(-1) * sqrt(0) class] == org.taffy.core.maths.Number
+                and [sqrt(0) * sqrt(-1) class] == org.taffy.core.maths.Number
+                and [i^0 class] == org.taffy.core.maths.Number
+                and [(2 + i) - i class] == org.taffy.core.maths.Number
+                and [(2 + -i) + i class] == org.taffy.core.maths.Number
+                and [i / i class] == org.taffy.core.maths.Number
+                and [i * 0 class] == org.taffy.core.maths.Number
+                and [0 * i class] == org.taffy.core.maths.Number
+                and [i - i class] == org.taffy.core.maths.Number)
+    }
+
+    (@) testCreateFromNumber
+    {
+        return ([ComplexNumber createFromNumber: 4] == 4
+                and [ComplexNumber createFromNumber: -4] == -4
+                and [ComplexNumber createFromNumber: 3.14] == 3.14)
+    }
+}

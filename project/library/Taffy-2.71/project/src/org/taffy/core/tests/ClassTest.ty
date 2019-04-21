@@ -1,0 +1,570 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.tests.*
+import org.taffy.core.tests.inheritance.*
+import org.taffy.core.exception.*
+import org.taffy.core.container.*
+
+class ClassTest
+{
+    (@) testInstanceVariable
+    {
+        testClass = new TestClass
+        testClass firstMethod
+
+        success = true
+
+        try
+        {
+            value = [testClass secondMethod]
+        }
+        catch (Exception _exception)
+        {
+            success = false
+        }
+
+        return (success and value == 1)
+    }
+
+    (@) testMetaVariable
+    {
+        [TestClass setMetaVariable: 22]
+        return ([TestClass metaVariable] == 22)
+    }
+
+    (@) testClassInClass
+    {
+        testClass = new TestClass
+        return ([testClass publicClassTest])
+    }
+
+    (@@) testTheClass: _class
+         variableName: _variableName
+    {
+        success = false
+
+        try
+        {
+            kernel eval: "#[_variableName]"
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == _variableName)
+        }
+
+        return (success)
+    }
+
+    //
+    // testClassA and testClassB verify that a variable defined inside of their
+    // files is not put into global space
+    //
+    (@) testClassA
+    {
+        return ([ClassTest testTheClass: new TestClassA
+                           variableName: "testClassA"])
+    }
+
+    (@) testClassB
+    {
+        return ([ClassTest testTheClass: new TestClassB
+                           variableName: "testClassB"])
+    }
+
+    (@) testUnidentifiedClassException
+    {
+        success = false
+
+        try
+        {
+            new ThisClassDoesNNnnnnnotExist
+        }
+        catch (UnidentifiedClassException _exception)
+        {
+            success = ([_exception className] == "ThisClassDoesNNnnnnnotExist")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testPublic
+    {
+        success = false
+
+        try
+        {
+            publicClass = new TestClass.PublicClass
+            success = ([publicClass six] == 6)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testProtectedClass
+    {
+        success = false
+
+        try
+        {
+            // we can't access protected subclasses from outside the class
+            protectedClass = new TestClass.ProtectedClass
+        }
+        catch (UnidentifiedClassException _exception)
+        {
+            success = ([_exception className] == "TestClass.ProtectedClass")
+        }
+
+        return (success)
+    }
+
+    (@) testPublicClassInsideOfProtectedClass
+    {
+        success = false
+
+        try
+        {
+            // we can't access protected classes from outside the class
+            protectedClass = new TestClass.ProtectedClass.ProtectedPublicClass
+        }
+        catch (UnidentifiedClassException _exception)
+        {
+            success = ([_exception className]
+                        == "TestClass.ProtectedClass.ProtectedPublicClass")
+        }
+
+        return (success)
+    }
+
+    (@) testProtectedMethod
+    {
+        success = false
+        testClass = new TestClass
+
+        try
+        {
+            testClass protectedVariable
+        }
+        catch (UnidentifiedMethodException _exception)
+        {
+            success = ([_exception exceptionMethodName] == "protectedVariable")
+        }
+
+        return (success)
+    }
+
+    (@) testInheritance
+    {
+        success = true
+
+        try
+        {
+            classA = new org.taffy.core.tests.inheritance.ClassA
+            classB = new org.taffy.core.tests.inheritance.ClassB
+            classC = new org.taffy.core.tests.inheritance.ClassC
+
+            if (! ([classA publicMethod1] == "A PublicMethod1"
+                   and [classA publicMethod2] == "A PublicMethod2"
+                   and [classA publicMethod3] == "A PublicMethod3"))
+            {
+                throw ("ClassA public fail")
+            }
+
+            if (! ([classB publicMethod1] == "B PublicMethod1"
+                   and [classB publicMethod2] == "A PublicMethod2"
+                   and [classB publicMethod3] == "A PublicMethod3"))
+            {
+                throw ("ClassB public fail")
+            }
+
+            if (! ([classC publicMethod1] == "B PublicMethod1"
+                   and [classC publicMethod2] == "C PublicMethod2"
+                   and [classC publicMethod3] == "A PublicMethod3"))
+            {
+                throw ("ClassC public fail")
+            }
+
+            // try to use inherited private methods
+            try
+            {
+                if (! ([classA callPrivateMethod1] == "A PrivateMethod1"
+                       and [classA callPrivateMethod2] == "A PrivateMethod2"
+                       and [classA callPrivateMethod3] == "A PrivateMethod3"))
+                {
+                    throw ("ClassA private fail")
+                }
+
+                if (! ([classB callPrivateMethod1] == "B PrivateMethod1"
+                       and [classB callPrivateMethod2] == "A PrivateMethod2"
+                       and [classB callPrivateMethod3] == "A PrivateMethod3"))
+                {
+                    throw ("ClassB private fail")
+                }
+
+                if (! ([classC callPrivateMethod1] == "B PrivateMethod1"
+                       and [classC callPrivateMethod2] == "C PrivateMethod2"
+                       and [classC callPrivateMethod3] == "A PrivateMethod3"))
+                {
+                    throw ("ClassC private fail")
+                }
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private exception: #[_exception]"
+                success = false
+            }
+
+            // try to call inherited private methods
+            try
+            {
+                classA privateMethod1
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classA privateMethod2
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classA privateMethod3
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            //
+            // Class B
+            //
+            try
+            {
+                classB privateMethod1
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classB privateMethod2
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classB privateMethod3
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            //
+            // Class C
+            //
+            try
+            {
+                classC privateMethod1
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classC privateMethod2
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+
+            try
+            {
+                classC privateMethod3
+            }
+            catch (Exception _exception)
+            {
+                io putLine: "private invocation exception: #[_exception]"
+                success = false
+            }
+        }
+        catch (Exception _exception)
+        {
+            io putLine: "public exception: #[_exception]"
+            success = false
+        }
+
+        return (success)
+    }
+
+    (@) testNonConstantUseOfConstantException
+    {
+        tester = new NonConstantUseOfConstTester
+        success = false
+
+        try
+        {
+            tester testException
+        }
+        catch (NonConstantUseOfConstantException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testNonConstantUseOfConstantExceptionReset
+    {
+        tester = new NonConstantUseOfConstTester
+        success = false
+
+        try
+        {
+            tester testException
+        }
+        catch (NonConstantUseOfConstantException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        if (success)
+        {
+            try
+            {
+                tester constChain
+            }
+            catch (Exception _exception)
+            {
+                success = false
+            }
+        }
+
+        return (success)
+    }
+
+    (@) testConstChain
+    {
+        tester = new NonConstantUseOfConstTester
+        success = true
+
+        try
+        {
+            tester constChain
+        }
+        catch (Exception _exception)
+        {
+            success = false
+        }
+
+        return (success)
+    }
+
+    (@) testInfinitelyRecursiveContainerAsString
+    {
+        array = [1]
+        array[0] = array
+
+        hash = ()
+        hash[0] = hash
+
+        pair = new Pair
+        pair setLeft: pair
+        pair setRight: pair
+
+        return ([array asString] == "[[...]]"
+                and [hash asString] == "#Hash(0=>#Hash(0=>...))"
+                and [pair asString] == "#Pair<#Pair<..., ...>, #Pair<..., ...>>")
+    }
+
+    (@) testUpperCaseVariable
+    {
+        testClass = new TestClass
+        testClass setUpperCaseVariable: 5
+        testClass setUpPeRcAsEvArIaBlE: 6
+
+        return ([testClass UpperCaseVariable] == 5
+                and [testClass UpPeRcAsEvArIaBlE] == 6)
+    }
+
+    (@) testVariableTestClass
+    {
+        tester1 = new VariableTestClass
+        tester2 = new VariableTestClass
+        copy1 = [tester1 copy]
+
+        return ([tester1 variableA] == 1
+                and [tester1 variableB] == 1
+                and [tester2 variableA] == 2
+                and [tester2 variableB] == 2
+                and [copy1 variableA] == 1
+                and [copy1 variableB] == 1)
+    }
+
+    (@) testExceptionInInit
+    {
+        success = false
+
+        try
+        {
+            new TestClassInvalidInit
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "asdf")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testInvalidClassVariableInInit
+    {
+        success = false
+
+        try
+        {
+            new TestClassInvalidClassVariableInInit
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "@asdf")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testInvalidMetaClassVariableInInit
+    {
+        success = false
+
+        try
+        {
+            new TestClassInvalidMetaClassVariableInInit
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "@@asdf")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    class ClassWithin
+    {
+        // dummy method, just need a method
+        (@) getValue
+        {
+            return 5
+        }
+
+        class WithinWithin
+        {
+            (@) getValue
+            {
+                return 7
+            }
+        }
+    }
+
+    (@) testClassWithin
+    {
+        success = false
+
+        try
+        {
+            within = new ClassWithin
+            success = ([within getValue] == 5)
+        }
+        catch (Exception _exception)
+        {
+            io putLine: "Exception: #[_exception]"
+        }
+
+        return success
+    }
+
+    (@) testClassWithinWithin
+    {
+        success = false
+
+        try
+        {
+            withinWithin = new ClassWithin.WithinWithin
+            success = ([withinWithin getValue] == 7)
+        }
+        catch (Exception _exception)
+        {
+            io putLine: "Exception: #[_exception]"
+        }
+
+        return success
+    }
+}

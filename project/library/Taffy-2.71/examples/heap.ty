@@ -1,0 +1,41 @@
+///////////////////////////////
+//                           //
+// heap.ty                   //
+//                           //
+// heap example              //
+//                           //
+///////////////////////////////
+
+import org.taffy.core.container.Heap
+
+//
+// do a sort example for both a min and max heap
+//
+
+["Min", "Max"] each: { <method>
+    heap = [Heap perform: "new" + method]
+
+    //
+    // insert random values into the heap
+    //
+    0 upTo: 100 do: { <dummy>
+        heap insert: rand(100)
+    }
+
+    //
+    // print the heap
+    //
+    io put: "Printing a sorted #[method] heap:\n"
+
+    while ([heap size] > 0)
+    {
+        io put: "" + [heap pop]
+
+        if ([heap size] > 0)
+        {
+            io put: ", "
+        }
+    }
+
+    io put: "\n"
+}

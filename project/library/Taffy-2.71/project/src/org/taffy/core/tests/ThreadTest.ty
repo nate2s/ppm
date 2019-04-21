@@ -1,0 +1,435 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.threading.*
+import org.taffy.core.container.Array
+import org.taffy.core.container.List
+import org.taffy.core.container.Hash
+import org.taffy.core.container.Pair
+import org.taffy.core.maths.Series
+
+class ThreadTest
+{
+    (@) testSimple
+    {
+        block = ^{ 1 }
+        thread = [Thread new: block]
+
+        thread start
+        thread wait
+
+        return ([thread result] == 1)
+    }
+
+    (@) testFew
+    {
+        blocks = [^{1 + 1}, ^{2 + 2}, ^{3 + 3}]
+        threads = new List
+
+        blocks each: ^{ <block>
+            threads push: [Thread new: block]
+        }
+
+        threads each: ^{ <thread>
+            thread start
+        }
+
+        result = 0
+
+        threads each: ^{ <thread>
+            [thread wait]
+            result += [thread result]
+        }
+
+        return (result == 12)
+    }
+
+    (@) testArgument
+    {
+        block = ^{ <one, two, three> one + two + three }
+
+        thread = [Thread new: block]
+        thread startWith: [2, 3, 4]
+        thread wait
+
+        return ([thread result] == 9)
+    }
+
+    (@) testArrayMesh
+    {
+        array = [Array createWithSize: 252]
+
+        block1 = ^{ <val>
+            for (a = 0; a < 250; a++)
+            {
+                val[a] = a
+            }
+        }
+
+        block2 = ^{ <val>
+            for (a = 1; a < 250; a++)
+            {
+                val[a] = a
+            }
+
+            val[250] = 31337
+        }
+
+        block3 = ^{ <val>
+            for (a = 2; a < 250; a++)
+            {
+                val[a] = a
+            }
+
+            val[251] = 31338
+        }
+
+        thread1 = [Thread new: block1]
+        thread2 = [Thread new: block2]
+        thread3 = [Thread new: block3]
+
+        thread1 startWith: [array]
+        thread2 startWith: [array]
+        thread3 startWith: [array]
+
+        thread1 wait
+        thread2 wait
+        thread3 wait
+
+        success = ([array size] == 252
+                   and array[0] == 0
+                   and array[-1] == 31338
+                   and array[-2] == 31337
+                   and array[-3] == 249)
+
+        if (! success)
+        {
+            io put: ("[array size]: #[array size] \n"
+                     + "and first: #[array[0]] \n"
+                     + "and last: #[array[-1]]\n")
+        }
+
+        return (success)
+    }
+
+    (@) testHashMesh
+    {
+        hash = ()
+        maximum = 250
+
+        block1 = ^{ <val, maximum>
+            a = 1
+
+            while (a <= maximum)
+            {
+                val[a] = a
+                a = a + 1
+            }
+        }
+
+        block2 = ^{ <val, maximum>
+            a = 1
+
+            while (a <= maximum)
+            {
+                val[a] = a
+                a = a + 1
+            }
+        }
+
+        thread1 = [Thread new: block1]
+        thread2 = [Thread new: block2]
+
+        thread1 startWith: [hash, maximum]
+        thread2 startWith: [hash, maximum]
+
+        thread1 wait
+        thread2 wait
+
+        success = true
+
+        1 upTo: maximum do: ^{ <val>
+            if (hash[val] != val)
+            {
+                success = false
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@) testListMesh
+    {
+        list = new List
+        maximum = 250
+
+        block1 = ^{ <val, myMaximum>
+            a = 1
+
+            while (a <= myMaximum)
+            {
+                val push: a
+                a = a + 1
+            }
+        }
+
+        block2 = ^{ <val, myMaximum>
+            a = 1
+
+            while (a <= myMaximum)
+            {
+                val push: a
+                a = a + 1
+            }
+        }
+
+        thread1 = [Thread new: block1]
+        thread2 = [Thread new: block2]
+
+        thread1 startWith: [list, maximum]
+        thread2 startWith: [list, maximum]
+
+        thread1 wait
+        thread2 wait
+
+        success = ([list size] == 500
+                   and [list head] == 1 and [list tail] == maximum)
+
+        if (! success)
+        {
+            io put: "list size: #[list size] \n" +
+                    "and head: #[list head] and tail: #[list tail]\n"
+        }
+
+        return (success)
+    }
+
+    (@) testPairMesh
+    {
+        pair = new Pair
+        maximum = 250
+
+        block1 = ^{ <val, myMaximum>
+            for (a = 0; a < myMaximum; a++)
+            {
+                val setLeft: a
+                val setRight: a
+            }
+        }
+
+        block2 = ^{ <val, myMaximum>
+            for (a = 0; a < myMaximum; a++)
+            {
+                val setLeft: a
+                val setRight: a
+            }
+        }
+
+        thread1 = [Thread new: block1]
+        thread2 = [Thread new: block2]
+
+        thread1 startWith: [pair, maximum]
+        thread2 startWith: [pair, maximum]
+
+        thread1 wait
+        thread2 wait
+
+        success = ([pair left] == 249 and [pair right] == 249)
+
+        if (! success)
+        {
+            io putLine: "left: #[pair left] and right: #[pair right]"
+        }
+
+        return (success)
+    }
+
+    (@) testMutex
+    {
+        mutex = new Mutex
+        hash = new Hash
+
+        block = ^{ <mutex, hash, values>
+            values each: ^{ <value>
+                mutex lock
+                hash[value] = value
+                mutex unlock
+            }
+        }
+
+        thread1 = [Thread new: block]
+        thread2 = [Thread new: block]
+        thread3 = [Thread new: block]
+        thread4 = [Thread new: block]
+
+        values1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        values2 = ["one", "two", "three", "four",
+                   "five", "six", "seven", "eight",
+                   "nine", "ten"]
+        values3 = ["1one", "2two", "3three", "4four",
+                   "5five", "6six", "7seven", "8eight",
+                   "9nine", "10ten"]
+        values4 = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+        thread1 startWith: [mutex, hash, values1]
+        thread2 startWith: [mutex, hash, values2]
+        thread3 startWith: [mutex, hash, values3]
+        thread4 startWith: [mutex, hash, values4]
+
+        thread1 wait
+        thread2 wait
+        thread3 wait
+        thread4 wait
+
+        success = true
+
+        valuesArray = [values1, values2, values3, values4]
+
+        valuesArray each: ^{ <valueArray>
+            valueArray each: ^{ <value>
+                if (hash[value] != value)
+                {
+                    success = false
+                    break
+                }
+            }
+
+            if (! success)
+            {
+                break
+            }
+        }
+
+        return (success)
+    }
+
+    (@) testSeries
+    {
+        series = [Series createWithBlock: ^{<x> x^2}]
+
+        thread1 = [Thread new: ^{ <series>
+                     series[0, 1000]
+                  }]
+
+        thread2 = [Thread new: ^{ <series>
+                     series[1001, 2000]
+                  }]
+
+        thread3 = [Thread new: ^{ <series>
+                     series[2001, 3000]
+                  }]
+
+        thread1 startWith: [series]
+        thread2 startWith: [series]
+        thread3 startWith: [series]
+
+        result = ([[thread1 wait] result]
+                  + [[thread2 wait] result]
+                  + [[thread3 wait] result])
+
+        return (result == 9004500500)
+    }
+
+    (@) testThreader
+    {
+        block = ^{ <_start, _end>
+            series = [Series createWithBlock: ^{<x> x^2}]
+            series[_start, _end]
+        }
+
+        result = 0
+
+        [[Threader startWithBlock: block
+                        arguments: [[0, 500],
+                                   [501, 1000],
+                                   [1001, 1500]]]
+         each: ^{ <_value>
+             result += _value
+         }]
+
+         return (result == 1126125250)
+    }
+
+    (@) testIntegerPlusPlus
+    {
+        global maximum = 500
+        global value = 0
+
+        thread = [Thread new: ^{
+                     for (a = 0; a < maximum; a++)
+                     {
+                         value++
+                     }
+                 }]
+        threads = [thread, [thread copy], [thread copy]]
+
+        threads each: ^{ <_thread>
+            _thread start
+        }
+
+        threads each: ^{ <_thread>
+            _thread wait
+        }
+
+        success = (value == 1500)
+
+        if (! success)
+        {
+            io putLine: "value is: #[value] != 1500"
+        }
+
+        return success
+    }
+
+    class ReentrantMutexTester
+    {
+        @mutex
+        @value, @r
+
+        (@) init
+        {
+            @mutex = new ReentrantMutex
+            @value = 0
+        }
+
+        (@) testIt
+        {
+            @mutex lock
+
+            if (@value == 10)
+            {
+                @mutex unlock
+                return
+            }
+
+            @value++
+            self testIt
+            @mutex unlock
+        }
+    }
+
+    (@) testReentrantMutex
+    {
+        tester = new ReentrantMutexTester
+        tester testIt
+        return ([tester value] == 10)
+    }
+}

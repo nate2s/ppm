@@ -1,0 +1,1593 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+/////////////////////////////
+//                         //
+// FunctionTest.ty         //
+//                         //
+// unit tests for Function //
+//                         //
+/////////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.maths.Function
+import org.taffy.core.maths.Number
+import org.taffy.core.container.Hash
+import org.taffy.core.container.List
+import org.taffy.core.threading.Thread
+
+import org.taffy.core.exception.*
+
+class FunctionTest
+{
+    (@) testEquals
+    {
+        f1(x) = x
+        g1(x) = x
+        g2(x) = x + 1
+
+        return (f1 == g1
+                and f1 != g2)
+    }
+
+    (@) testCombineAdd
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x + 3 + x
+        n(x) = 4 + 3x
+
+        g2(x) = "hi there"
+        h2(x) = 3x + "hi there"
+
+        return (f + g == h
+                and 4 + f == n
+                and f + g2 == h2)
+    }
+
+    (@) printSubtract
+    {
+        f(x) = 3 - x + y
+        g(x) = 3 - (x + y)
+        h(x) = (x + 3) - 3
+
+        return ([f asString] == "F(x) = 3 - x + y"
+                and [g asString] == "F(x) = 3 - (x + y)"
+                and [h asString] == "F(x) = x + 3 - 3")
+    }
+
+    (@) subtractNotEquals
+    {
+        f(x) = 3 - x + y
+        g(x) = 3 - (x + y)
+        return (f != g)
+    }
+
+    (@) testCombineSubtract
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x - (3 + x)
+        n(x) = 4 - 3x
+
+        g2(x) = "hi there"
+        h2(x) = 3x - "hi there"
+
+        return (f - g == h
+                and 4 - f == n
+                and f - g2 == h2)
+    }
+
+    (@) testCombineMultiply
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x * (3 + x)
+        n(x) = 4 * 3x
+        g2(x) = "hi there"
+        h2(x) = 3x * "hi there"
+
+        return (f * g == h
+                and 4 * f == n
+                and f * g2 == h2)
+    }
+
+    (@) testCombineDivide
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x / (3 + x)
+        n(x) = 4 / (3x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x / "hi there"
+
+        return (f / g == h
+                and 4 / f == n
+                and f / g2 == h2)
+    }
+
+    (@) testCombineLeftShift
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x << (3 + x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x << "hi there"
+
+        return (f << g == h
+                and f << g2 == h2)
+    }
+
+    (@) testCombineRightShift
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x >> (3 + x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x >> "hi there"
+
+        return (f >> g == h
+                and f >> g2 == h2)
+    }
+
+    (@) testCombineBitAnd
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x & (3 + x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x & "hi there"
+
+        return (f & g == h
+                and f & g2 == h2)
+    }
+
+    (@) testCombineBitOr
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x | (3 + x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x | "hi there"
+
+        return (f | g == h
+                and f | g2 == h2)
+    }
+
+    (@) testCombineModulus
+    {
+        f(x) = 3x
+        g(x) = 3 + x
+        h(x) = 3x % (3 + x)
+
+        g2(x) = "hi there"
+        h2(x) = 3x % "hi there"
+
+        return (f % g == h
+                and f % g2 == h2)
+    }
+
+    (@) testCombineFactorial
+    {
+        f(x) = 3x
+        g(x) = (3x)!
+
+        g2(x) = "hi there"
+        h2(x) = "hi there"!
+
+        return ((f)! == g
+                and (g2)! == h2)
+    }
+
+    (@) testPrintParenthesesOperator
+    {
+        f(x) = g(x)
+        g(x) = h(x, y, z)
+        return ([f asString] == "F(x) = g(x)"
+                and [g asString] == "F(x) = h(x, y, z)")
+    }
+
+    (@) testMultipleArgumentsPrint
+    {
+        f(x, y) = x + y
+        g(x, y, z) = x + y + z
+        return ([f asString] == "F(x, y) = x + y"
+                and [g asString] == "F(x, y, z) = x + y + z")
+    }
+
+    (@) testPrintAnd
+    {
+        a(x) = 3 and 5
+        b(x) = (3 + x) and 5
+        c(x) = (3 + x) and (5 + x)
+        d(x) = (3 or 4) and 5
+        f(x) = (3 or 4) and (5 or 6)
+        return ([a asString] == "F(x) = 3 and 5"
+                and [b asString] == "F(x) = (3 + x) and 5"
+                and [c asString] == "F(x) = (3 + x) and (5 + x)"
+                and [d asString] == "F(x) = (3 or 4) and 5"
+                and [f asString] == "F(x) = (3 or 4) and (5 or 6)")
+    }
+
+    (@) testPrintOr
+    {
+        a(x) = 3 or 5
+        b(x) = (3 + x) or 5
+        c(x) = (3 + x) or (5 + x)
+        d(x) = (3 and 4) or 5
+        f(x) = (3 and 4) or (5 and 6)
+        return ([a asString] == "F(x) = 3 or 5"
+                and [b asString] == "F(x) = (3 + x) or 5"
+                and [c asString] == "F(x) = (3 + x) or (5 + x)"
+                and [d asString] == "F(x) = (3 and 4) or 5"
+                and [f asString] == "F(x) = (3 and 4) or (5 and 6)")
+    }
+
+    (@) testPrintBracket1
+    {
+        f(x) = f[1]
+        return ([f asString] == "F(x) = f[1]")
+    }
+
+    (@) testPrintBracket2
+    {
+        f(x) = f[1, 2, 3]
+        return ([f asString] == "F(x) = f[1, 2, 3]")
+    }
+
+    (@) testPrintParen1
+    {
+        f(x) = f(y)
+        return ([f asString] == "F(x) = f(y)")
+    }
+
+    (@) testPrintParen2
+    {
+        f(x) = f(x, y, z)
+        return ([f asString] == "F(x) = f(x, y, z)")
+    }
+
+    (@) testPrintGreaterThan
+    {
+        f(x) = x > y
+        return ([f asString] == "F(x) = x > y")
+    }
+
+    (@) testPrintGreaterThanEqual
+    {
+        f(x) = x >= y
+        return ([f asString] == "F(x) = x >= y")
+    }
+
+    (@) testPrintLessThan
+    {
+        f(x) = x < y
+        return ([f asString] == "F(x) = x < y")
+    }
+
+    (@) testPrintLessThanEqual
+    {
+        f(x) = x <= y
+        return ([f asString] == "F(x) = x <= y")
+    }
+
+    (@) testPrintLeftShfit
+    {
+        f(x) = x << y
+        return ([f asString] == "F(x) = x << y")
+    }
+
+    (@) testPrintRightShift
+    {
+        f(x) = x >> y
+        return ([f asString] == "F(x) = x >> y")
+    }
+
+    (@) testPrintRaise
+    {
+        f(x) = (x^x)^2
+        g(x) = x^x^2
+        h(x) = x^2 + 3
+        return ([f asString] == "F(x) = (x^x)^2"
+                and [g asString] == "F(x) = x^(x^2)"
+                and [h asString] == "F(x) = x^2 + 3")
+    }
+
+    (@) testPrintDeltaEquals
+    {
+        f(x) = x ~= 3
+        g(x) = x ~=<8> 332
+
+        return ([f asString] == "F(x) = x ~=<6> 3"
+                and [g asString] == "F(x) = x ~=<8> 332")
+    }
+
+    (@) testPrintLessThanEqual
+    {
+        f(x) = x <= y
+        return ([f asString] == "F(x) = x <= y")
+    }
+
+    (@) testSimpleAddition
+    {
+        f(a) = a + 5
+        return (f(5) == 10)
+    }
+
+    (@) testSinAndCosRaise
+    {
+        f(x) = sin(x)^2 * cos(x)^2
+        return (f(0) == 0
+                and f(PI) ~= 0
+                and !(f(PI + 1) ~= 0))
+    }
+
+    (@) testBaseCases
+    {
+        f(a) = f(a - 1)
+
+        f(0) = 0
+        f(1) = 1
+        f(2) = 2
+        f(3) = 3
+        f(4) = 3
+        f(7) = f(0)
+
+        return (f(0) == 0
+                and f(1) == 1
+                and f(2) == 2
+                and f(5) == 3
+                and f(6) == 3
+                and f(7) == 0)
+    }
+
+    (@) testComposition
+    {
+        f(a) = a + 3
+        g(a) = 3a
+        h(a) = f(g(a))
+        return (h(3) == 12)
+    }
+
+    (@) testDivision
+    {
+        f(a) = a / 2
+        return (f(20) == 10)
+    }
+
+    (@) testFibonacci
+    {
+        // definition //
+        f(n) = f(n - 1) + f(n - 2)
+
+        // base cases //
+        f(0) = 0
+        f(1) = 1
+
+        return (f(5) == 5 and f(8) == 21)
+    }
+
+    (@) testFunctionCall
+    {
+        h = new Hash
+        methods = [h methods]
+        f(a) = [[a methods] size]
+        return (f(h) == [methods size])
+    }
+
+    (@) testAFew
+    {
+        o(w) = w + 3
+        n(w) = w + 4
+        t(w) = w + 5
+        ea(w) = w + 6
+
+        g(w) = ea(t(n(o(w))))
+
+        return (g(1) == 19)
+    }
+
+    (@) testMultiplication
+    {
+        f(a) = 5a
+        return (f(5) == 25)
+    }
+
+    (@) testMultiple
+    {
+        f(a,b,c) = a + b + c
+        return (f(1,2,3) == 6)
+    }
+
+    (@) testSimple
+    {
+        f(a) = a
+        return (f(5) == 5)
+    }
+
+    (@) testFunction
+    {
+        f(a) = a + f(a - 1)
+        f(a < 2) = 1
+
+        g(b) = 1 + g(b - 1)
+        g(b < 2) = 1
+
+        return (f(10) == 55 and g(10) == 10)
+    }
+
+    (@) testMemorySize
+    {
+        old = [Function getDefaultMemorySize]
+        newValue = 10
+        Function setDefaultMemorySize: newValue
+
+        f(x) = x
+
+        success = (([f getMemorySize] == newValue)
+                   and ([Function getDefaultMemorySize] == newValue))
+
+        Function setDefaultMemorySize: old
+        return (success)
+    }
+
+    (@) testMethodCallWithArgumentAsString
+    {
+        f(x) = [x callWith: [1]]
+        return ([f asString] == "F(x) = [x callWith: [1]]")
+    }
+
+    (@) testMethodCallAsString
+    {
+        f(x) = [x call]
+        return ([f asString] == "F(x) = [x call]")
+    }
+
+    (@) testNegativePrintAsString
+    {
+        f(x) = -3
+        return ([f asString] == "F(x) = -3")
+    }
+
+    (@) testNegativePrintAsStringX
+    {
+        f(x) = -x
+        return ([f asString] == "F(x) = -x")
+    }
+
+    (@) testNegativePrintAsStringN
+    {
+        f(x) = -n
+        return ([f asString] == "F(x) = -n")
+    }
+
+    (@) testEmptinessOfMemorySaving
+    {
+        result = 0
+        f(x) = x
+        maximum = 10
+
+        for (a = 0; a < maximum; a++)
+        {
+            result += f(a)
+        }
+
+        return (result == (maximum * (maximum - 1) / 2))
+    }
+
+    (@) testScalarMultipliciation
+    {
+        f(x) = 3x + 3
+        g = f * 3
+        return (g(3) == 36)
+    }
+
+    (@) testScalarDivision
+    {
+        f(x) = 30x + 3
+        g = f / 3
+        return (g(3) == 31)
+    }
+
+    (@) testMatrixMultiplication
+    {
+        f(x) = x
+        g = f * ||1, 2, 3||
+        return (g(3) == ||3,6,9||)
+    }
+
+    (@) testDeriveWithoutSymbol
+    {
+        f(x) = x^2
+        g = [f derive]
+        one(x) = 2x
+        return (g == one)
+    }
+
+    (@) testIntegrateWithoutSymbol
+    {
+        f(x) = x
+        g = [f integrate]
+        integry(x) = 0.5 * x^2
+        return (g == integry)
+    }
+
+    (@) testSimpleDerive
+    {
+        f(x) = x
+        g = [f derive: 'x]
+        one(x) = 1
+        return (g == one)
+    }
+
+    (@) testSimpleAdditionRule
+    {
+        f(x, y) = x + y + x
+        h(x, y) = 2 + 1
+        return (([f derive: 'x] + [f derive: 'y]) == h)
+    }
+
+    (@) testSimpleDeriveZero
+    {
+        f(x) = x
+        g = [f derive: 'y]
+        zero(x) = 0
+        return (g == zero)
+    }
+
+    (@) testSimpleDeriveMethodCall
+    {
+        f(x) = 0.5 x
+        return ([f derive: 'x] == {0})
+    }
+
+    (@) testSimpleDivisionRule
+    {
+        f(x) = x / x
+        g = [f derive: 'x]
+        zero(x) = 0
+        return (g == zero)
+    }
+
+    (@) testSimpleMultiplicationRule
+    {
+        f(x) = x * x
+        g = [f derive: 'x]
+        // fix me with graph equalities...
+        return ([g asString] == "F(x) = 2x")
+    }
+
+    (@) testDeriveToZeroFromFunctionCall
+    {
+        string = "the string is the shiz"
+        f(x) = 3 * [string length]
+        wanted(x) = 0
+        return ([f derive: 'x] == wanted)
+    }
+
+    (@) testSinCosZeroDerivative
+    {
+        f(x) = sin(x)
+        g(x) = cos(x)
+        wanted(x) = 0
+        return ([f derive: 'y] == wanted
+                and [f derive: 'y] == wanted)
+    }
+
+    (@) testSinCosDerivative
+    {
+        f1(x) = sin(x)
+        f2 = [f1 derive: 'x]
+        f3 = [f2 derive: 'x]
+        f4 = [f3 derive: 'x]
+        f5 = [f4 derive: 'x]
+
+        myCos(x) = cos(x)
+        myNegativeCos(x) = -cos(x)
+        mySin(x) = sin(x)
+        myNegativeSin(x) = -sin(x)
+
+        return (f1 == mySin
+                and f2 == myCos
+                and f3 == myNegativeSin
+                and f4 == myNegativeCos
+                and f5 == mySin)
+    }
+
+    (@) testTanDerivative
+    {
+        f(x) = tan(x)
+        wanted(x) = sec(x)^2
+        return ([f derive: 'x] == wanted)
+    }
+
+    (@) testLinkedDerivatives
+    {
+        f(x) = 3*sin(x)
+        wanted(x) = -3 * cos(x)
+        return ([[[f derive: 'x] derive: 'x] derive: 'x] == wanted)
+    }
+
+    (@) testSymbolDerivative
+    {
+        f(x) = x * a * b
+        wanted(x) = a * b
+        return ([f derive: 'x] == wanted)
+    }
+
+    (@) testUninitializedString
+    {
+        f(x) = "hi there" * 3
+        return ([f asString] == "F(x) = \"hi there\" * 3")
+    }
+
+    (@) testUninitializedStringExpression
+    {
+        f(x) = "hi there #[x+3]"
+        return ([f asString] == "F(x) = \"hi there \#[x + 3]\"")
+    }
+
+    (@) testUninitializedStringExpressionExecution
+    {
+        f(x) = "hi there #[x+3]"
+        return (f(33) == "hi there 36")
+    }
+
+    (@) testMethodCallDeriveSimple
+    {
+        f(x) = 3x
+        g(x) = f(x)
+        wanted(x) = 3
+        return ([g derive: 'x] == wanted)
+    }
+
+    (@) testMethodCallDeriveWithAddition
+    {
+        f(x) = 3x
+        g(x) = 1 + f(x)
+        wanted(x) = 3
+        return ([g derive: 'x] == wanted)
+    }
+
+    (@) testLeftExceptionFix
+    {
+        g(x) = 1 << x
+        return (g(0) == 1)
+    }
+
+    (@) testMultipleMethodCallDerive
+    {
+        f(x) = e^x
+        g(x) = x^2
+        result = [[f compose: { g(x) }] derive]
+        return (result == {e^(x^2) * 2x})
+    }
+
+    (@) testStringEquality
+    {
+        f(x) = "hi there"
+        g(x) = "hi there"
+        h(x) = "hi ther"
+        j(x) = "hi theree"
+        return (f == g
+                and f != h
+                and f != j)
+    }
+
+    (@) testArrayEquality
+    {
+        f(x) = [1]
+        g(x) = [1]
+        h(x) = [1, 2]
+        j(x) = [0]
+        return (f == g
+                and f != h
+                and f != j)
+    }
+
+    (@) testArrayEqualityWithAdd
+    {
+        f(x) = [1] + [1]
+        g(x) = [1] + [1]
+        h(x) = [1] + [2]
+        j(x) = [1] + [1] + [1]
+        return (f == g
+                and f != h
+                and f != j)
+    }
+
+    (@) testHashEquality
+    {
+        f(x) = (1 => "one")
+        g(x) = (1 => "one")
+        h(x) = (1 => "one", 2 => "two")
+        j(x) = (0 => "zero")
+        return (f == g
+                and f != h
+                and f != j)
+    }
+
+    (@) testListEquality
+    {
+        list1 = new List
+        list1 push: 1
+        f(x) = list1
+        g(x) = list1
+        list2 = new List
+        list2 push: 1
+        list2 push: 2
+        h(x) = list2
+        return (f == g
+                and f != h)
+    }
+
+    (@) testUnidentifiedObjectDuringDerive
+    {
+        success = false
+
+        try
+        {
+            f(x) = a(x)
+            f derive: 'x
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "a")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we need to catch it
+        }
+
+        return (success)
+    }
+
+    (@) testSpecificValuesPrint1
+    {
+        f(x) = x
+        f(1) = 111
+        string = [f asString]
+        return (string == "{F(x) = x, (1) = 111}")
+    }
+
+    (@) testSpecificValuesPrint2
+    {
+        f(x) = x
+        f(1) = 111
+        f("2") = [222]
+        string = [f asString]
+        return (string == "{F(x) = x, (1) = 111, (\"2\") = [222]}")
+    }
+
+    (@) testSpecificValuesPrintLots
+    {
+        f(x) = x
+        f(1) = 111
+        f("2") = [222]
+        f(1, 2, 3, 4) = 111222333444
+        f("1", "2", "3", "4", "5") = "1" + "2" + "3" + "4" + "5"
+        string = [f asString]
+        return (string ==
+                "{F(x) = x, "
+                + "(1) = 111, "
+                + "(\"2\") = [222], "
+                + "(1, 2, 3, 4) = 111222333444, "
+                + "(\"1\", \"2\", \"3\", \"4\", \"5\") = "
+                + "\"1\" + \"2\" + \"3\" + \"4\" + \"5\"}")
+    }
+
+    (@) testArgumentCount
+    {
+        f(x) = x
+        g(x, y) = x + y
+        h(x, y, z) = x + y + z
+        return ([f argumentCount] == 1
+                and [g argumentCount] == 2
+                and [h argumentCount] == 3)
+    }
+
+    (@) testSimplifyWithMethodCall
+    {
+        f(x) = [a b] + [a b]
+        return ([f simplify] == [Function createWithBlock: ^{<x> 2 * [a b]}])
+    }
+
+    (@) testSimplify
+    {
+        f(x) = x / x
+        g(x) = x^2 / x
+        h(x) = x / x^2
+
+        simplifiedF(x) = 1
+        simplifiedG(x) = x
+        simplifiedH(x) = 1 / x
+
+        return ([f simplify] == { 1 }
+                and [g simplify] == { x }
+                and [h simplify] == { 1 / x })
+    }
+
+    (@) testSimplifyBang
+    {
+        f(x) = x / x
+        g(x) = x^2 / x
+        h(x) = x / x^2
+
+        f simplify!
+        g simplify!
+        h simplify!
+
+        return (f == { 1 }
+                and g == { x }
+                and h == { 1 / x })
+    }
+
+    (@) testCreateWithBody
+    {
+        f(x) = 1
+        g(x) = x
+        h(x, y) = 1 + x + y
+        m(x, y, z) = x / y / z
+
+        return (f == { 1 }
+                and g == { x }
+                and h == [Function createWithBlock: ^{ <x, y> 1 + x + y }]
+                and m == [Function createWithBlock: ^{ <x, y, z> x / y / z }])
+    }
+
+    (@) testAddKeyValue
+    {
+        f = [Function createWithBlock: ^{ <x> x }]
+        f addKey: ^{0} value: ^{1000}
+        f addKey: ^{x > 0 and x < 1000} value: ^{1.1234}
+        f addKey: ^{} value: ^{}
+        success = false
+
+        try
+        {
+            f(nil)
+        }
+        catch (UnidentifiedMethodException _exception)
+        {
+            success = ([_exception exceptionMethodName] == "#operator(>):"
+                       and [_exception exceptionClassName] == "Nil")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we need to catch it
+        }
+
+        return (success
+                and f(0) == 1000
+                and f(-1) == -1
+                and f(2) == 1.1234
+                and f(1000.01) == 1000.01)
+    }
+
+    (@) testKeyValueEquality
+    {
+        f = [Function createWithBlock: ^{ <x> x }]
+        f addKey: ^{x == 1} value: ^{456}
+        f addKey: ^{x > 10} value: ^{900}
+
+        g(x) = x
+        g(x == 1) = 456
+        g(x > 10) = 900
+
+        h(x) = x
+        h(x == 1) = 456
+
+        return (f == g and f != h)
+    }
+
+    (@) testUnfindableIntegral
+    {
+        f(x) = cos(e^x)
+        return ([f integrate: 'x] == nil)
+    }
+
+    (@) testEqualityAfterSimplify1
+    {
+        f(x) = 1 + 2
+        g(x) = 3
+        return (f == g)
+    }
+
+    (@) testEqualityAfterSimplify2
+    {
+        f(x) = x * x
+        g(x) = x^2
+        return (f == g)
+    }
+
+    (@) testEqualityAfterSimplify3
+    {
+        f(x) = x * x - x * x
+        g(x) = 0
+        return (f == g)
+    }
+
+    (@) testNegativeRearrangement
+    {
+        f(x) = -x + y
+        return ([[f simplify] asString] == "F(x) = y - x")
+    }
+
+    (@) testNegativeRemoval
+    {
+        f(x) = 1 / ((1 * (1 - 1 / x^2))^2 * x^2)
+        return ([[f simplify] asString] == "F(x) = (x / (x^2 - 1))^2")
+    }
+
+    (@) testFactorEquality
+    {
+        f(x) = 2x + y*x
+        g(x) = x * (2 + y)
+        h(x) = y*x + 2x
+        return (f == g and g == h)
+    }
+
+    (@) testFactorWithSnipNeeded
+    {
+        f(x) = (w * cos(w - ln(w)) * x - cos(w - ln(w)) * x) / w
+        factored = [f factor]
+        return ([factored asString] == "F(x) = (x * cos(w - ln(w)) * (w - 1)) / w")
+    }
+
+    (@) testIntegrateWithFunctionCall
+    {
+        a = 2
+        f(x) = [a absoluteValue]
+        return ([f integrate] == {2x})
+    }
+
+    (@) testIntegrateWithEvaluate
+    {
+        f(x) = x
+        g(x) = f(x^2)
+        return ([g integrate] == {x^3 / 3})
+    }
+
+    (@) testIntegrateWithEvaluateTwoValues
+    {
+        f(x, y) = x + y
+        g(x) = f(x^2, y^2)
+        return ([g integrate] == [Function createWithBlock: ^{<x> (x^3 + 3 * y^2 * x) / 3}])
+    }
+
+    (@) testDeriveWithEvaluate
+    {
+        f(x) = x
+        g(x) = f(x^2)
+        return ([g derive] == {2x})
+    }
+
+    (@) testDeriveWithEvaluateTwoValues
+    {
+        f(x, y) = x + y
+        g(x) = f(x^2, y^2)
+        return ([g derive] == {2x})
+    }
+
+    (@) testIntegrateWithSpecificValue
+    {
+        f(x) = x
+        f(0) = 0
+
+        success = false
+
+        try
+        {
+            f integrate
+        }
+        catch (UnsupportedMathOperationException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testCompose
+    {
+        f(x) = x^2
+        g = [f compose: {x^2}]
+        return (g == {x^4})
+    }
+
+    (@) testComposeWithSimplify
+    {
+        f(x) = x^2
+        g = [f compose: {x^2}]
+        return (g == {x^4})
+    }
+
+    (@) testComposes
+    {
+        f(x, y) = x^2 + y^3
+        g = [f composes: [{x^2}, {y^4}]]
+        h(x, y) = x^4 + y^12
+        return (g == h)
+    }
+
+    (@) testComposesWithSimplify
+    {
+        f(x, y) = x + y
+        g = [[f composes: [{x^2}, {x^2}]] simplify]
+        h(x, y) = 2 * x^2
+        return (g == h)
+    }
+
+    (@) testMoreArgumentsNotEqual
+    {
+        f(x, y) = x + y
+        g(x) = x + y
+        return (g != f)
+    }
+
+    (@) testDifferentArgumentsNotEqual
+    {
+        f(x, y) = x + y
+        g(z, x) = x + y
+        return (g != f)
+    }
+
+    (@) testDeriveWithSpecificValue
+    {
+        f(x) = x
+        f(0) = 0
+
+        success = false
+
+        try
+        {
+            f derive
+        }
+        catch (UnsupportedMathOperationException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testDivisionWithMultiplicationOnBottomPrintYeah
+    {
+        f(x) = 1 / (4 * x^4)
+        g(x) = 1 / (4x^4)
+        h(x) = 1 / (4x)
+        return ([f asString] == "F(x) = 1 / (4x^4)"
+                and [g asString] == "F(x) = 1 / (4x^4)"
+                and [h asString] == "F(x) = 1 / (4x)")
+    }
+
+    (@) testRaiseWithNegativeNumberPrint
+    {
+        f(x) = x^3
+        g(x) = x^(-3)
+        h(x) = x^(3x)
+        return ([f asString] == "F(x) = x^3"
+                and [g asString] == "F(x) = x^(-3)"
+                and [h asString] == "F(x) = x^(3x)")
+    }
+
+    // run this with helgrind and valgrind
+    (@) testIntegrateWithThreads
+    {
+        thread = [Thread new: ^{ <_f>
+            for (a = 0; a < 10; a++)
+            {
+                //io putLine: "index: #[a] self: #[self]"
+                _f integrate: 'x
+                //io putLine: "/self: #[self]"
+            }
+        }]
+
+        threads = new List
+
+        for (a = 0; a < 5; a++)
+        {
+            threads push: [thread copy]
+        }
+
+        f(x) = sin(x)
+
+        threads each: ^{ <_myThread>
+            _myThread startWith: [f]
+        }
+
+        threads each: ^{ <_myThread>
+            _myThread wait
+        }
+
+        return (true)
+    }
+
+    (@) testArrayDisplay
+    {
+        f(x) = [x, 3, x^2]
+        return ([f asString] == "F(x) = [x, 3, x^2]"
+                and f(2) == [2, 3, 4])
+    }
+
+    (@) testHashDisplay
+    {
+        f(x) = (1=>x, 2=>x^3)
+        return ([f asString] == "F(x) = #Hash(1=>x, 2=>x^3)"
+                and f(2) == (1=>2, 2=>8))
+    }
+
+    (@) testMatrixDisplay
+    {
+        f(x) = ||x ; 1 ; x^2||
+        return ([f asString] == "F(x) = ||x ; 1 ; x^2||"
+                and f(2) == ||2 ; 1 ; 4||)
+    }
+
+    (@) testOutOfOrderEquals
+    {
+        f(x) = -x - 2
+        g(x) = -2 - x
+        return (f == g)
+    }
+
+    (@) testOutOfOrderEqualsComplexer
+    {
+        f(x) = 2^(x/x^2 + 1/x)
+        g(x) = 2^(2/x)
+        return (f == g)
+    }
+
+    (@) testConvertSubtractToAdd
+    {
+        f(x) = 3 - x
+        g(x) = 3 - (x - y)
+        h(x) = 3 - (x - y + z)
+
+        return ([[f convertSubtractToAdd] asString] == "F(x) = 3 + -x"
+                and [[g convertSubtractToAdd] asString] == "F(x) = 3 + -x + y"
+                and [[h convertSubtractToAdd] asString] == "F(x) = 3 + -x + y + -z")
+    }
+
+    (@) testCancel
+    {
+        f(x) = x / x
+        g(x) = 6 / (3 * x)
+        return ([f cancel] == {1}
+                and [g cancel] == {2 / x })
+    }
+
+    (@) testDegree
+    {
+        return ([{x} degree] == 1
+                and [{x^2} degree] == 2
+                and [{1 / x} degree] == -1
+                and [{1 % x} degree] == nil
+                and [{x^x} degree] == nil
+                and [{(y - 3) * (2y + 6) * (-4y - 21)} degree] == 3)
+    }
+
+    (@) testFactor
+    {
+        f(x) = 3x + 6y
+        g(x) = 3 * (x + 2y)
+        return ([f factor] == g)
+    }
+
+    (@) testNot
+    {
+        f(x) = 3
+        return ([~f asString] == "F(x) = ~ (3)"
+                and ~f == {~ (3)})
+    }
+
+    (@) testCreateWithBlockNonSingularBlock
+    {
+        success = false
+
+        try
+        {
+            Function createWithBlock: ^{ <x> x + 3; x + 4 }
+        }
+        catch (BlockNotSingularException exception)
+        {
+            success = true
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return success
+    }
+
+    (@) testCompile
+    {
+        f(x) = 3x
+        g(x) = f(x^2)
+
+        return ([g compile] == {3 * x^2}
+                and g == [Function createWithBlock: ^{ <x> f(x^2) }])
+    }
+
+    (@) testDeepCompile
+    {
+        a = 5
+        h(x) = a * x^3
+        g(x) = h(x)
+        f(x) = g(x)
+
+        return ([f compile] == {5 * x^3})
+    }
+
+    (@) testArrayCompile
+    {
+        a = 5
+        f(x) = a * 3 + cos(a) * a
+
+        return ([f compile] == {5 * 3 + cos(5) * 5})
+    }
+
+    class SimpleClass
+    {
+        (@) test: _one two: _two
+        {
+            return _one + _two
+        }
+    }
+
+    (@) testCompileWithMethodCall
+    {
+        simple = new FunctionTest.SimpleClass
+        a = 1
+        b = 2
+        f(x) = [simple test: a two: b]
+        return ([f compile] == {3})
+    }
+
+    (@) testCompile!
+    {
+        f(x) = 3x
+        g(x) = f(x^2)
+
+        return ([g compile!] == {3 * x^2}
+                and g == {3 * x^2})
+    }
+
+    (@) testCompileException
+    {
+        return ([ExceptionHelper testUnidentifiedObjectException: "f(x) = g(x); f compile"
+                                                  withObjectName: "g"]
+                and [ExceptionHelper testUnidentifiedObjectException: "f(x) = g(x); f compile!"
+                                                      withObjectName: "g"])
+    }
+
+    (@) testUpdateTwice
+    {
+        f(x) = sin(x)
+        f(0) = 30
+        f(0) = 30
+        return ([f asString] == "{F(x) = sin(x), (0) = 30}")
+    }
+
+    (@) testId
+    {
+        f(x) = sin(x)
+        g(x) = tan(x)
+        h(x) = sin(cos(x))
+
+        return ([f id] == [f id]
+                and [f id] < [g id]
+                and [g id] < [h id])
+    }
+
+    (@) testCompileStackOverflow
+    {
+        f(x) = f
+
+        success = false
+
+        try
+        {
+            f compile
+        }
+        catch (StackOverflowException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testCompileWithSpecificValueStackOverflow
+    {
+        f(x) = f
+        f(0) = 0
+
+        success = false
+
+        try
+        {
+            f compile
+        }
+        catch (StackOverflowException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testClearMemory
+    {
+        Number pushDigitLimit: 7
+
+        f(x) = x / e
+
+        if (f(3) != 1.103638)
+        {
+            io << "Fail first: #[f(3)] != 1.103638\n"
+            return false
+        }
+
+        if ([f clearMemory] != true)
+        {
+            io << "Fail second\n"
+            return false
+        }
+
+        Number popDigitLimit
+
+        Number pushDigitLimit: 16
+
+        if (f(3) != 1.103638323514327)
+        {
+            io << "Fail third: #[f(3)] != 1.103638323514327\n"
+            return false
+        }
+
+        Number popDigitLimit
+        return true
+    }
+
+    (@@) testPrettyPrintLeft: _f right: _expected
+    {
+        printed = [_f prettyPrint]
+
+        if (printed != _expected)
+        {
+            io putLine: ("Got:\n'"
+                         + "\n#[printed]\n'\n"
+                         + "But wanted:\n'"
+                         + "\n#[_expected]\n'")
+            return false
+        }
+
+        return true
+    }
+
+    (@) testPrettyPrint
+    {
+        f(x) = (x / z)^2 * x^e
+        prettyPrint = (  "       /        2 \\     \n"
+                       + "F(x) = | /  x  \\  |    e\n"
+                       + "       | | --- |  | * x \n"
+                       + "       \\ \\  z  /  /     ")
+
+        if (! [FunctionTest testPrettyPrintLeft: f right: prettyPrint])
+        {
+            return false
+        }
+
+        f(x) = (x / z) * e^e^z^2^1^3 * (1 / 2/ y)
+        prettyPrint = (  "             /      3 \\            \n"
+                       + "             |     1  |   /   1   \\\n"
+                       + "F(x) =  x    |    2   |   |  ---  |\n"
+                       + "       --- * |   z    | * |   2   |\n"
+                       + "        z    |  e     |   | ----- |\n"
+                       + "             \\ e      /   \\   y   /")
+
+        if (! [FunctionTest testPrettyPrintLeft: f right: prettyPrint])
+        {
+            return false
+        }
+
+        f(x) = (x - 2) * x^e^z
+        prettyPrint = (   "                   z\n"
+                        + "F(x) = (x - 2) *  e \n"
+                        + "                 x  ")
+
+        if (! [FunctionTest testPrettyPrintLeft: f right: prettyPrint])
+        {
+            return false
+        }
+
+        f(x) = x
+        f(x < 0) = 1
+        f(x == 2) = 2
+        f(x/2/3/4 == 4) = 3
+
+        prettyPrint = (  "       / x                         \\\n"
+                       + "       |                           |\n"
+                       + "       | 1 if x < 0                |\n"
+                       + "       |                           |\n"
+                       + "       | 2 if x == 2               |\n"
+                       + "       |                           |\n"
+                       + "F(x) = | /      /    x    \\      \\ |\n"
+                       + "       | |      |   ---   |      | |\n"
+                       + "       | |      |    2    |      | |\n"
+                       + "       | | 3 if |  -----  | == 4 | |\n"
+                       + "       | |      |    3    |      | |\n"
+                       + "       | |      | ------- |      | |\n"
+                       + "       \\ \\      \\    4    /      / /")
+
+        if (! [FunctionTest testPrettyPrintLeft: f right: prettyPrint])
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@) testQuadraticSimplification
+    {
+        f(x) = x^2 + 2x + 1
+        g(x) = 9x^2 + 42x + 49
+        h(y) = y^2 - 2y + 1
+
+        return ([[f simplify] asString] == "F(x) = (x + 1)^2"
+                and [[g simplify] asString] == "F(x) = (3x + 7)^2"
+                and [[h simplify] asString] == "F(y) = (y - 1)^2")
+    }
+
+    (@) testBlockPromotion
+    {
+        f(x) = x
+        g = f + {y}
+
+        if ([g asString] != "F(x) = x + y")
+        {
+            return false
+        }
+
+        g = f * {y}
+
+        if ([g asString] != "F(x) = x * y")
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@) testDeltaEqual
+    {
+        f(x) = 0.00000006 * x
+        g(x) = 0.00006 * x
+
+        if (! (f ~=<3> g))
+        {
+            return false
+        }
+
+        f(x) = 0.00005 * (x^2 + 2x + 1)
+        g(x) = 0.005 * (x^2 + 2x + 1)
+
+        if (! (f ~=<2> g))
+        {
+            return false
+        }
+
+        return ! (f ~=<3> g)
+    }
+
+    (@) testDeltaEqualNot
+    {
+        f(x) = 0.00000006 * x
+
+        if (f ~= []
+            or f ~= ()
+            or f ~= ""
+            or f ~= 3)
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@) testLargeNonWholeDenominatorDoNothing
+    {
+        Number pushDigitLimit: 100
+        f(x) = 1 / 0.00001693508780843028671103659672475401784958255008552219343257294789073481346000779014039187793188707683
+        display = [f asString]
+        f simplify!
+        return (display == [f asString])
+    }
+
+    (@) testRightHandSideInitialization
+    {
+        f1 = {x + 1}
+        f2(x) = x + 1
+
+        g1 = {x + y}
+        g2(x, y) = x + y
+
+        h1 = {1 + i}
+        h2(x) = 1 + i
+
+        return (f1 == f2 and g1 == g2 and h1 == h2)
+    }
+
+    (@) testIndexes
+    {
+        f(x) = x
+        return (f[1, 2] == [1, 2]
+                and f[1, 10] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    }
+
+    (@) testInvalidIndexesException
+    {
+        f(x) = x
+        success = false
+
+        try
+        {
+            f[2, 1, 3]
+        }
+        catch (InvalidIndexesException _exception)
+        {
+            success = ([_exception indexes] == [2, 1, 3])
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testIndexesException
+    {
+        f(x) = x
+        return (f[1, 1] == [1]
+                and f[1, 2] == [1, 2]
+                and f[1, 10] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    }
+}

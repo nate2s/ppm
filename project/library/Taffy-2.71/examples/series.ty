@@ -1,0 +1,34 @@
+///////////////////////////////
+//                           //
+// series.ty                 //
+//                           //
+// a series example          //
+//                           //
+///////////////////////////////
+
+import org.taffy.core.maths.Series
+
+//
+// This program hints that the series 1 / x^2 converges
+//
+
+series = [Series createWithBlock: ^{ <x> 1 / x^2 }]
+f(x) = series[1, x]
+top = 100
+
+io put: "First #[top] iterations of #[f], where series is #[series]\n"
+io put: "Shown difference at iteration x is: f(x) - f(x - 1)\n"
+
+1 upTo: top do: ^{ <j>
+    io put: "[#[j]/#[top]] " + f(j)
+
+    if (j > 1)
+    {
+        // f(j) and f(j - 1) are cached, so calling them again to
+        // compute their difference requires a minimal amount of extra
+        // processing
+        io put: " difference: " + (f(j) - f(j - 1))
+    }
+
+    io put: "\n"
+}

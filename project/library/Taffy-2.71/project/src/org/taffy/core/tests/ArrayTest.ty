@@ -1,0 +1,980 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+//////////////////////////
+//                      //
+// ArrayTest.ty         //
+//                      //
+// unit tests for Array //
+//                      //
+//////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+import org.taffy.core.container.Array
+import org.taffy.core.container.List
+import org.taffy.core.container.Pair
+import org.taffy.core.String
+
+import org.taffy.core.tests.ExceptionHelper
+
+class ArrayTest
+{
+    (@) testAsString
+    {
+        a = [1,2,3,4]
+        return ([a asString] == "[1, 2, 3, 4]")
+    }
+
+    (@) testCollect
+    {
+        a = [1,2,3,4,5]
+        b = [a collect: ^{ <val> val < 3 }]
+
+        return (a == [1,2,3,4,5]
+                and b == [yes, yes, no, no, no])
+    }
+
+    (@) testCollectBang
+    {
+        a = [1,2,3,4,5]
+        a collect!: ^{ <val> val < 3 }
+
+        return (a == [yes, yes, no, no, no])
+    }
+
+    (@) testConcat
+    {
+        a = [1,2,3,4]
+        b = ["a", "b", "c", "d"]
+
+        c = [a concat: b]
+
+        return (a == [1,2,3,4]
+                and b == ["a", "b", "c", "d"]
+                and c == [1,2,3,4, "a", "b", "c", "d"])
+    }
+
+    (@) testConcatEmptyLeft
+    {
+        b = [1,2,3,4]
+        a = []
+
+        c = [a concat: b]
+
+        return (b == [1,2,3,4]
+                and a == []
+                and c == [1,2,3,4])
+    }
+
+
+    (@) testConcatEmptyRight
+    {
+        a = [1,2,3,4]
+        b = []
+
+        c = [a concat: b]
+
+        return (a == [1,2,3,4]
+                and b == []
+                and c == [1,2,3,4])
+    }
+
+    (@) testEach
+    {
+        a = [1,2,3,4]
+        b = [1, 2, 3, 4]
+        k = 0
+
+        a each: ^{ <val>
+            if (a[k] != b[k])
+            {
+                return false
+            }
+
+            k++
+        }
+
+        return true
+    }
+
+    (@) testEachIndex
+    {
+        a = ["a", "b", "c", "d"]
+        b = new List
+
+        k = 0
+
+        a eachIndex: ^{ <val>
+            if (val != k)
+            {
+                return false
+            }
+
+            k++
+        }
+
+        return true
+    }
+
+    (@) testContains
+    {
+        a = [1,2,3,4,5]
+
+        return (([a contains?: ^{ <val> val == 1 }])
+                and ! ([a contains?: ^{ <val> val == "a" }]))
+    }
+
+    (@) testEachIndexException
+    {
+        success = no
+
+        try
+        {
+            a = ["a", "b", "c", "d"]
+            b = new List
+
+            a eachIndex: ^{ <val>
+                if (val < 2)
+                {
+                    b asdf
+                }
+            }
+        }
+        catch (UnidentifiedMethodException _e)
+        {
+            success = ([_e exceptionClassName] == "List"
+                       and [_e exceptionMethodName] == "asdf")
+        }
+
+        return (success)
+    }
+
+    (@) testEachModification
+    {
+        success = true
+
+        try
+        {
+            a = ["a", "b", "c", "d"]
+
+            a eachIndex: ^{ <val>
+                a[0] = 1
+            }
+        }
+        catch (NonConstantUseOfConstantException _e)
+        {
+            success = ([_e objectName] == "Array")
+        }
+        catch (Exception _e)
+        {
+            success = false
+        }
+
+        return (success)
+    }
+
+    (@) testEqualEqual
+    {
+        a = [1,2,3,4,5]
+        b = [1,2,3,4]
+        c = [1,2,3,4,5,6]
+        d = [1,2,3,4,5]
+        empty = []
+
+        nonArray1 = "nonArray"
+        nonArray2 = (1=>2)
+
+        return (a == d
+                and a != b
+                and a != c
+                and b != c
+                and a != empty
+                and empty == empty
+                and a != nonArray1
+                and a != nonArray2)
+    }
+
+    (@) testIndexOf
+    {
+        a = [1,2,3,4,5]
+        return ([a indexOf: 2] == 1 and [a indexOf: "a"] == -1)
+    }
+
+    (@) testInsertObjectAtIndex
+    {
+        a = [1,2,4,5]
+        a insertObject: 3 atIndex: 2
+        return (a == [1,2,3,4,5])
+    }
+
+    (@) testInsertObjectAtIndexIndexOutOfBoundsException
+    {
+        program1 = "a = [1]; a insertObject: 3 atIndex: 5"
+        program3 = "a = [1]; a insertObject: 3 atIndex: -5.2"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 5]
+                and [ExceptionHelper testNeedIntegerException: program3
+                                                    withValue: -5.2])
+
+    }
+
+    (@) testInsertObjectAtIndexNeedIntegerException
+    {
+        program1 = "a = [1]; a insertObject: 3 atIndex: 5.1"
+        program2 = "a = [1]; a insertObject: 3 atIndex: 123456789123456789123456789"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 5.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789123456789])
+    }
+
+    (@) testIsEmpty
+    {
+        a = [1]
+        b = []
+        return (![a isEmpty?] and [b isEmpty?])
+    }
+
+    (@) testLastIndexOf
+    {
+        a = [1,2,3,1]
+        b = [2,2,2,2]
+        c = [2,3,4,5]
+
+        return ([a lastIndexOf: 1] == 3
+                and [b lastIndexOf: 2] == 3
+                and [c lastIndexOf: 1] == -1)
+    }
+
+    (@) testMax
+    {
+        a = [1,2,3,4,5,4,3,2,1]
+        b = [5,4,3,2,1]
+
+        return ([a max] == 5
+                and [b max] == 5)
+    }
+
+    (@) testMin
+    {
+        a = [1,2,3,4,5]
+        b = [5,4,3,2,1]
+
+        return ([a min] == 1
+                and [b min] == 1)
+    }
+
+    (@) testObjectAtIndex
+    {
+        a = [0,1,2,3,4,5]
+
+        return ([a objectAtIndex: 1] == 1
+                and [a objectAtIndex: 3] == 3
+                and a[1] == 1
+                and a[3] == 3)
+    }
+
+    (@) testObjectAtIndexNeedIntegerException
+    {
+        program1 = "a = [1, 2, 3] ; a[5.1]"
+        program2 = "a = [1, 2, 3] ; a[123456789123456789]"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                               withValue: 5.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                   withValue: 123456789123456789])
+    }
+
+    (@) testObjectAtIndexIndexOutOfBoundsException
+    {
+        program2 = "a = [1]; a[5]"
+        program3 = "a = []; a[0]"
+        program4 = "a = [1, 2, 3] ; a[-5.2]"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program2
+                                                     withIndex: 5]
+                and [ExceptionHelper testIndexOutOfBoundsException: program3
+                                                         withIndex: 0]
+                and [ExceptionHelper testNeedIntegerException: program4
+                                                    withValue: -5.2])
+    }
+
+    (@) testObjectAtIndexes
+    {
+        a = [0,[1,[2,[3,[4]]]]]
+        b = [[[1]]]
+
+        return (a[1,1,1,1,0] == 4
+                and b[0,0,0] == 1)
+    }
+
+    (@) testObjectAtIndexesNeedIntegerException
+    {
+        program1 = "a = [0,1,[2,[3,[4,[5]]]]] ; a[2, 5.1]"
+        program2 = "a = [0,1,[2,[3,[4,[5]]]]] ; a[2, 123456789123456789]"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 5.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789])
+    }
+
+    (@) testObjectAtIndexesIndexOutOfBoundsException
+    {
+        program2 = "a = [0,[1,[2,[3,[4]]]]] ; a[1, 1, 2]"
+        program3 = "a = [0,[1,[2,[3,[4]]]]] ; a[1, 1, 1, 1, 1, 1, 1, 1]"
+        program4 = "a = [0,[1,[2,[3,[4]]]]] ; a[-5.2]"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program2
+                                                     withIndex: 2]
+                and [ExceptionHelper testIndexOutOfBoundsException: program3
+                                                         withIndex: 1]
+                and [ExceptionHelper testNeedIntegerException: program4
+                                                    withValue: -5.2])
+    }
+
+    (@) testReject
+    {
+        a = [1,2,3,4,5]
+        b = [a reject: ^{ <val> val < 4 }]
+
+        return (a == [1,2,3,4,5] and b == [4,5])
+    }
+
+    (@) testRejectException
+    {
+        return (true)
+        success = no
+
+        try
+        {
+            a = [1,2,3,4,5]
+            b = [a reject: ^{ <val> [val asdf] }]
+        }
+        catch (UnidentifiedMethodException _e)
+        {
+            success = ([_e exceptionClassName] == "Number"
+                       and [_e exceptionMethodName] == "asdf")
+        }
+
+        return (success)
+    }
+
+    (@) testClear
+    {
+        a = [1,2,3,4,5]
+        a clear
+        return (a == [])
+    }
+
+    (@) testReverse
+    {
+        // odd //
+        a = [1,2,3,4,5]
+        b = [a reverse]
+
+        // even //
+        c = [1,2,3,4]
+        d = [c reverse]
+
+        return (a == [1,2,3,4,5]
+                and b == [5,4,3,2,1]
+                and c == [1,2,3,4]
+                and d == [4,3,2,1])
+    }
+
+    (@) testReverseBang
+    {
+        // odd //
+        a = [1,2,3,4,5]
+        a reverse!
+
+        // even //
+        b = [1,2,3,4]
+        b reverse!
+
+        return (a == [5,4,3,2,1] and b == [4,3,2,1])
+    }
+
+    (@) testSelect
+    {
+        a = [1,2,3,4,5]
+        b = [a select: ^{ <val> val < 5 }]
+        return (a == [1,2,3,4,5] and b == [1,2,3,4])
+    }
+
+    (@) testNegativeIndexSetAndGet
+    {
+        a = [1, 2, 3, 4, 5]
+        a[-1] = 6
+
+        b = [1, 2, 3]
+
+        return (a == [1,2,3,4,6]
+                and b[-1] == 3
+                and b[-2] == 2
+                and b[-3] == 1
+                and b[-4] == 3)
+    }
+
+    (@) testSelectException
+    {
+        success = no
+
+        try
+        {
+            a = [1,2,3,4,5]
+            b = [a select: ^{ <val> val < asdf }]
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "asdf")
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return (success)
+    }
+
+    (@) testSelectBang
+    {
+        a = [1,2,3,4,5]
+        [a select!: ^{ <val> val < 5 }]
+        return (a == [1,2,3,4])
+    }
+
+    (@) testSetIndexForObject
+    {
+        a = [1,2,4,4,5]
+        a[2] = 3
+        return (a == [1,2,3,4,5])
+    }
+
+    (@) testSetIndexForObjectNeedIntegerException
+    {
+        program1 = "a = [1, 2] ; a[1.1] = 3"
+        program2 = "a = [1, 2] ; a[123456789123456789] = 3"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789])
+    }
+
+    (@) testSetIndexForObjectIndexOutOfBoundsException
+    {
+        program2 = "a = [1, 2] ; a[100] = 3"
+        program3 = "a = [1, 2] ; a[-1.1] = 3"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program2
+                                                     withIndex: 100]
+                and [ExceptionHelper testNeedIntegerException: program3
+                                                    withValue: -1.1])
+    }
+
+    (@) testSize
+    {
+        a = [1,2,3,4,5]
+        b = []
+
+        return ([a size] == 5
+                and [b size] == 0)
+    }
+
+    (@) testNil
+    {
+        array1 = [1,2,nil]
+        array2 = [1,2,nil,nil]
+        array3 = [1,2,nil,3,nil]
+        array4 = [1,2,nil,3,nil,4]
+
+        return ([array1 size] == 3
+                and array1 == [1,2,nil]
+                and [array2 size] == 4
+                and array2 == [1,2,nil,nil]
+                and [array3 size] == 5
+                and array3 == [1,2,nil,3,nil]
+                and [array4 size] == 6
+                and array4 == [1,2,nil,3,nil,4])
+    }
+
+    (@) testHash
+    {
+        array1 = [1,2,3,4,5]
+        array2 = [1,2,3,4,5]
+        array3 = []
+        array4 = [1,2,3,4]
+
+        return ([array1 hash] == [array2 hash]
+                and [array1 hash] != [array3 hash]
+                and [array1 hash] != [array4 hash])
+    }
+
+    (@) testCreateWithCapacity
+    {
+        capacity = 100
+        array = [Array createWithSize: capacity]
+        result = true
+
+        for (a = 1; a < capacity; a++)
+        {
+            if (array[a] != nil)
+            {
+                result = false
+            }
+        }
+
+        return (result)
+    }
+
+    (@@) test1To100: _array
+    {
+        result = true
+
+        for (b = 1; b <= 100; b++)
+        {
+            if (_array[b - 1] != b)
+            {
+                io putLine: "wanted #[b] but got #[_array[b - 1]]"
+                result = false
+            }
+        }
+
+        return (result)
+    }
+
+    (@) testCopy
+    {
+        array1 = [1,2,3,4]
+        array2 = [array1 copy]
+
+        for (a = 0; a < 4; a++)
+        {
+            if (array1[a] != array2[a])
+            {
+                return false
+            }
+        }
+
+        return ([array1 size] == 4
+                and [array2 size] == 4)
+    }
+
+    (@) testAtomicCopyWithInsertObjectAtIndex
+    {
+        array = [Array createWithSize: 100]
+
+        for (a = 1; a <= 100; a++)
+        {
+            array insertObject: a atIndex: a - 1
+        }
+
+        return ([ArrayTest test1To100: array])
+    }
+
+    (@) testAtomicCopyWithSetIndexForObject
+    {
+        array = [Array createWithSize: 100]
+
+        for (a = 1; a <= 100; a++)
+        {
+            array[a - 1] = a
+        }
+
+        return ([ArrayTest test1To100: array])
+    }
+
+    (@) testSetObjectAtIndexes
+    {
+        success = false
+
+        try
+        {
+            a = [[0], [[0, 0]]]
+            a[0, 0] = 1
+            a[1, 0, 0] = 2
+            a[1, 0, 1] = 3
+
+            success = (a == [[1], [[2, 3]]])
+        }
+        catch (Exception _exception)
+        {
+            success = false
+        }
+    }
+
+    (@) testSubArray
+    {
+        return ([[0, 1, 2, 3] subArrayFrom: 0 to: 2] == [0, 1, 2]
+                and [[0, 1, 2, 3] subArrayFrom: 3 to: 3] == [3])
+    }
+
+    (@) testSubArrayNeedIntegerException
+    {
+        program1 = "[0, 1, 2] subArrayFrom: 1.2 to: 2"
+        program2 = "[0, 1, 2] subArrayFrom: 1 to: 2.2"
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.2]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 2.2])
+    }
+
+    (@) testSubArrayIndexOutOfBoundsException
+    {
+        program1 = "[0, 1, 2] subArrayFrom: 1 to: 0"
+        program2 = "[0, 1, 2] subArrayFrom: 2 to: -2"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 0]
+                and [ExceptionHelper testIndexOutOfBoundsException: program2
+                                                         withIndex: 1])
+    }
+
+    (@@) testArithmeticWithLeft: _left
+                       operator: _operator
+                          right: _right
+                   wantedResult: _wantedResult
+    {
+        result = [kernel eval: "_left #[_operator] _right"]
+
+        if (result != _wantedResult)
+        {
+            io putLine: ("#[_left] #[_operator] #[_right] = #[result], "
+                         + "which is not what's wanted: #[_wantedResult]")
+            return false
+        }
+
+        return true
+    }
+
+    (@@) testAssignmentArithmeticWithLeft: _left
+                                 operator: _operator
+                                    right: _right
+                             wantedResult: _wantedResult
+    {
+        kernel eval: "_left #[_operator] _right"
+
+        if (_left != _wantedResult)
+        {
+            io putLine: ("#[_left] #[_operator] #[_right] = #[result], "
+                         + "which is not what's wanted: #[_wantedResult]")
+            return false
+        }
+
+        return true
+    }
+
+    (@) testArithmetic
+    {
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 3]
+                                       operator: "+"
+                                          right: 2
+                                   wantedResult: [3, 4, 5]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 3]
+                                       operator: "-"
+                                          right: 2
+                                   wantedResult: [-1, 0, 1]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 3]
+                                       operator: "*"
+                                          right: 2
+                                   wantedResult: [2, 4, 6]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "/"
+                                          right: 2
+                                   wantedResult: [0.5, 1, 2]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "^"
+                                          right: 2
+                                   wantedResult: [1, 4, 16]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "<<"
+                                          right: 2
+                                   wantedResult: [4, 8, 16]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [8, 4, 2]
+                                       operator: ">>"
+                                          right: 2
+                                   wantedResult: [2, 1, 0]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [9, 10, 11]
+                                       operator: "%"
+                                          right: 3
+                                   wantedResult: [0, 1, 2]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "|"
+                                          right: 2
+                                   wantedResult: [3, 2, 6]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "&"
+                                          right: 2
+                                   wantedResult: [0, 2, 0]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testArithmeticWithLeft: [1, 2, 4]
+                                       operator: "^^"
+                                          right: 2
+                                   wantedResult: [3, 0, 6]])
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@) testAssignmentArithmetic
+    {
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 3]
+                                                 operator: "+="
+                                                    right: 2
+                                             wantedResult: [3, 4, 5]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 3]
+                                                 operator: "-="
+                                                    right: 2
+                                              wantedResult: [-1, 0, 1]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 3]
+                                                 operator: "*="
+                                                    right: 2
+                                             wantedResult: [2, 4, 6]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                       operator: "/="
+                                          right: 2
+                                   wantedResult: [0.5, 1, 2]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                                 operator: "^="
+                                                    right: 2
+                                             wantedResult: [1, 4, 16]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                                 operator: "<<="
+                                                    right: 2
+                                             wantedResult: [4, 8, 16]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [8, 4, 2]
+                                                 operator: ">>="
+                                                    right: 2
+                                             wantedResult: [2, 1, 0]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [9, 10, 11]
+                                                 operator: "%="
+                                                    right: 3
+                                             wantedResult: [0, 1, 2]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                                 operator: "|="
+                                                    right: 2
+                                             wantedResult: [3, 2, 6]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                                 operator: "&="
+                                                    right: 2
+                                             wantedResult: [0, 2, 0]])
+        {
+            return false
+        }
+
+        if (! [ArrayTest testAssignmentArithmeticWithLeft: [1, 2, 4]
+                                                 operator: "^^="
+                                                    right: 2
+                                             wantedResult: [3, 0, 6]])
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@) testFactorial
+    {
+        a = [1, 2, 3]
+        b = (a)!
+        return (a == [1, 2, 3]
+                and b == [1, 2, 6])
+    }
+
+    (@) testPlusPlus
+    {
+        a = [1, 2, 3]
+        a++
+        return (a == [2, 3, 4])
+    }
+
+    (@) testMinusMinus
+    {
+        a = [1, 2, 3]
+        a--
+        return (a == [0, 1, 2])
+    }
+
+    (@) testVectorize
+    {
+        f(x) = x^2
+        a = [1, 2, 3]
+        b = [a vectorize: f]
+        return (a == [1, 2, 3]
+                and b == [1, 4, 9])
+    }
+
+    (@) testVectorize!
+    {
+        f(x) = x^2
+        a = [1, 2, 3]
+        a vectorize!: f
+        return (a == [1, 4, 9])
+    }
+
+    (@) testMean
+    {
+        a = [-1, 0, 1, 5, 3, 4, 2]
+        return ([a mean] == 2)
+    }
+
+    (@) testMin
+    {
+        a = [-1, 0, 1, 5, 3, 4, 2]
+        return ([a min] == -1)
+    }
+
+    (@) testMax
+    {
+        a = [-1, 0, 1, 5, 3, 4, 2]
+        return ([a max] == 5)
+    }
+
+    (@) testVariance
+    {
+        return ([[600, 470, 170, 430, 300] variance] == 21704
+                and [[0] variance] == 0)
+    }
+
+    (@) testStandardDeviation
+    {
+        return ([[600, 470, 170, 430, 300] standardDeviation] ~= 147.3227748856232
+                and [[0] standardDeviation] == 0)
+    }
+
+    (@) testSort
+    {
+        a = [-20, 2, 1, 3, 10, 0, -10, 1, 30, 7, 1.5, -1.5]
+        sorted = [-20, -10, -1.5, 0, 1, 1, 1.5, 2, 3, 7, 10, 30]
+        return ([a sort] == sorted)
+    }
+
+    (@) testSort!
+    {
+        a = [-20, 2, 1, 3, 10, 0, -10, 1, 30, 7, 1.5, -1.5]
+        sorted = [-20, -10, -1.5, 0, 1, 1, 1.5, 2, 3, 7, 10, 30]
+        a sort!
+        return (a == sorted)
+    }
+
+    (@) testLcm
+    {
+        return ([[1, 2, 3] lcm] == 6
+                and [[-1, 2, -3] lcm] == 6
+                and [[2, 33, 99, 101] lcm] == 19998
+                and [[2, -33, 99, 101] lcm] == 19998
+                and [[2, -33, 0, 101] lcm] == 0
+                and [[2] lcm] == 2
+                and [[2, 4] lcm] == 4)
+    }
+
+    (@) testGcd
+    {
+        return ([[1, 2, 3] gcd] == 1
+                and [[-1, 2, -3] gcd] == 1
+                and [[2, 33, 99, 101] gcd] == 1
+                and [[2, -33, 99, 101] gcd] == 1
+                and [[2, -33, 0, 101] gcd] == 1
+                and [[4, 8, 12, 16] gcd] == 4
+                and [[4, 8, 12, -16] gcd] == 4
+                and [[4] gcd] == 4
+                and [[4, 8] gcd] == 4)
+    }
+}

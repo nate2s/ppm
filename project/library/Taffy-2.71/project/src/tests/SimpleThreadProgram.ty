@@ -1,0 +1,19 @@
+global a = 1
+
+thread = [org.taffy.core.threading.Thread new: { a++ }]
+thread2 = [thread copy]
+
+thread start
+thread2 start
+
+thread wait
+thread2 wait
+
+if (a == 3)
+{
+    io putLine: "SUCCESS"
+}
+else
+{
+    io putLine: "FAIL"
+}

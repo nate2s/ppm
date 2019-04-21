@@ -1,0 +1,83 @@
+########
+# TODO #
+########
+
+clean up python module lsb
+
+is render passthrough really needed
+
+########
+# DONE #
+########
+
+add email address to copyright 2018
+
+change _variable to variable_ in Renderer
+
+random colors aren't working
+
+have all things like operator<< take references instead of pointers
+
+enable rendering of ==
+
+clean up tryToRenderAssignment()
+
+redo _variable to variable_, or just take it out
+
+sin(x/2/3)
+
+grouped color for parens should be same color for both
+
+handle blank string input: " "
+
+handle string input with space on the end: "a = 1 "
+
+clean up command line argument parsing
+
+make paste() method O(n) by iterating backwards thru the lattice
+
+clean up tryToRenderAssignment() calls, and remove renderAssignment()
+
+stylizedGraph => renderString
+
+add support for equals
+
+clean up auto overusage
+
+delete the bad fonts
+
+color is off by default (bad)
+
+add paste for comma
+
+add support for input that starts with -, with --input argument
+
+add support for --color none
+
+sin(x, x)
+sin(x, x, x)
+
+1 + (2/3)^5
+
+clean up renderMethodCall
+
+render sin(x)
+
+render sin(x) + 1
+
+copy ppm to base directory after build
+
+clean up font creation directories
+
+remove fonts: script slant block
+
+don't group divides if they are the only thing
+
+don't group twice! e^(x/2/3)
+add engroup to lattice, and set a flag and getter for it
+
+######
+# NO #
+######
+
+use getopt in CommandLineArguments

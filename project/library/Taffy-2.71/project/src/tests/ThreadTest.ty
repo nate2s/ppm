@@ -1,0 +1,29 @@
+import org.taffy.core.threading.Thread
+
+class ThreadTest
+{
+    (@) parse
+    {
+        for (a = 0; a < 1000; a++)
+        {
+            io putLine: [kernel eval: "#[a + 1]"]
+        }
+    }
+
+    (@) loopAndCreate
+    {
+        for (a = 0; a < 1000; a++)
+        {
+            new org.taffy.core.String
+            io putLine: "loopy: #[a]"
+        }
+    }
+}
+
+t = new ThreadTest
+
+thread1 = [Thread new: { <test> [test parse] }]
+thread2 = [Thread new: { <test> [test loopAndCreate] }]
+
+thread1 startWith: [t]
+thread2 startWith: [t]

@@ -1,0 +1,137 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.time.Date
+
+class DateTest
+{
+    //
+    // NOTE: most of these do little more than verify Taffy does not crash
+    //       most may fail on edge cases, which could be fixed with setters
+    //
+
+    (@) testDay
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        date2 = new Date
+        return ([date1 day] == [date2 day])
+    }
+
+    (@) testEqualEqual
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return (date1 == date2)
+    }
+
+    (@) testFullDay
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 fullDay] == [date2 fullDay])
+    }
+
+    (@) testFullMonth
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 fullMonth] == [date2 fullMonth])
+    }
+
+    (@) testGreaterThan
+    {
+        date1 = new Date
+        kernel sleepSeconds: 1
+        date2 = new Date
+        return (date2 > date1 and !(date2 < date1))
+    }
+
+    (@) testGreaterThanOrEqual
+    {
+        date1 = new Date
+        date2 = new Date
+        kernel sleepSeconds: 1
+        date3 = new Date
+        return ((date3 >= date2)
+                and (date2 >= date1)
+                and !(date3 < date2))
+    }
+
+    (@) testHour
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 hour] == [date2 hour])
+    }
+
+    (@) testLessThan
+    {
+        date1 = new Date
+        date2 = new Date
+        kernel sleepSeconds: 1
+        date3 = new Date
+        return ((date1 < date3)
+                and !(date3 < date1)
+                and !(date1 < date2))
+    }
+
+    (@) testLessThanOrEqual
+    {
+        date1 = new Date
+        date2 = new Date
+        kernel sleepSeconds: 1
+        date3 = new Date
+        return ((date1 <= date3)
+                and !(date3 <= date1)
+                and (date1 <= date2))
+    }
+
+    (@) testMinute
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 minute] == [date2 minute])
+    }
+
+    (@) testMonth
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 month] == [date2 month])
+    }
+
+    (@) testSecond
+    {
+        date1 = new Date
+        date2 = new Date
+        kernel sleepSeconds: 1
+        date3 = new Date
+        return ([date1 second] == [date2 second]
+                and [date1 second] != [date3 second])
+    }
+
+    (@) testYear
+    {
+        date1 = new Date
+        date2 = [date1 copy]
+        return ([date1 year] == [date2 year])
+    }
+}

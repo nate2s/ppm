@@ -1,0 +1,1624 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+import org.taffy.core.maths.Number
+import org.taffy.core.maths.Series
+
+class NumberTest
+{
+    (@) testAbsoluteValue1
+    {
+        return (1 == abs(-1))
+    }
+
+    (@) testAbsoluteValue2
+    {
+        return (abs(-2) == abs(-2))
+    }
+
+    (@) testAbsoluteValue3
+    {
+        return (abs(-2)*abs(-2) == 4)
+    }
+
+    (@) testAbsoluteValue4
+    {
+        return (abs(-2) != -2 and abs(-2) == 2)
+    }
+
+    (@) testWithDigitLimitWithSmallDigitLimit
+    {
+        return ([Number withDigitLimit: 4 do: ^{ 1 }] == false)
+    }
+
+    (@) testWithDigitLimitWithNotSmallEnoughDigitLimit
+    {
+        return ([Number withDigitLimit: 5 do: ^{ 1 }] == 1)
+    }
+
+    (@) testPushSmallDigitLimit
+    {
+        return ([Number pushDigitLimit: 4] == false
+                and [Number pushDigitLimit: 1] == false)
+    }
+
+    (@) testPushAlmostSmallDigitLimit
+    {
+        number = [Number pushDigitLimit: 5]
+
+        if (number == false)
+        {
+            return false
+        }
+
+        Number popDigitLimit
+        return (number == 5)
+    }
+
+    (@) testPushPrecisionNeedIntegerException
+    {
+        success = false
+
+        try
+        {
+            Number pushDigitLimit: 1.1234
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1234)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testPushPrecisionNeedPositiveIntegerException
+    {
+        success = false
+
+        try
+        {
+            Number pushDigitLimit: -3
+        }
+        catch (NeedPositiveIntegerException _exception)
+        {
+            success = ([_exception value] == -3)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testAbsoluteValue4
+    {
+        [Number pushDigitLimit: 128]
+
+        result = (abs(-10.123412341234) == 10.123412341234
+                  and abs(-10.123412341234) != 10.123412341233)
+
+        [Number popDigitLimit]
+
+        return (result == true)
+    }
+
+    (@) testAdd1
+    {
+        return (1 + 1 == 2)
+    }
+
+    (@) testAdd2
+    {
+        Number pushDigitLimit: 64
+        a = 10000000000000000000 + 1
+
+        success = (a == 10000000000000000001
+                   and a != 10000000000000000002)
+        Number popDigitLimit
+        return (success)
+    }
+
+    (@) testAdd3
+    {
+        [Number pushDigitLimit: 128]
+
+        a = 100000000000000000000.000000000003
+        b = a + 0.000000000003
+
+        result = (b == 100000000000000000000.000000000006
+                  and b != 100000000000000000000.000000000007)
+
+        [Number popDigitLimit]
+
+        return (result == true)
+    }
+
+    (@) testCeiling1
+    {
+        return ([3.2 ceiling] == 4)
+    }
+
+    (@) testCeiling2
+    {
+        return ([3 ceiling] == 3)
+    }
+
+    (@) testCeiling3
+    {
+        return ([3.99999 ceiling] == 4)
+    }
+
+    (@) testDecrement
+    {
+        a = 2
+        return (a-- == 1)
+    }
+
+    (@) testDelta0
+    {
+        return (1.0 ~=<0> 2
+                and !(1.0 ~=<0> 2.1))
+    }
+
+    (@) testDelta1
+    {
+        return (1.01 ~=<1> 1.02
+                and !(1.0 ~=<1> 1.2))
+    }
+
+    (@) testDelta5
+    {
+        return (1.00001 ~=<5> 1.000001
+                and !(1.00001 ~=<5> 1.0001))
+    }
+
+    (@) testDelta6
+    {
+        return (1 ~= 1
+                and 1.0 ~= 1.0
+                and 1.000001 ~= 1.000002
+                and 1.000001 ~=<6> 1.000002
+                and !(1.000001 ~=<6> 1.00001))
+    }
+
+    (@) testDeltaEqualsNeedIntegerException
+    {
+        success = false
+
+        try
+        {
+            1 ~=<0.2> 2
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 0.2)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testDeltaEqualsCastFailure
+    {
+        return (! (1 ~= "asdf"))
+    }
+
+    (@) testEquality1
+    {
+        return (1 == 1)
+    }
+
+    (@) testEquality2
+    {
+        return (10000000000000000000000000 == 10000000000000000000000000
+                and 10000000000000000000000000 != 10000000000000000000000001)
+    }
+
+    (@) testEquality3
+    {
+        return (0.00000000003 == 0.00000000003
+                and 0.00000000003 != 0.00000000004)
+    }
+
+    (@) testEquality4
+    {
+        retval = (0.00000000000000000000000000000000000000001 == 0.00000000000000000000000000000000000000001
+                  and 0.00000000000000000000000000000000000000001 != 0.00000000000000000000000000000000000000002)
+
+        return (retval)
+    }
+
+    (@) testEquality5
+    {
+        return (3.0 == 3.0
+                and 3.0 + 0.0000001 != 3.0)
+    }
+
+    (@) testFloor1
+    {
+        return ([3.2 floor] == 3)
+    }
+
+    (@) testFloor2
+    {
+        return ([3 floor] == 3)
+    }
+
+    (@) testFloor3
+    {
+        return ([3.9999999 floor] == 3)
+    }
+
+    (@) testIncrement
+    {
+        a = 1
+        return (a++ == 2)
+    }
+
+    (@) testLargerPower
+    {
+        result = 3.5 ^ 8
+        return (result ~= 22518.75390625)
+    }
+
+    (@) testLargestPower
+    {
+        [Number pushDigitLimit: 512]
+
+        preResult = 5 ^ 32.1
+
+        result = (preResult ~= 27348728456721152316649.99541109
+                  and !(preResult ~= 27348728456721152316649.99542))
+
+        [Number popDigitLimit]
+
+        return (result == true)
+    }
+
+    (@) testLessThan1
+    {
+        return (1 < 2)
+    }
+
+    (@) testLessThan2
+    {
+        return (1.0 < 2.0)
+    }
+
+    (@) testLessThan3
+    {
+        return (1.001 < 1.002
+                and !(1.0001 < 1.00001))
+    }
+
+    (@) testLessThan4
+    {
+        return (1.000000001 < 1.00000002)
+    }
+
+    (@) testGreaterThan1
+    {
+        return (2 > 1)
+    }
+
+    (@) testGreaterThan2
+    {
+        return (2.0 > 1.0)
+    }
+
+    (@) testGreaterThan3
+    {
+        return (1.002 > 1.001
+                and !(1.00001 > 1.0001))
+    }
+
+    (@) testDivide
+    {
+        a = 10
+        b = a / 2
+
+        c = 2000000000002.2
+        d = c / 2
+
+        return (a == 10
+                and b == 5
+                and c == 2000000000002.2
+                and d == 1000000000001.1)
+    }
+
+    (@) testDivideEquals
+    {
+        a = 10
+        a /= 3
+
+        b = 20
+        b /= 2
+
+        c = 2222222222222
+        c /= 2
+
+        return (a ~= 3.333333333
+                and b == 10
+                and c == 1111111111111)
+    }
+
+    (@) testMultiplyEquals
+    {
+        a = 3
+        a *= 3
+
+        b = 3
+        b *= 3.5
+
+        return (a == 9 and b ~= 10.5)
+    }
+
+    (@) testMultiply1
+    {
+        return (3 * 4 == 12)
+    }
+
+    (@) testMultiply2
+    {
+        return (3.1 * 4 == 12.4)
+    }
+
+    (@) testMultiply3
+    {
+        return (3.7 * 4444444444 ~= 16444444442.7999999999)
+    }
+
+    (@) testMultiply4
+    {
+        result = (3.7 * 4444444444 ~= 16444444442.8)
+
+        return (result == true)
+    }
+
+    (@) testPlusLong
+    {
+        a = 1
+        b = 1
+        c = -2
+
+        return (a + b == 2 and a + c == -1)
+    }
+
+    (@) testPlusEquals
+    {
+        a = 1
+        a += 2
+
+        b = 1
+        b += 0.3
+
+        return (a == 3 and b ~= 1.3)
+    }
+
+    (@) testPlusSmallFractional
+    {
+        a = 1.2
+        b = 2.3
+        c = -2.5
+        d = -2.2
+
+        return (a + b == 3.5
+                and a + c == -1.3
+                and a + d == -1)
+    }
+
+    (@) testPlusWhole
+    {
+        a = 1111111111111111
+        b = 2222222222222222
+        c = 3333333333333333
+
+        return (a + b == c
+                and c - b == a)
+    }
+
+    (@) testPlusLargerFractional
+    {
+        a = 1.1111111111111
+        b = 2.2222222222222
+        c = 3.3333333333333
+        d = 0.9999999999999
+        f = 3.2222222222221
+
+        result = ((a + b ~=<16> c)
+                  and !(a + b ~=<16> d)
+                  and (c - b ~=<16> a)
+                  and !(c - b ~=<16> d)
+                  and (b + d ~=<16> f))
+
+        return (result == true)
+    }
+
+    (@) testRaise1
+    {
+        return (2^2 == 4)
+    }
+
+    (@) testRaise2
+    {
+        return (10^10 == 10000000000)
+    }
+
+    (@) testRaise3
+    {
+        return (2.2^4 ~= 23.4256)
+    }
+
+    (@) testRaise4
+    {
+        return (2.2^4.2 ~= 27.426807)
+    }
+
+    (@) testRaise5
+    {
+        [Number pushDigitLimit: 128]
+        result = (22.2^3.4 ~= 37809.428517)
+        [Number popDigitLimit]
+        return (result == yes)
+    }
+
+    (@) testRaise6
+    {
+        [Number pushDigitLimit: 128]
+        result = (3453^2.2 ~= 60818047.347131)
+        [Number popDigitLimit]
+        return (result == yes)
+    }
+
+    (@) testRaise7
+    {
+        Number pushDigitLimit: 1024
+        result = (30^300 == 136891479058588375991326027382088315966463695625337436471480190078368997177499076593800206155688941388250484440597994042813512732765695774566001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+                and 30^300 != 136891479058588375991326027382088315966463695625337436471480190078368997177499076593800206155688941388250484440597994042813512732765695774566001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+                and 30^300 != 136891479058588375991326027382088315966463695625337436471480190078368997177499076593800206155688941388250484440597994042813512732765695774566001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.1
+                and 30^300 ~= 136891479058588375991326027382088315966463695625337436471480190078368997177499076593800206155688941388250484440597994042813512732765695774566001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.000000000001)
+        Number popDigitLimit
+        return (result)
+    }
+
+    (@) testRaise8
+    {
+        return (3.3^4.234234234 ~= 156.859011936)
+    }
+
+    (@) testRaise9
+    {
+        [Number pushDigitLimit: 128]
+
+        result = (33.3^4.234234234 ~= 2795023.687726)
+        result2 = !(33.3^4.234234234 ~= 2795023.687728)
+
+        [Number popDigitLimit]
+
+        return (result and result2)
+    }
+
+    (@) testRaise10
+    {
+        return ([Number withDigitLimit: 100
+                                    do: ^{(2^3^4 == 2417851639229258349412352)}])
+    }
+
+    (@) testSubtractEqual
+    {
+        a = 3
+        a -= 1
+
+        b = 3
+        b -= 0.1
+
+        return (a == 2 and b == 2.9)
+    }
+
+    (@) testSubtract1
+    {
+        a = 0.1 - 0.1
+        return (a == 0)
+    }
+
+    (@) testSubtract2
+    {
+        return (20 - 10 == 10)
+    }
+
+    (@) testSubtract3
+    {
+        return (20.0000000003 - 10 ~= 10.0000000003
+                and !(20.0000000003 - 10 ~= 10.000003))
+    }
+
+    (@) testSmallPower
+    {
+        return (3.2^3 ~= 32.768
+                and !(3.2^3 ~= 32.767))
+    }
+
+    (@) testFloorLoopy
+    {
+        a = 0
+        x = 1
+        result = true
+
+        while (a < 99)
+        {
+            x = x + 0.01
+
+            if (floor(x) != 1)
+            {
+                result = false
+                break
+            }
+
+            a++
+        }
+
+        x = x + 0.1
+
+        if (floor(x) != 2)
+        {
+            result = false
+        }
+
+        return (result)
+    }
+
+    (@) testCeilingLoopy
+    {
+        a = 0
+        x = 1
+        result = true
+
+        while (a < 99)
+        {
+            x = x + 0.01
+
+            if (ceiling(x) != 2)
+            {
+                result = false
+                break
+            }
+
+            a++
+        }
+
+        x = x + 0.1
+
+        if (ceiling(x) != 3)
+        {
+            result = false
+        }
+
+        return (result)
+    }
+
+    (@) testUpTo
+    {
+        number = 1
+        totalValue = 0
+
+        number upTo: 100 do: ^{ <val>
+            totalValue += val
+        }
+
+        return (totalValue == floor((100*101)/2))
+    }
+
+    (@) testUpToBreak
+    {
+        number = 1
+        totalValue = 0
+
+        number upTo: 100 do: ^{ <value>
+            totalValue += value
+
+            if (value == 10)
+            {
+                break
+            }
+        }
+
+        return (totalValue == floor((10*11)/2))
+    }
+
+    (@) testDownTo
+    {
+        number = 100
+        totalValue = 0
+
+        number downTo: 1 do: ^{ <value>
+            totalValue += value
+        }
+
+        return (totalValue == floor((100*101)/2))
+    }
+
+    (@) testDownToBreak
+    {
+        number = 100
+        totalValue = 0
+
+        number downTo: 1 do: ^{ <value>
+            totalValue += value
+
+            if (value == 90)
+            {
+                break
+            }
+        }
+
+        adder = [Series createWithBlock: ^{<x> x}]
+        return (totalValue == adder[90, 100])
+    }
+
+    (@) testOr
+    {
+        return (3 | 4 == 7 and 4 | 4 == 4 and 4 | 0 == 4)
+    }
+
+    (@) testOrWithBinary
+    {
+        return (0b00011 | 0b11000 == 0b11011
+                and 0b10011 | 0b11000 == 0b11011)
+    }
+
+    (@) testOrWithHex
+    {
+        return (0xF0 | 0x0F == 0xFF
+                and 0xFF | 0x0F == 0xFF
+                and 0x00 | 0xFF == 0xFF)
+    }
+
+    (@) testOrWithExceptionCatch1
+    {
+        success = false
+
+        try
+        {
+            3.3 | 4
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 3.3)
+        }
+
+        return (success)
+    }
+
+    (@) testOrWithExceptionCatch2
+    {
+        success = false
+
+        try
+        {
+            3 | 4.3
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 4.3)
+        }
+
+        return (success)
+    }
+
+    (@) testOrWithExceptionCatch3
+    {
+        success = false
+
+        try
+        {
+            3.3 | 4.3
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 3.3)
+        }
+
+        return (success)
+    }
+
+    (@) testModulusSimple
+    {
+        return (32 % 10 == 2 and 30 % 10 == 0)
+    }
+
+    (@) testModulusDivideByZeroExceptionCatch
+    {
+        success = false
+
+        try
+        {
+            1000 % (1-1)
+        }
+        catch (DivideByZeroException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testModulusEquals
+    {
+        a = 101
+        a %= 100
+        return (a == 1)
+    }
+
+    (@) testModulusEqualsDivideByZeroExceptionCatch
+    {
+        success = false
+
+        try
+        {
+            a = 101
+            a %= 0
+        }
+        catch (DivideByZeroException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testLeftShift
+    {
+        return (0b0001 << 1 == 0b0010
+                and 0b0000 << 31 == 0b0000
+                and 0b0100 << 0 == 0b0100
+                and 0x00FF << 8 == 0xFF00
+                and 0xFF00 << -8 == 0x00FF
+                and 2 << 3 == 16)
+    }
+
+    (@) testLeftShiftException1
+    {
+        success = false
+
+        try
+        {
+            1 << 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testLeftShiftException2
+    {
+        success = false
+
+        try
+        {
+            1.1 << 1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testLeftShiftException3
+    {
+        success = false
+
+        try
+        {
+            1.1 << 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testLeftShiftEqual
+    {
+        a = 1
+        a <<= 10
+        return (a == 1024)
+    }
+
+    (@) testLeftShiftEqualException
+    {
+        success = false
+
+        try
+        {
+            a = 1
+            a <<= 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testRightShift
+    {
+        return (0b0001 >> 1 == 0b0000
+                and 0b0000 >> 31 == 0b0000
+                and 0b1000 >> 2 == 0b0010
+                and 0xFF00 >> 1 == 0x7F80
+                and 0xFF00 >> -8 == 0xFF0000
+                and 2 >> 0 == 2
+                and 0 >> 0 == 0)
+    }
+
+    (@) testRightShiftException1
+    {
+        success = false
+
+        try
+        {
+            1 >> 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testRightShiftException2
+    {
+        success = false
+
+        try
+        {
+            1.1 >> 1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testRightShiftException3
+    {
+        success = false
+
+        try
+        {
+            1.1 >> 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testRightShiftEqual
+    {
+        a = 1024
+        a >>= 10
+        return (a == 1)
+    }
+
+    (@) testRightShiftEqualException
+    {
+        success = false
+
+        try
+        {
+            a = 1024
+            a <<= 10.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 10.1)
+        }
+
+        return (success)
+    }
+
+    (@) testAndEqual
+    {
+        a = 3
+        a &= 2
+        return (a == 2)
+    }
+
+    (@) testAndEqualException
+    {
+        success = false
+
+        try
+        {
+            a = 3
+            a &= 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testOrEqual
+    {
+        a = 4
+        a |= 1
+        return (a == 5)
+    }
+
+    (@) testOrEqualException
+    {
+        success = false
+
+        try
+        {
+            a = 3
+            a |= 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testXOrEqual
+    {
+        a = 3
+        a ^^= 1
+        return (a == 2)
+    }
+
+    (@) testXOrEqualException
+    {
+        success = false
+
+        try
+        {
+            a = 3
+            a ^^= 1.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 1.1)
+        }
+
+        return (success)
+    }
+
+    (@) testLargeNumberDivide
+    {
+        [Number pushDigitLimit: 10024]
+        a = 23498723498714098714982347589342765928347568923475682394756894235760984237092318740912837409871329048731290847128903749012374092138234987234987234987234982734982374982374982374902837498134759872346598723465987324659872364598762345987634928576324985762394875629384756239487569823475698234756982347569823475623497862435972349872349871409871498234758934276592834756892347568239475689423576098423709231874091283740987132904873129084712890374901237409213823498723498723498723498273498237498237498237490283749813475987234659872346598732465987236459876234598763492857632498576239487562938475623948756982347569823475698234756982347562349786243597234987234987140987149823475893427659283475689234756823947568942357609842370923187409128374098713290487312908471289037490123740921382349872349872349872349827349823749823749823749028374981347598723465987234659873246598723645987623459876349285763249857623948756293847562394875698234756982347569823475698234756234978624359723498723498714098714982347589342765928347568923475682394756894235760984237092318740912837409871329048731290847128903749012374092138234987234987234987234982734982374982374982374902837498134759872346598723465987324659872364598762345987634928576324985762394875629384756239487569823475698234756982347569823475623497862435972349872349871409871498234758934276592834756892347568239475689423576098423709231874091283740987132904873129084712890374901237409213823498723498723498723498273498237498237498237490283749813475987234659872346598732465987236459876234598763492857632498576239487562938475623948756982347569823475698234756982347562349786243597234987234987140987149823475893427659283475689234756823947568942357609842370923187409128374098713290487312908471289037490123740921382349872349872349872349827349823749823749823749028374981347598723465987234659873246598723645987623459876349285763249857623948756293847562394875698234756982347569823475698234756234978624359723498723498714098714982347589342765928347568923475682394756894235760984237092318740912837409871329048731290847128903749012374092138234987234987234987234982734982374982374982374902837498134759872346598723465987324659872364598762345987634928576324985762394875629384756239487569823475698234756982347569823475623497862435977
+        b = a / 2
+        success = (b * 2 == a and (b * 2 + 1) != a)
+        [Number popDigitLimit]
+        return (success)
+    }
+
+    (@) testDivideByZero
+    {
+        success = false
+
+        try
+        {
+            1 / 0
+        }
+        catch (DivideByZeroException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testDivideByZeroWithSimpleArithmetic
+    {
+        success = false
+
+        try
+        {
+            1 / (1 - 1)
+        }
+        catch (DivideByZeroException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testFactorial
+    {
+        Number pushDigitLimit: 500
+        factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 20922789888000, 355687428096000, 6402373705728000, 121645100408832000, 2432902008176640000, 51090942171709440000, 1124000727777607680000, 25852016738884976640000, 620448401733239439360000, 15511210043330985984000000, 403291461126605635584000000, 10888869450418352160768000000, 304888344611713860501504000000, 8841761993739701954543616000000, 265252859812191058636308480000000, 8222838654177922817725562880000000, 263130836933693530167218012160000000, 8683317618811886495518194401280000000, 295232799039604140847618609643520000000, 10333147966386144929666651337523200000000, 371993326789901217467999448150835200000000, 13763753091226345046315979581580902400000000, 523022617466601111760007224100074291200000000, 20397882081197443358640281739902897356800000000, 815915283247897734345611269596115894272000000000, 33452526613163807108170062053440751665152000000000, 1405006117752879898543142606244511569936384000000000, 60415263063373835637355132068513997507264512000000000, 2658271574788448768043625811014615890319638528000000000, 119622220865480194561963161495657715064383733760000000000, 5502622159812088949850305428800254892961651752960000000000, 258623241511168180642964355153611979969197632389120000000000, 12413915592536072670862289047373375038521486354677760000000000, 608281864034267560872252163321295376887552831379210240000000000]
+        success = true
+
+        for (a = 0; a < 50; a++)
+        {
+            success = ([a factorial] == factorials[a])
+
+            if (! success)
+            {
+                break
+            }
+        }
+
+        Number popDigitLimit
+        return (success)
+    }
+
+    (@) testNumberAndMatrix
+    {
+        return (3 + ||33, 1, 2|| == ||36, 4, 5||
+                and 3 - ||33, 1, 2|| == ||-30, 2, 1||
+                and 3 * ||33 ; 1 ; 2|| == ||99 ; 3 ; 6||
+                and 20 / ||1 ; 2 ; 5|| == ||20 ; 10 ; 4||
+                and 33 % ||3 ; 4 ; 10|| == ||0  ; 1 ; 3||)
+    }
+
+    (@) testAddWithObjects
+    {
+        f(x) = x
+        matrix = ||3||
+        complexy = 5i
+
+        convertedF(x) = 3 + x
+        convertedMatrix = ||6||
+        convertedComplexy = 3 + 5i
+
+        value = 3
+
+        return (value + f == convertedF
+                and value + matrix == convertedMatrix
+                and value + complexy == convertedComplexy)
+    }
+
+    (@) testMinusWithObjects
+    {
+        f(x) = x
+        matrix = ||3||
+        complexy = 5i
+
+        convertedF(x) = 3 - x
+        convertedMatrix = ||0||
+        convertedComplexy = 3 - 5i
+
+        value = 3
+
+        return (value - f == convertedF
+                and value - matrix == convertedMatrix
+                and value - complexy == convertedComplexy)
+    }
+
+    (@) testDivideWithObjects
+    {
+        f(x) = x
+        matrix = ||3||
+        complexy = 5i
+
+        convertedF(x) = 3 / x
+        convertedMatrix = ||1||
+        convertedComplexy = -0.6i
+
+        value = 3
+
+        return (value / f == convertedF
+                and value / matrix == convertedMatrix
+                and value / complexy == convertedComplexy)
+    }
+
+    (@) testMultiplyWithObjects
+    {
+        f(x) = x
+        matrix = ||3||
+        complexy = 5i
+
+        convertedF(x) = 3 * x
+        convertedMatrix = ||9||
+        convertedComplexy = 15i
+
+        value = 3
+
+        return (value * f == convertedF
+                and value * matrix == convertedMatrix
+                and value * complexy == convertedComplexy)
+    }
+
+    (@) testRaiseWithObjects
+    {
+        f(x) = x
+        matrix = ||3||
+        complexy = 5i
+
+        convertedF(x) = 3 ^ x
+        convertedMatrix = ||27||
+        convertedComplexy = (0.7037573231697863 - 0.7104404479510633i)
+
+        value = 3
+
+        return (value ^ f == convertedF
+                and value ^ matrix == convertedMatrix
+                and value ^ complexy ~= convertedComplexy)
+    }
+
+    (@) testLeftShiftWithObjects
+    {
+        f(x) = x
+        matrix = ||3, 5||
+        complexy = 3 + 5i
+
+        value = 7
+
+        convertedFLeft(x) = 7 << x
+        convertedFRight(x) = x << 7
+        convertedMatrixLeft = ||value << 3, value << 5||
+        convertedMatrixRight = ||3 << value, 5 << value||
+        convertedComplexyLeft = (value << 3) + (value << 5) * i
+        convertedComplexyRight = (3 << value) + (5 << value) * i
+
+        return ((value << f) == convertedFLeft
+                and (f << value) == convertedFRight
+                and value << matrix == convertedMatrixLeft
+                and matrix << value == convertedMatrixRight
+                and value << complexy == convertedComplexyLeft
+                and complexy << value == convertedComplexyRight)
+    }
+
+    (@) testRightShiftWithObjects
+    {
+        f(x) = x
+        matrix = ||3, 5||
+        complexy = 3 + 5i
+
+        value = 7
+
+        convertedFLeft(x) = 7 >> x
+        convertedFRight(x) = x >> 7
+        convertedMatrixLeft = ||value >> 3, value >> 5||
+        convertedMatrixRight = ||3 >> value, 5 >> value||
+        convertedComplexyLeft = (value >> 3) + (value >> 5) * i
+        convertedComplexyRight = (3 >> value) + (5 >> value) * i
+
+        return ((value >> f) == convertedFLeft
+                and (f >> value) == convertedFRight
+                and value >> matrix == convertedMatrixLeft
+                and matrix >> value == convertedMatrixRight
+                and value >> complexy == convertedComplexyLeft
+                and complexy >> value == convertedComplexyRight)
+    }
+
+    (@) testModulusWithObjects
+    {
+        f(x) = x
+        matrix = ||3, 5||
+        complexy = 3 + 5i
+
+        value = 7
+
+        convertedFLeft(x) = 7 % x
+        convertedFRight(x) = x % 7
+        convertedMatrixLeft = ||value % 3, value % 5||
+        convertedMatrixRight = ||3 % value, 5 % value||
+        convertedComplexyLeft = (value % 3) + (value % 5) * i
+        convertedComplexyRight = (3 % value) + (5 % value) * i
+
+        return ((value % f) == convertedFLeft
+                and (f % value) == convertedFRight
+                and value % matrix == convertedMatrixLeft
+                and matrix % value == convertedMatrixRight
+                and value % complexy == convertedComplexyLeft
+                and complexy % value == convertedComplexyRight)
+    }
+
+    (@) testAndWithObjects
+    {
+        f(x) = x
+        matrix = ||3, 5||
+        complexy = 3 + 5i
+
+        value = 7
+
+        convertedFLeft(x) = 7 & x
+        convertedFRight(x) = x & 7
+        convertedMatrix = ||value & 3, value & 5||
+        convertedComplexy = value & 3 + (value & 5) * i
+
+        return ((value & f) == convertedFLeft
+                and (f & value) == convertedFRight
+                and value & matrix == convertedMatrix
+                and matrix & value == convertedMatrix
+                and value & complexy == convertedComplexy
+                and complexy & value == convertedComplexy)
+    }
+
+    (@) testOrWithObjects
+    {
+        f(x) = x
+        matrix = ||3, 5||
+        complexy = 3 + 5i
+
+        value = 7
+
+        convertedFLeft(x) = 7 | x
+        convertedFRight(x) = x | 7
+        convertedMatrix = ||value | 3, value | 5||
+        convertedComplexy = value | 3 + (value | 5) * i
+
+        return ((value | f) == convertedFLeft
+                and (f | value) == convertedFRight
+                and value | matrix == convertedMatrix
+                and matrix | value == convertedMatrix
+                and value | complexy == convertedComplexy
+                and complexy | value == convertedComplexy)
+    }
+
+    (@) testChomp
+    {
+        return ([1 chomp] == 1
+                and [1.111 chomp] == 1
+                and [1.11111111111 chomp] == 1
+                and [0 chomp] == 0
+                and [-1 chomp] == -1
+                and [-1.111 chomp] == -1
+                and [-1.11111111111 chomp] == -1
+                and [10000000000.1 chomp] == 10000000000)
+    }
+
+    (@) testPopDigitLimit
+    {
+        baseDigitLimit = [Number digitLimit]
+        Number pushDigitLimit: 64
+        Number pushDigitLimit: 128
+        Number pushDigitLimit: 256
+
+        return ([Number popDigitLimit] == 128
+                and [Number popDigitLimit] == 64
+                and [Number popDigitLimit] == baseDigitLimit)
+    }
+
+    (@) testNegativeRaise
+    {
+        return (-2^2 == -4)
+    }
+
+    (@) testExponentialNotation
+    {
+        return (3E+3 == 3000
+                and 3E-3 == 0.003
+                and 10E+0 == 10
+                and 10E-0 == 10)
+    }
+
+    (@) testGetFractionalSize
+    {
+        return ([3.21 getFractionalSize] == 2
+                and [-3.21 getFractionalSize] == 2
+                and [10 getFractionalSize] == 0
+                and [0 getFractionalSize] == 0)
+    }
+
+    (@) testNot
+    {
+        return (~1 == 0
+                and ~0xEFFE == 0x1001
+                and ~0 == 1)
+    }
+
+    (@) testFactorialOfFraction
+    {
+        success = false
+
+        try
+        {
+            3.14!
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 3.14)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testNotNeedInteger
+    {
+        success = false
+
+        try
+        {
+            ~3.14
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 3.14)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testPrefixNegative
+    {
+        return (--1 == 1
+                and ---1 == -1
+                and ----1 == 1)
+    }
+
+    (@) testPrefixPlus
+    {
+        return (+1 == 1
+                and +-33 == -33
+                and +3.14 == 3.14)
+    }
+
+    (@) testPrefixNegativeAndPlus
+    {
+        return (-+1 == -1
+                and ---+1   == -1
+                and -+--1   == -1
+                and +---1   == -1
+                and +---+1  == -1
+                and +--+--1 == 1)
+    }
+
+    (@) testAsBinary
+    {
+        return ([239487239487 asBinary] == "0b11011111000010100011010100010100111111"
+                and [3 asBinary] == "0b11"
+                and [0 asBinary] == "0b0"
+                and [11111111111111111111111111111111111111111111 asBinary] == "0b11111111000110010011110111100000110111000100101101001110111111111100111100100000000000000011111101011000111000111000111000111000111000111000111"
+                and [1111111111111111111111111111111111111111111111111111111111111111111111 asBinary] == "0b10100100110110101000010111110111111100000011001101110101100001011111010100111011100010111101100001111110010010010000101000000100010101011100101001111011000111010111000111000111000111000111000111000111000111000111000111000111000111")
+    }
+
+    (@) testAsHex
+    {
+        return ([239487239487 asHex] == "0x37C28D453F"
+                and [3 asHex] == "0x3"
+                and [0 asHex] == "0x0"
+                and [1111111111111111111111111111111111111111111111111111111111111111111111 asHex] == "0x2936A17DFC0CDD617D4EE2F61F92428115729EC75C71C71C71C71C71C7")
+    }
+
+    (@) testAsBase3
+    {
+        return ([239487239487 asBase: 3] == "211220011021111021210210"
+                and [3 asBase: 3] == "10"
+                and [0 asBase: 3] == "0")
+    }
+
+    (@) testFromHex
+    {
+        return (0xF == 15
+                and 0xFF == 255
+                and 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF == 1606938044258990275541962092341162602522202993782792835301375
+                and 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF == 2582249878086908589655919172003011874329705792829223512830659356540647622016841194629645353280137831435903171972747493375)
+    }
+
+    (@) testFromBinary
+    {
+        return (0b1 == 1
+                and 0b10 == 2
+                and 0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010 == 845100400152152934331135470250)
+    }
+
+    (@) testAsBaseNegativeOne
+    {
+        success = false
+
+        try
+        {
+            239487239487 asBase: -1
+        }
+        catch (IndexOutOfBoundsException exception)
+        {
+            success = ([exception index] == -1)
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return success
+    }
+
+    (@) testAsBase17
+    {
+        success = false
+
+        try
+        {
+            239487239487 asBase: 17
+        }
+        catch (IndexOutOfBoundsException exception)
+        {
+            success = ([exception index] == 17)
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return success
+    }
+
+    (@) testAsBaseFractional
+    {
+        success = false
+
+        try
+        {
+            239487239487 asBase: 2.3
+        }
+        catch (NeedIntegerException exception)
+        {
+            success = ([exception value] == 2.3)
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return success
+    }
+
+    (@) testAsBaseSelfFractional
+    {
+        success = false
+
+        try
+        {
+            1.25 asBase: 3
+        }
+        catch (NeedIntegerException exception)
+        {
+            success = ([exception value] == 1.25)
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return success
+    }
+
+    (@@) testFormattedNumber: _left
+                       right: _right
+                       style: _style
+                     success: _success
+    {
+        result = false
+
+        try
+        {
+            number = [Number formattedNumber: _left style: _style]
+            result = (number == _right)
+        }
+        catch (InvalidFormattedNumberException _exception)
+        {
+            result = ! _success
+        }
+        catch (Exception _exception)
+        {
+            io putLine: "got exception: #[_exception]"
+        }
+
+        return result
+    }
+
+    (@) testAmericanFormattedNumber
+    {
+        numbers = ["1,345,456,678.12345", 1345456678.12345, true,
+                   "1,345,456",           1345456,          true,
+                   "345.145",             345.145,          true,
+                   "3.145",               3.145,            true,
+                   "3.1",                 3.1,              true,
+                   "3",                   3,                true,
+                   "0.2",                 0.2,              true,
+                   "4,1",                 nil,              false,
+                   "1.234.234",           nil,              false,
+                   "1,3456,234",          nil,              false,
+                   "1,3.2",               nil,              false]
+
+       for (a = 0; a < [numbers size]; a += 3)
+       {
+           if (! [NumberTest testFormattedNumber: numbers[a]
+                                           right: numbers[a + 1]
+                                           style: 'american
+                                         success: numbers[a + 2]])
+           {
+               io putLine: "failed at index: #[a]"
+               return false
+           }
+       }
+
+       return true
+    }
+
+    (@) testBritishFormattedNumber
+    {
+        numbers = ["1.345.456.678,12345", 1345456678.12345, true,
+                   "1.345.456",           1345456,          true,
+                   "345,145",             345.145,          true,
+                   "3,145",               3.145,            true,
+                   "3,1",                 3.1,              true,
+                   "3",                   3,                true,
+                   "0,2",                 0.2,              true,
+                   "4.1",                 nil,              false,
+                   "1,234,234",           nil,              false,
+                   "1,3456,234",          nil,              false,
+                   "1,3.2",               nil,              false]
+
+       for (a = 0; a < [numbers size]; a += 3)
+       {
+           if (! [NumberTest testFormattedNumber: numbers[a]
+                                           right: numbers[a + 1]
+                                           style: 'british
+                                         success: numbers[a + 2]])
+           {
+               io putLine: "failed at index: #[a]"
+               return false
+           }
+       }
+
+       return true
+    }
+
+    (@) testUnwholeDenomitorLarge
+    {
+        f(x) = 1 / 0.00001693508780843028671103659672475401784958255008552219343257294789073481346000779014039187793188707683
+        display = [f asString]
+        f simplify!
+        return (display == [f asString])
+    }
+
+    (@) testMetaPrint
+    {
+        return ([Number asString] == "#Number-meta")
+    }
+}

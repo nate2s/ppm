@@ -1,0 +1,7 @@
+import asdf
+
+package src.tests.TestDirectory
+
+class InvalidImport
+{
+}

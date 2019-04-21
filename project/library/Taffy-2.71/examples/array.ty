@@ -1,0 +1,26 @@
+////////////////////////////
+//                        //
+// array.ty               //
+//                        //
+// simple array example   //
+//                        //
+////////////////////////////
+
+// define the array
+myArray = ["zero", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "eleven", 'twelve]
+
+// iterate over the array, and print out the elements
+io put: "myArray:\n"
+
+myArray each: ^{ <val>
+    io put: "#[val]\n"
+}
+
+io put: "\n"
+
+// print the names of the methods of array
+io put: "myArray method names:\n"
+
+[[myArray methods] each: ^{ <method>
+    io put: method + "\n"
+}]

@@ -1,0 +1,138 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.container
+
+import org.taffy.core.String
+
+class Pair(LineContainer)
+{
+    (@@) left: _left
+        right: _right
+    {
+        result = new Pair
+        result setLeft: _left
+        result setRight: _right
+        return (result)
+    }
+
+    //////////////////////////////////////////////////////
+    //
+    // Pair # #operator(==):
+    //
+    // Returns true if self's left and right are equal
+    // to _other's left and right, respectively
+    //
+    //////////////////////////////////////////////////////
+    (@) #operator(==): _other
+    #const
+    {
+        return ([_other kindOf?: Pair]
+                and [self left] == [_other left]
+                and [self right] == [_other right])
+    }
+
+    //////////////////////////////////////////////////////
+    //
+    // Pair#"hash"
+    //
+    // Returns the hashed value of self
+    //
+    //////////////////////////////////////////////////////
+    (@) hash
+    #const
+    {
+        return ([[self left] hash] * 2 + [[self right] hash])
+    }
+
+    /////////////////////////////////////////////////
+    //
+    // Pair#"setLeft: right:"
+    //
+    // Sets the left and right values of self
+    //
+    // p = [Pair new]
+    // p setLeft: 6 right: 8
+    // ==> [6,8]
+    //
+    /////////////////////////////////////////////////
+    (@) setLeft: _left
+          right: _right
+    {
+        [self setLeft: _left]
+        [self setSecon: _right]
+        return (self)
+    }
+
+    (@) asPair
+    #const
+    {
+        return (self)
+    }
+
+    /////////////////////////////////////////////////
+    //
+    // Pair#"asArray"
+    //
+    // Returns an Array representation of self
+    //
+    // p = [Pair new]
+    // p setLeft: 6 right: 8
+    // p asArray
+    // ==> [6,8]
+    //
+    /////////////////////////////////////////////////
+    (@) asArray
+    #const
+    {
+        return ([ [self left], [self right] ])
+    }
+
+    /////////////////////////////////////////////////
+    //
+    // Pair#"asString"
+    //
+    // Returns a String representation of self
+    //
+    // p = [Pair new]
+    // p setLeft: 6 right: "six"
+    // p asString
+    // ==> #Pair<6,"six">
+    //
+    /////////////////////////////////////////////////
+    (@) asString
+    #const
+    {
+        return ("#Pair<#[[String prettyPrint: [self left]]]"
+                + ", #[[String prettyPrint: [self right]]]>")
+    }
+
+    (@) each: _block
+    #const,
+    #breakthrough
+    {
+        _block callWith: [[self left]]
+        _block callWith: [[self right]]
+    }
+
+    (@) size
+    #const
+    {
+        return 2
+    }
+}

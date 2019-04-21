@@ -1,0 +1,187 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.container.Pair
+import org.taffy.core.String
+
+//////////////////////////
+//                      //
+// PairTest             //
+//                      //
+//   unit test for Pair //
+//                      //
+//////////////////////////
+
+class PairTest
+{
+    (@) testAsArray
+    {
+        pair = new Pair
+        pair setLeft: 1
+        pair setRight: 2
+
+        array = [pair asArray]
+
+        return (array == [1,2])
+    }
+
+    (@) testAsArrayUninitialized
+    {
+        pair = new Pair
+        return ([pair asArray] == [nil,nil])
+    }
+
+    (@) testAsPair
+    {
+        pair = [Pair left: 1 right: 2]
+        return ([pair asPair] == pair)
+    }
+
+    (@) testAsString
+    {
+        return ([[Pair left: 1 right: 2] asString] == "#Pair<1, 2>")
+    }
+
+    (@) testEqualEqual
+    {
+        pair1 = [Pair left: 1 right: 2]
+        pair2 = [Pair left: 1 right: 2]
+        pair3 = [Pair left: 1 right: 3]
+        pair4 = [Pair left: 3 right: 2]
+
+        nonPair1 = []
+        nonPair2 = ()
+
+        return (pair1 == pair2 and
+                pair1 != pair3 and
+                pair1 != pair4 and
+                pair1 != nonPair1 and
+                pair1 != nonPair2)
+    }
+
+    (@) testLeft
+    {
+        pair = new Pair
+        pair setLeft: 1
+        pair setRight: 2
+
+        return ([pair left] == 1)
+    }
+
+    (@) testInit
+    {
+        pair = [Pair left: 1 right: 2]
+        pair init
+        return ([pair left] == nil and [pair right] == nil)
+    }
+
+    (@) testRight
+    {
+        pair = new Pair
+
+        pair setLeft: 1
+        pair setRight: 2
+
+        return ([pair right] == 2)
+    }
+
+    (@) testSetLeft
+    {
+        pair = new Pair
+        pair setLeft: 1
+        return ([pair left] == 1 and [pair right] == nil)
+    }
+
+    (@) testSetRight
+    {
+        pair = new Pair
+        pair setRight: 3133
+
+        return ([pair left] == nil and [pair right] == 3133)
+    }
+
+    (@) testSetLeftRight
+    {
+        pair = [Pair left: 1 right: 2]
+        return ([pair left] == 1 and [pair right] == 2)
+    }
+
+    (@) testHash
+    {
+        pair1 = [Pair left: 1 right: 2]
+        pair2 = [Pair left: 2 right: 1]
+        pair3 = [Pair left: [1,2,3,4,5] right: (1=>2, 3=>4)]
+        pair3 = [Pair left: [1,2,3,4,5] right: (1=>2, 3=>4)]
+        pair4 = [Pair left: 1 right: 2]
+
+        return ([pair1 hash] != [pair2 hash] and
+                [pair1 hash] != [pair3 hash] and
+                [pair1 hash] == [pair4 hash])
+    }
+
+    (@) testAtomicCopy
+    {
+        pair = new Pair
+
+        a = 1
+        pair setLeft: a
+        a++
+        pair setRight: a
+
+        return ([pair left] == 1
+                and [pair right] == 2)
+    }
+
+    (@) testMin
+    {
+        return ([[Pair left: 1 right: 2] min] == 1
+                and [[Pair left: -1 right: 2] min] == -1
+                and [[Pair left: 1 right: -2] min] == -2
+                and [[Pair left: 0 right: 0] min] == 0)
+    }
+
+    (@) testMax
+    {
+        return ([[Pair left: 1 right: 2] max] == 2
+                and [[Pair left: -1 right: 2] max] == 2
+                and [[Pair left: 1 right: -2] max] == 1
+                and [[Pair left: 0 right: 0] max] == 0)
+    }
+
+    (@) testMean
+    {
+        return ([[Pair left: 1 right: 2] mean] == 1.5
+                and [[Pair left: -1 right: 2] mean] == 0.5
+                and [[Pair left: 1 right: -2] mean] == -0.5
+                and [[Pair left: 0 right: 0] mean] == 0)
+    }
+
+    (@) testVariance
+    {
+        return ([[Pair left: -2111 right: 234] variance] ~= 1374756.25
+                and [[Pair left: 1 right: 2] variance] == 0.25)
+    }
+
+    (@) testStandardDeviation
+    {
+        return ([[Pair left: -2111 right: 234] standardDeviation] ~= sqrt(1374756.25)
+                and [[Pair left: 1 right: 2] standardDeviation] ~= sqrt(0.25))
+    }
+}

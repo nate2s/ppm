@@ -1,0 +1,581 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+/////////////////////////
+//                     //
+// HashTest.ty         //
+//                     //
+// unit tests for Hash //
+//                     //
+/////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.tests.*
+import org.taffy.core.exception.*
+import org.taffy.core.container.Pair
+import org.taffy.core.String
+
+class HashTest
+{
+    class CollisionClass
+    {
+        (@) hash
+        {
+            return (2)
+        }
+    }
+
+    (@) testAsArray
+    {
+        hash1 = ()
+        array1 = [hash1 asArray]
+
+        hash2 = (1=>2, 3=>4)
+        array2 = [hash2 asArray]
+
+        pair1 = [Pair left: 1 right: 2]
+        pair2 = [Pair left: 3 right: 4]
+
+        return (array1 == []
+                and array2 == [pair1, pair2])
+    }
+
+    (@) testAsArrayWithCollisions
+    {
+        hash = ()
+
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        hash[collision1] = collision1
+        hash[collision2] = collision2
+
+        array = [hash asArray]
+
+        return ([array size] == 2)
+    }
+
+    (@) testAsFlatArray
+    {
+        hash1 = ()
+        array1 = [hash1 asFlatArray]
+
+        hash2 = (1=>2, 3=>4)
+        array2 = [hash2 asFlatArray]
+
+        return (array1 == [] and array2 == [1,2,3,4])
+    }
+
+    (@) testAsFlatArrayWithCollisions
+    {
+        hash = ()
+
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        hash[collision1] = collision1
+        hash[collision2] = collision2
+
+        array = [hash asFlatArray]
+
+        return ([array size] == 4)
+    }
+
+    (@) testAsString
+    {
+        // simple test //
+        hash1 = ()
+        hash2 = (1=>2)
+
+        return ([hash1 asString] == "#Hash()"
+                and [hash2 asString] == "#Hash(1=>2)")
+    }
+
+    // silly test to test crashiness
+    (@) testAsStringWithCollisions
+    {
+        hash = ()
+
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        hash[collision1] = collision1
+        hash[collision2] = collision2
+
+        return ([hash asString] != nil)
+    }
+
+    (@) testCount
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4, 5=>6)
+
+        return ([hash1 size] == 0 and [hash2 size] == 3)
+    }
+
+(@) testEach
+    {
+        hash1 = ()
+        list = new org.taffy.core.container.List
+
+        hash1 each: ^{ <val>
+            list push: val
+        }
+
+        hash2 = (1=>2, 3=>4, 5=>6)
+        list2 = new org.taffy.core.container.List
+
+        hash2 each: ^{ <val>
+            list2 push: val
+        }
+
+        return ([list size] == 0
+                and [list2 size] == 3
+                and [list2 contains?: ^{ <val> val == [Pair left: 1 right: 2]}]
+                and [list2 contains?: ^{ <val> val == [Pair left: 3 right: 4]}]
+                and [list2 contains?: ^{ <val> val == [Pair left: 5 right: 6]}])
+    }
+
+    (@) testEachWithCollision
+    {
+        hash1 = ()
+        list1 = new org.taffy.core.container.List
+
+        hash1 each: ^{ <val>
+            list1 push: val
+        }
+
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        hash2 = (collision1 => "collision1", collision2 => "collision2")
+        list2 = new org.taffy.core.container.List
+
+        hash2 each: ^{ <val>
+            list2 push: val
+        }
+
+        return ([list1 size] == 0
+                and [list2 size] == 2
+                and [list2 contains?: ^{ <val>
+                        val == [Pair left: collision1 right: "collision1"]
+                     }]
+                and [list2 contains?: ^{ <val>
+                        val == [Pair left: collision2 right: "collision2"]
+                     }])
+    }
+
+    (@) testEachKey
+    {
+        hash1 = ()
+        list1 = new org.taffy.core.container.List
+
+        hash1 eachKey: ^{ <val>
+            list1 push: val
+        }
+
+        hash2 = (1=>2, 3=>4, 5=>6)
+        list2 = new org.taffy.core.container.List
+
+        hash2 eachKey: ^{ <val>
+            list2 push: val
+        }
+
+        return ([list1 size] == 0
+                and [list2 size] == 3
+                and [list2 contains?: ^{ <val> val == 1}]
+                and [list2 contains?: ^{ <val> val == 3}]
+                and [list2 contains?: ^{ <val> val == 5}])
+    }
+
+    (@) testEachKeyWithCollision
+    {
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        list = new org.taffy.core.container.List
+        hash = (collision1 => collision1, collision2 => collision2)
+
+        hash eachKey: ^{ <val>
+            list push: val
+        }
+
+        return ([list size] == 2
+                and [list head] == collision1
+                and [list tail] == collision2)
+    }
+
+    (@) testEachKeyException
+    {
+        hash1 = (1 => 2, "one" => "two")
+        list1 = new org.taffy.core.container.List
+
+        success = no
+
+        try
+        {
+            hash1 eachKey: ^{ <val>
+                list1 push: vasdf
+            }
+        }
+        catch (UnidentifiedObjectException _e)
+        {
+            success = [_e objectName] == "vasdf"
+        }
+
+        return (success)
+    }
+
+    (@) testEachValue
+    {
+        hash1 = ()
+        list1 = new org.taffy.core.container.List
+
+        hash1 eachKey: ^{ <val>
+            list1 push: val
+        }
+
+        hash2 = (1=>2, 3=>4, 5=>6)
+        list2 = new org.taffy.core.container.List
+
+        hash2 eachValue: ^{ <val>
+            list2 push: val
+        }
+
+        return ([list1 size] == 0
+                and [list2 size] == 3
+                and [list2 contains?: ^{ <val> val == 2 }]
+                and [list2 contains?: ^{ <val> val == 4 }]
+                and [list2 contains?: ^{ <val> val == 6 }])
+	}
+
+    (@) testEachValueException
+    {
+        hash1 = (1 => 2, "one" => "two")
+        list1 = new org.taffy.core.container.List
+
+        success = no
+
+        try
+        {
+            hash1 eachValue: ^{ <val>
+                list1 push: vasdf
+            }
+        }
+        catch (UnidentifiedObjectException _e)
+        {
+            success = [_e objectName] == "vasdf"
+        }
+
+        return (success)
+    }
+
+    (@) testHashExceptionSet
+    {
+        invalidy = new InvalidHashClass
+        success = no
+
+        try
+        {
+            hash = ()
+            hash[invalidy] = 2
+        }
+        catch (InvalidHashValueException _e)
+        {
+            success = ([_e value] == [invalidy hash])
+        }
+
+        return (success)
+    }
+
+    (@) testHashExceptionCreate
+    {
+        invalidy = new InvalidHashClass
+        success = no
+
+        try
+        {
+            hash = (invalidy => 2)
+        }
+        catch (InvalidHashValueException _e)
+        {
+            success = ([_e value] == [invalidy hash])
+        }
+
+        return (success)
+    }
+
+    (@) testEachValueWithCollision
+    {
+        collision1 = new HashTest.CollisionClass
+        collision2 = new HashTest.CollisionClass
+
+        list = new org.taffy.core.container.List
+        hash = (collision1 => "collision1", collision2 => "collision2")
+
+        hash eachValue: ^{ <val>
+            list push: val
+        }
+
+        return ([list size] == 2
+                and [list head] == "collision1"
+                and [list tail] == "collision2")
+    }
+
+    (@) testEqualEqual
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4, 5=>6)
+        hash3 = (1=>2, 3=>4, 5=>7)
+
+        return (hash1 == ()
+                and hash2 == (1=>2, 3=>4, 5=>6)
+                and hash2 != hash3
+                and hash1 != hash3)
+    }
+
+    (@) testKeys
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4, 5=>6, "a"=>"b")
+
+        keys1 = [hash1 keys]
+        keys2 = [hash2 keys]
+
+        return (keys1 == []
+                and [keys2 contains?: ^{ <val> val == 1 }]
+                and [keys2 contains?: ^{ <val> val == 3 }]
+                and [keys2 contains?: ^{ <val> val == 5 }]
+                and [keys2 contains?: ^{ <val> val == "a" }])
+    }
+
+    (@) testObject
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4, 5=>6, "a"=>"b")
+
+        object1 = hash1[1]
+        object2 = hash2[1]
+        object3 = hash2[2]
+        object4 = hash2["a"]
+
+        return (object1 == nil
+                and object2 == 2
+                and object3 == nil
+                and object4 == "b")
+    }
+
+    (@) testObjectForKey
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4, 5=>6, "a"=>"b")
+
+        object1 = [hash1 objectForKey: 1]
+        object2 = [hash2 objectForKey: 1]
+        object3 = [hash2 objectForKey: 2]
+        object4 = [hash2 objectForKey: "a"]
+
+        return (object1 == nil
+                and object2 == 2
+                and object3 == nil
+                and object4 == "b")
+    }
+
+    (@) testRemove
+    {
+        hash1 = ()
+        hash2 = (1=>2, "a"=>"b")
+        hash3 = (1=>2, "a"=>"b")
+
+        hash1 remove: 1
+        hash2 remove: 1
+
+        hash3 remove: 1
+        hash3 remove: "a"
+        hash3 remove: "bloof"
+
+        return (hash1 == () and hash2 == ("a"=>"b") and hash3 == ())
+    }
+
+    (@) testSetKeyForObject
+    {
+        hash1 = ()
+        hash2 = (1=>2, 3=>4)
+
+        hash1[1] = "2"
+        hash2[1] = "2"
+
+        hash2["a"] = "b"
+        hash2["a"] = "c"
+
+        return (hash1[1] == "2"
+                and [hash1 size] == 1
+                and hash2[1] == "2"
+                and hash2[3] == 4
+                and hash2["a"] == "c"
+                and [hash2 size] == 3)
+    }
+
+    (@) testSize
+    {
+        hash1 = ()
+        hash2 = (1=>2)
+        hash3 = ("a"=>"b","c"=>"d","e"=>"f")
+
+        hash1 remove: "bloof"
+        hash3 remove: "c"
+
+        return ([hash1 size] == 0 and [hash2 size] == 1 and [hash3 size] == 2)
+    }
+
+    (@) testSymbol
+    {
+        hash = ('asdf =>1)
+        return (hash['asdf] == 1)
+    }
+
+    (@) testValues
+    {
+        hash1 = ()
+        hash2 = (1=>2,    3=>4,
+  5=>6,
+"a"         =>                "b")
+
+        values1 = [hash1 values]
+        values2 = [hash2 values]
+
+        return (values1 == []
+                and [values2 size] == 4
+                and [values2 contains?: ^{ <val> val == 2 }]
+                and [values2 contains?: ^{ <val> val == 4 }]
+                and [values2 contains?: ^{ <val> val == 6 }]
+                and [values2 contains?: ^{ <val> val == "b" }])
+    }
+
+    (@) testNegative
+    {
+        hash1 = (1 => 2, -3 => -4)
+        return ([hash1 size] == 2)
+    }
+
+    (@) testHashSimple
+    {
+        hash1 = (1=>2, 3=>4)
+        hash2 = (1=>2, 3=>4)
+        hash3 = (2=>1, 4=>3)
+
+        return ([hash1 hash] == [hash2 hash]
+                and [hash2 hash] != [hash3 hash])
+    }
+
+    (@) testEachBreak
+    {
+        hash = (1 => 2, 3 => 4, 5 => 6)
+        wantedPair = [Pair left: 3 right: 4]
+        result = nil
+
+        hash each: ^{ <value>
+            result = value
+
+            if (value == wantedPair)
+            {
+                break
+            }
+        }
+
+        return (result == wantedPair)
+    }
+
+    (@) testEachKeyBreak
+    {
+        hash = (1 => 2, 3 => 4, 5 => 6)
+        wantedKey = 3
+        result = nil
+
+        hash eachKey: ^{ <value>
+            result = value
+
+            if (value == wantedKey)
+            {
+                break
+            }
+        }
+
+        return (result == wantedKey)
+    }
+
+    (@) testEachValueBreak
+    {
+        hash = (1 => 2, 3 => 4, 5 => 6)
+        wantedValue = 6
+        result = nil
+
+        hash eachValue: ^{ <value>
+            result = value
+
+            if (value == wantedValue)
+            {
+                break
+            }
+        }
+
+        return (result == wantedValue)
+    }
+
+    (@@) test1To100: _hash
+    {
+        result = true
+
+        for (b = 1; b <= 100; b++)
+        {
+            if (_hash[b - 1] != b)
+            {
+                result = false
+                break
+            }
+        }
+
+        return (result)
+    }
+
+    (@) testAtomicCopyWithSetValueForKey
+    {
+        hash = ()
+
+        for (a = 1; a <= 100; a++)
+        {
+            hash setValue: a forKey: a - 1
+        }
+
+        return ([HashTest test1To100: hash])
+    }
+
+
+    (@) testAtomicCopyWithSetKeyForObject
+    {
+        hash = ()
+
+        for (a = 1; a <= 100; a++)
+        {
+            hash[a - 1] = a
+        }
+
+        return ([HashTest test1To100: hash])
+    }
+}

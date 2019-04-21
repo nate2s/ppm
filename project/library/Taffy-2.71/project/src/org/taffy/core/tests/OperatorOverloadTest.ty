@@ -1,0 +1,162 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.tests.OperatorOverloader
+import org.taffy.core.exception.*
+
+//
+// A simple test class that verifies the results of overloaded operator methods
+//
+class OperatorOverloadTest
+{
+    (@) testPlus
+    {
+        return ((new OperatorOverloader) + 5 == "+ 5")
+    }
+
+    (@) testMinus
+    {
+        return ((new OperatorOverloader) - 5 == "- 5")
+    }
+
+    (@) testMultiply
+    {
+        return ((new OperatorOverloader) * 5 == "* 5")
+    }
+
+    (@) testDivide
+    {
+        return ((new OperatorOverloader) / 5 == "/ 5")
+    }
+
+    (@) testModulus
+    {
+        return ((new OperatorOverloader) % 5 == "% 5")
+    }
+
+    (@) testLessThan
+    {
+        return ((new OperatorOverloader) < 5 == "< 5")
+    }
+
+    (@) testLessThanOrEqual
+    {
+        return ((new OperatorOverloader) <= 5 == "<= 5")
+    }
+
+    (@) testGreaterThan
+    {
+        return ((new OperatorOverloader) > 5 == "> 5")
+    }
+
+    (@) testGreaterThanOrEqual
+    {
+        return ((new OperatorOverloader) >= 5 == ">= 5")
+    }
+
+    (@) testLeftShift
+    {
+        return ((new OperatorOverloader) << 5 == "<< 5")
+    }
+
+    (@) testRightShift
+    {
+        return ((new OperatorOverloader) >> 5 == ">> 5")
+    }
+
+    (@) testBitOr
+    {
+        return ((new OperatorOverloader) | 5 == "| 5")
+    }
+
+    (@) testBitAnd
+    {
+        return ((new OperatorOverloader) & 5 == "& 5")
+    }
+
+    (@) testTildeEqual
+    {
+        return ((new OperatorOverloader) ~= 5 == "~= [5, 6]")
+    }
+
+    (@) testPlusEqual
+    {
+        object = new OperatorOverloader
+        return (object += 5 == "+= 5")
+    }
+
+    (@) testMultiplyEqual
+    {
+        object = new OperatorOverloader
+        return (object *= 5 == "*= 5")
+    }
+
+    (@) testDivideEqual
+    {
+        object = new OperatorOverloader
+        result = (object /= 5 == "/= 5")
+    }
+
+    (@) testRaiseEqual
+    {
+        object = new OperatorOverloader
+        return (object ^= 5 == "^= 5")
+    }
+
+    (@) testModulusEqual
+    {
+        object = new OperatorOverloader
+        return (object %= 5 == "%= 5")
+    }
+
+    (@) testParentheses
+    {
+        object = new OperatorOverloader
+        return (object(5) == "() [5]")
+    }
+
+    (@) testBrackets
+    {
+        object = new OperatorOverloader
+        return (object[5] == "[] 5")
+    }
+
+    (@) testFailedOverload
+    {
+        success = false
+
+        try
+        {
+            (new OperatorOverloaderNot) + 5
+            (new OperatorOverloaderNot) * 5
+        }
+        catch (UnidentifiedMethodException _exception)
+        {
+            success = ([_exception exceptionClassName] == "OperatorOverloaderNot"
+                      and [_exception exceptionMethodName] == "#operator(*):")
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (success)
+    }
+}

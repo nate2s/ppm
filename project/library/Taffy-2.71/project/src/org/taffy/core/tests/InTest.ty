@@ -1,0 +1,199 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+
+class InTest
+{
+    (@) testHash
+    {
+        return ((1 => 2) in [1, 2, (1 => 2), 3])
+    }
+
+    (@) testNumberInArray
+    {
+        return (1 in [1, 2])
+    }
+
+    (@) testNumberInArrayFailure
+    {
+        return (! (1 in [2, 3]))
+    }
+
+    (@) testNumberInArrayOfDifferentTypes
+    {
+        return (1 in ["hello", 1])
+    }
+
+    (@) testNumberInArrayOfDifferentTypesFailure
+    {
+        return (! (1 in ["hello", 2]))
+    }
+
+    (@) testSet
+    {
+        a = (1 in [1, 2])
+        return a
+    }
+
+    (@) testIf
+    {
+        result = false
+
+        if ("hi" in ["hi", "ho"])
+        {
+            result = true
+        }
+
+        return result
+    }
+
+    (@) testExceptionInObject
+    {
+        success = false
+
+        try
+        {
+            a in [1, 2]
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "a")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInArray
+    {
+        success = false
+
+        try
+        {
+            1 in [2, abc]
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "abc")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInObjectInIf
+    {
+        success = false
+
+        try
+        {
+            if (a in [2, "hello"])
+            {
+            }
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "a")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInArrayInIf
+    {
+        success = false
+
+        try
+        {
+            if (1 in [2, abc])
+            {
+            }
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "abc")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInObjectInReturn
+    {
+        success = false
+
+        try
+        {
+            return (a in [1, 2])
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "a")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInArrayInReturn
+    {
+        success = false
+
+        try
+        {
+            return (1 in [abc, 2])
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "abc")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return success
+    }
+
+    (@) testExceptionInObjectInFor
+    {
+    }
+
+    (@) testExceptionInArrayInFor
+    {
+    }
+}

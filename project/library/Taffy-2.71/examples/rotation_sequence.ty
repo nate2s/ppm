@@ -1,0 +1,39 @@
+///////////////////////////////
+//                           //
+// sequence.ty               //
+//                           //
+// a sequence example        //
+//                           //
+///////////////////////////////
+
+import org.taffy.core.maths.Sequence
+
+// define a simple print function for vectors
+printVector(vector) = [io put: "(" + vector[0] + ", " + vector[1] + ")\n"]
+
+//
+// this program uses a sequence to show rotations of the vector (10, 0)
+// via the angle 2PI / 50
+//
+
+rotations = 50
+angleGenerator(x) = 2PI / rotations * x
+
+rotator(theta) = ||cos(theta), -sin(theta)
+                   sin(theta), cos(theta)||
+point = ||10 ; 0||
+
+// define the sequence
+// the angle theta is given by the result of the function angleGenerator
+// via the code: angleGenerator => theta
+sequence = [Sequence createWithBlock: { <x> rotator(angleGenerator(x)) * point }]
+
+io put: "Rotations about (0, 0) via the angle 2PI / #[rotations] of the vector "
+printVector(point)
+ii = 1
+
+sequence[1, rotations] each: { <vector>
+    io put: "[#[ii]/#[rotations]] "
+    printVector(vector)
+    ii++
+}

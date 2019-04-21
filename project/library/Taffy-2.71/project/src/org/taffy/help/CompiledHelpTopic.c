@@ -1,0 +1,103 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+const char *__compiledHelpTopic =    "package org.taffy.help\n"
+    "\n"
+    "import org.taffy.core.container.Hash\n"
+    "\n"
+    "abstract class HelpTopic\n"
+    "{\n"
+    "    @title, @r\n"
+    "    @prettyTitle, @r\n"
+    "    @description, @r\n"
+    "    @keyword, @r\n"
+    "\n"
+    "    // a hash mapping String => HelpTopic\n"
+    "    @subtopics, @r\n"
+    "\n"
+    "    // an array of HelpTopicS\n"
+    "    @orderedSubtopics, @r\n"
+    "\n"
+    "    (@) init\n"
+    "    {\n"
+    "        @subtopics = new Hash\n"
+    "    }\n"
+    "\n"
+    "    (@) loadTitle: _title\n"
+    "    {\n"
+    "        @title = _title\n"
+    "\n"
+    "        edge = \"+\"\n"
+    "        @prettyTitle = \"\"\n"
+    "\n"
+    "        // create the top portion of the box\n"
+    "        for (a = 0; a < [_title length] + 2; a++)\n"
+    "        {\n"
+    "            edge += \"-\"\n"
+    "        }\n"
+    "\n"
+    "        edge += \"+\"\n"
+    "\n"
+    "        @prettyTitle += edge + \"\n\"\n"
+    "        @prettyTitle += \"+ #[_title] +\n\"\n"
+    "        @prettyTitle += edge + \"\n\"\n"
+    "    }\n"
+    "\n"
+    "    (@) loadSubtopics: _subtopics\n"
+    "    {\n"
+    "        @orderedSubtopics = _subtopics\n"
+    "\n"
+    "        _subtopics each: ^{ <subtopic>\n"
+    "            @subtopics[[subtopic keyword]] = subtopic\n"
+    "        }\n"
+    "    }\n"
+    "\n"
+    "    (@) asString\n"
+    "    {\n"
+    "        result = \"\"\n"
+    "\n"
+    "        if (@title != nil)\n"
+    "        {\n"
+    "            result += \"\n#[@prettyTitle]\n\"\n"
+    "        }\n"
+    "\n"
+    "        if (@description != nil)\n"
+    "        {\n"
+    "            result += @description + \"\n\"\n"
+    "        }\n"
+    "\n"
+    "        if (@subtopics != nil\n"
+    "            and [@subtopics size] > 0)\n"
+    "        {\n"
+    "            result += \"\nTopics:\n\n\"\n"
+    "\n"
+    "            @orderedSubtopics each: ^{ <topic>\n"
+    "                if ([topic keyword] == nil)\n"
+    "                {\n"
+    "                    throw (\"nil keyword for topic: #[topic]!\")\n"
+    "                }\n"
+    "\n"
+    "                result += (\"    #[[[topic keyword] withWidth: 10]] \"\n"
+    "                           + \"-- #[topic title]\n\")\n"
+    "            }\n"
+    "        }\n"
+    "\n"
+    "        return (result)\n"
+    "    }\n"
+    "}\n"
+;

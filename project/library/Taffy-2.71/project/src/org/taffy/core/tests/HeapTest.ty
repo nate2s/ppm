@@ -1,0 +1,113 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.container.Heap
+
+class InvalidComparer
+{
+    (@) compare: _other
+    {
+        return ("hi there!")
+    }
+}
+
+class HeapTest
+{
+    (@) testSimple
+    {
+        h = new Heap
+        h insert: 1
+        h insert: 2
+        return ([h size] == 2)
+    }
+
+    (@) testMinPopSort
+    {
+        h = [Heap newMin]
+        100 downTo: -100 do: ^{ <val>
+            h insert: val
+        }
+
+        lastValue = [h pop]
+        success = true
+
+        while ([h size] > 0)
+        {
+            value = [h pop]
+
+            if (lastValue > value)
+            {
+                success = false
+                break
+            }
+
+            lastValue = value
+        }
+
+        return (success)
+    }
+
+    (@) testMaxPopSort
+    {
+        h = [Heap newMax]
+        -100 upTo: 100 do: ^{ <val>
+            h insert: val
+        }
+
+        lastValue = [h pop]
+        success = true
+
+        while ([h size] > 0)
+        {
+            value = [h pop]
+
+            if (lastValue < value)
+            {
+                success = false
+                break
+            }
+
+            lastValue = value
+        }
+
+        return (success)
+    }
+
+    (@) testSize
+    {
+        h = new Heap
+        success = false
+
+        if ([h size] == 0)
+        {
+            h insert: 1
+            h insert: 2
+            h insert: -200
+            h pop
+
+            if ([h size] == 2)
+            {
+                success = true
+            }
+        }
+
+        return (success)
+    }
+}

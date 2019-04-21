@@ -1,0 +1,34 @@
+////////////////////////////
+//                        //
+// symbol.ty              //
+//                        //
+// simple symbol example  //
+//                        //
+////////////////////////////
+
+io put: "The following shows that two variables assigned to the "
+io put: "same symbol share the same address\n"
+
+io put: "\n"
+
+string1 = "myString"
+string2 = "myString"
+
+io put: "string1 is \"#[string1]\"\n"
+io put: "string2 is \"#[string2]\"\n"
+io put: "string1 == string2 ? " + (string1 == string2) + "\n"
+io put: "[string1 address] == [string2 address] ? " +
+        ([string1 address] == [string2 address]) +
+        "\n"
+
+io put: "\n"
+
+symbol1 = 'mySymbol
+symbol2 = 'mySymbol
+
+io put: "symbol1 is #[symbol1]\n"
+io put: "symbol2 is #[symbol2]\n"
+io put: "symbol1 == symbol2 ? " + (symbol1 == symbol2) + "\n"
+io put: "[symbol1 address] == [symbol2 address] ? " +
+        ([symbol1 address] == [symbol2 address]) +
+        "\n"

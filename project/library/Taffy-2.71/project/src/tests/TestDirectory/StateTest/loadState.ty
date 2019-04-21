@@ -1,0 +1,10 @@
+io putLine: [kernel loadState: "myState"]
+io putLine: a == 1
+io putLine: b == 2
+io putLine: c == "hi there"
+io putLine: nil == nil
+io putLine: kernel == kernel
+io putLine: yes == yes
+io putLine: no == no
+io putLine: yes != no
+io putLine: no != yes

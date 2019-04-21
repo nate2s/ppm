@@ -1,0 +1,22 @@
+////////////////////////////////////////////
+//
+// deltaEqual.ty
+//
+// delta-equal operator, ~=, examples
+//
+////////////////////////////////////////////
+
+title = '{The delta-equal (~=) checks if two values are within some bound
+of each other. The standard delta-equal operator checks if two
+values are within a 10^(-6) bound of each other.
+A number can be appended to the ~= operator, like ~=<X>, to determine if two
+values are within 10^(-X) of each other.'}
+
+io putLine: title
+io putLine: ""
+io putLine: "1 ~= 2: " + (1 ~= 2)
+io putLine: "1.9999999 ~= 2: " + (1.9999999 ~= 2)
+io putLine: "0.99999999 ~= 1: " + (0.99999999 ~= 1)
+io putLine: "0.9 ~= 1: " + (0.9 ~= 1)
+io putLine: "0.9 ~=<1> 1: " + (0.9 ~=<1> 1)
+io putLine: "0.98 ~=<1> 1: " + (0.98 ~=<1> 1)

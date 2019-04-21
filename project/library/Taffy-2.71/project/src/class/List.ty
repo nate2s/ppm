@@ -1,0 +1,163 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.container
+
+import org.taffy.core.String
+
+class List(LineContainer)
+{
+@protected
+
+    (@) arithmeticWithOperator: _operator
+    {
+        result = new List
+
+        self each: ^{ <_value>
+            result push: [kernel eval: "_value #[_operator]"]
+        }
+
+        return result
+    }
+
+    (@) arithmeticWithObject: _object
+                    operator: _operator
+    {
+        result = new List
+
+        self each: ^{ <_value>
+            result push: [kernel eval: "_value #[_operator] _object"]
+        }
+
+        return result
+    }
+
+@public
+    (@) prettyPrint: _separator
+    #synchronized,
+    #containerLoop,
+    #const
+    {
+        result = ""
+        a = 0
+        size = [self size]
+
+        [self each: ^{ <value>
+            result += "#[[String prettyPrint: value]]"
+
+            if (a < size - 1)
+            {
+                result += _separator
+            }
+
+            a++
+        }]
+
+        return (result)
+    }
+
+    (@) asString
+    #const,
+    #synchronizedRead
+    {
+        return ("#List[#[self prettyPrint: ", "]]")
+    }
+
+    (@) reverse
+    #const,
+    #synchronizedRead
+    {
+        result = new List
+
+        [self each: ^{ <value>
+            result unshift: value
+        }]
+
+        return (result)
+    }
+
+    //
+    // operators
+    //
+    (@) #operator(*): _object
+    {
+        return [self arithmeticWithObject: _object operator: "*"]
+    }
+
+    (@) #operator(/): _object
+    {
+        return [self arithmeticWithObject: _object operator: "/"]
+    }
+
+    (@) #operator(+): _object
+    {
+        return [self arithmeticWithObject: _object operator: "+"]
+    }
+
+    (@) #operator(-): _object
+    {
+        return [self arithmeticWithObject: _object operator: "-"]
+    }
+
+    (@) #operator(^): _object
+    {
+        return [self arithmeticWithObject: _object operator: "^"]
+    }
+
+    (@) #operator(<<): _object
+    {
+        return [self arithmeticWithObject: _object operator: "<<"]
+    }
+
+    (@) #operator(>>): _object
+    {
+        return [self arithmeticWithObject: _object operator: ">>"]
+    }
+
+    (@) #operator(%): _object
+    {
+        return [self arithmeticWithObject: _object operator: "%"]
+    }
+
+    (@) #operator(&): _object
+    {
+        return [self arithmeticWithObject: _object operator: "&"]
+    }
+
+    (@) #operator(|): _object
+    {
+        return [self arithmeticWithObject: _object operator: "|"]
+    }
+
+    (@) #operator(^^): _object
+    {
+        return [self arithmeticWithObject: _object operator: "^^"]
+    }
+
+    (@) vectorize: _function
+    #containerLoop
+    {
+        result = new List
+
+        self each: ^{ <_value>
+            result push: _function(_value)
+        }
+
+        return result
+    }
+}

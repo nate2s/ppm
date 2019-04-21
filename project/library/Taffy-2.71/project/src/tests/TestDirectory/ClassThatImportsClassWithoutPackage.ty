@@ -1,0 +1,11 @@
+package src.tests.TestDirectory
+
+import src.tests.TestDirectory.ClassWithoutPackage
+
+class ClassThatImportsClassWithoutPackage
+{
+    (@) init
+    {
+        new ClassWithoutPackage
+    }
+}

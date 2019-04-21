@@ -1,0 +1,136 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+
+class BreakTest
+{
+    (@) testNoLoop
+    {
+        success = false
+
+        try
+        {
+            break
+        }
+        catch (BreakWithoutALoopException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testNoLoopButInAScope
+    {
+        success = false
+
+        try
+        {
+            block = ^{
+                break
+            }
+
+            block call
+        }
+        catch (BreakWithoutALoopException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testFor
+    {
+        a = 0
+
+        for (a = 0; a < 10; a++)
+        {
+            if (a == 5)
+            {
+                break
+            }
+        }
+
+        return (a == 5)
+    }
+
+    (@) testWhile
+    {
+        a = 0
+
+        while (a < 10)
+        {
+            if (a == 5)
+            {
+                break
+            }
+
+            a++
+        }
+
+        return (a == 5)
+    }
+
+    (@) testKernelEval
+    {
+        a = 0
+
+        for (a = 0; a < 10; a++)
+        {
+            kernel eval: "if (a == 5) { break }"
+        }
+
+        return (a == 5)
+    }
+
+    (@) testBreakInBreak
+    {
+        a = 0
+        b = 0
+
+        for (a = 0; a < 10; a++)
+        {
+            for (b = 0; b < 20; b++)
+            {
+                if (b == 10)
+                {
+                    break
+                }
+            }
+
+            if (a == 5)
+            {
+                break
+            }
+        }
+
+        return (a == 5 and b == 10)
+    }
+}

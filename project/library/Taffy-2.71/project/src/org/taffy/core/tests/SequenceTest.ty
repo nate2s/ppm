@@ -1,0 +1,96 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.InvalidArraySizeException
+import org.taffy.core.exception.InvalidIndexesException
+import org.taffy.core.maths.Sequence
+
+class SequenceTest
+{
+    (@) testWithFunction
+    {
+        sequence = [Sequence createWithBlock: ^{ <a> a }]
+
+        // evaluate the sequence from 1 to 10 //
+        results = sequence[1, 10]
+
+        return ([results size] == 10 and
+                results == [1,2,3,4,5,6,7,8,9,10])
+    }
+
+    (@) testDouble
+    {
+        sequence = [Sequence createWithBlock: ^{ <a> 2a }]
+        results = sequence[1, 10]
+        return ([results size] == 10
+                and results == [2, 4, 6, 8, 10, 12, 14, 16, 18, 20])
+    }
+
+    (@) testInvalidIndexesException
+    {
+        success = false
+
+        try
+        {
+            sequence = [Sequence createWithBlock: ^{ <a> a }]
+            results = sequence[0, -10]
+        }
+        catch (InvalidIndexesException _exception)
+        {
+            success = ([_exception indexes] == [0, -10])
+        }
+
+        return (success)
+    }
+
+    (@) testNegativeIteration
+    {
+        s = [Sequence createWithBlock: ^{ <x> x^2 + 2x + 1 }]
+        return ([s[-10, 10] size] == 21)
+    }
+
+    (@) testInvalidArraySizeException
+    {
+        success = false
+
+        try
+        {
+            sequence = [Sequence createWithBlock: ^{ <a> a }]
+            sequence[0, 1, 2, 2, 3]
+        }
+        catch (InvalidArraySizeException _exception)
+        {
+            success = ([_exception expected] == 2
+                       and [_exception given] == 5)
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (success)
+    }
+
+    (@) testAsString
+    {
+        series = [Sequence createWithBlock: ^{ <x> x^2 }]
+        return ([series asString] == "#Sequence(x) = x^2")
+    }
+}

@@ -1,0 +1,467 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+import org.taffy.core.exception.*
+
+slice SliceA
+{
+    class ClassA
+    {
+        @@variable, @rw
+    }
+
+    class ClassB
+    {
+        @@variableB, @r
+    }
+
+    class ClassC
+    {
+        @variable
+    }
+
+    @x, @rw
+    @y, @r
+    @z, @w
+    @a
+}
+
+slice SliceB
+{
+    class ClassWithChild
+    {
+        class Child
+        {
+            @reader, @r
+            @writer, @rw
+        }
+    }
+
+    class ChildlessClass
+    {
+    }
+}
+
+slice EmptySlice
+{
+}
+
+slice ReaderSlice
+{
+    @variable, @r
+}
+
+slice WriterSlice
+{
+    @variable, @w
+}
+
+slice ReadWriterSlice
+{
+    @variable, @rw
+}
+
+class EmptyTester
+{
+}
+
+class WriterTester
+{
+    @variable, @w
+}
+
+class ReaderTester
+{
+    @variable, @r
+}
+
+class ReadWriterTester
+{
+    @variable, @rw
+}
+
+class Agent
+{
+}
+
+class Receptacle
+{
+}
+
+class SliceTest
+{
+    (@@) testWriter: _object
+    {
+        success = false
+
+        // tester should have exactly one method, the writer
+        if ([[_object methods] size] == 1)
+        {
+            try
+            {
+                // verify that variable writer exists
+                _object setVariable: 1
+
+                // verify that variable reader does not exist
+                _object variable
+            }
+            catch (UnidentifiedMethodException _exception)
+            {
+                success = ([_exception exceptionMethodName] == "variable")
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testReader: _object
+    {
+        success = false
+
+        // tester should have exactly one method, the reader
+        if ([[_object methods] size] == 1)
+        {
+            try
+            {
+                // verify that variable reader exists
+                _object variable
+
+                // verify that variable writer does not exist
+                _object setVariable: 5
+            }
+            catch (UnidentifiedMethodException _exception)
+            {
+                success = ([_exception exceptionMethodName] == "setVariable:")
+            }
+        }
+
+        return (success)
+    }
+
+    (@@) testReadWriter: _object
+    {
+        success = true
+
+        // tester should have exactly two methods, the reader and writer
+        if ([[_object methods] size] == 2)
+        {
+            try
+            {
+                // verify that variable writer exists
+                _object setVariable: 1
+
+                // verify that variable reader exists
+                _object variable
+            }
+            catch (UnidentifiedMethodException _exception)
+            {
+                success = false
+            }
+        }
+
+        return (success)
+    }
+
+    (@) testOverwriteWriter
+    {
+        tester = new WriterTester
+        tester attach: WriterSlice
+        return ([SliceTest testWriter: tester])
+    }
+
+    (@) testOverwriteReader
+    {
+        tester = new ReaderTester
+        tester attach: ReaderSlice
+        return ([SliceTest testReader: tester])
+    }
+
+    (@) testOverwriteReadWriter
+    {
+        tester = new ReadWriterTester
+        tester attach: ReadWriterSlice
+        return ([SliceTest testReadWriter: tester])
+    }
+
+    (@) testReader
+    {
+        tester = new EmptyTester
+        tester attach: ReaderSlice
+        return ([SliceTest testReader: tester])
+    }
+
+    (@) testWriter
+    {
+        tester = new EmptyTester
+        tester attach: WriterSlice
+        return ([SliceTest testWriter: tester])
+    }
+
+    (@) testReadWriter
+    {
+        tester = new EmptyTester
+        tester attach: ReadWriterSlice
+        return ([SliceTest testReadWriter: tester])
+    }
+
+    (@) testNonAbstractClass
+    {
+        return (true)
+    }
+
+    (@) testNonCrossPollination
+    {
+        tester = new EmptyTester
+        tester attach: ReadWriterSlice
+        tester setVariable: 5
+
+        tester2 = new EmptyTester
+        tester2 attach: ReadWriterSlice
+        return ([tester2 variable] == nil)
+    }
+
+    (@) testCrossPollination
+    {
+        Agent attach: ReadWriterSlice
+        agent1 = new Agent
+        agent2 = new Agent
+        return ([SliceTest testReadWriter: agent1]
+                and [SliceTest testReadWriter: agent2])
+    }
+
+    (@) testEmptySlice
+    {
+        t = new EmptyTester
+        return ([t attach: EmptySlice] == t)
+    }
+
+    (@) testSliceAgain
+    {
+        t = new EmptyTester
+        t attach: ReaderSlice
+
+        tester2 = new EmptyTester
+        success = false
+
+        try
+        {
+            tester2 variable
+        }
+        catch (UnidentifiedMethodException _exception)
+        {
+            success = ([_exception exceptionMethodName] == "variable")
+        }
+
+        return (success)
+    }
+
+    (@) testObjects
+    {
+        t = new EmptyTester
+        t attach: SliceA
+        objects = [t objects]
+        contains = true
+        values = ["@x", "@y", "@z", "@a"]
+
+        values each: ^{ <value>
+            if (! [objects contains?: ^{ <object>
+                                          [object left] == value
+                                      }])
+            {
+                contains = false
+                break
+            }
+        }
+
+        return (contains == true)
+    }
+
+    (@) testMethods
+    {
+        t = new EmptyTester
+        t attach: SliceA
+        tMethods = [t methods]
+        contains = true
+        values = ["setX:", "x", "y", "setZ:"]
+
+        values each: ^{ <value>
+            if (! [tMethods contains?: ^{ <method>
+                                           method == value
+                                       }])
+            {
+                contains = false
+                break
+            }
+        }
+
+        return (contains == true)
+    }
+
+    (@) testAttach
+    {
+        tester = new EmptyTester
+        tester attach: SliceA
+        success = false
+
+        //
+        // verify that EmptyTester is unaffected
+        //
+        try
+        {
+            EmptyTester.ClassA
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = true
+        }
+
+        if (! success)
+        {
+            return (false)
+        }
+
+        //
+        // set and retreive x
+        //
+        tester setX: 5
+
+        if ([tester x] != 5)
+        {
+            io put: "fail 1\n"
+            return (false)
+        }
+
+        //
+        // test existence of y reader
+        //
+        if ([tester y] != nil)
+        {
+            io put: "fail 2\n"
+            return (false)
+        }
+
+        //
+        // test non-existence of z reader
+        //
+        success = false
+        subSuccess1 = true
+
+        try
+        {
+            [tester z]
+            subSuccess1 = false
+        }
+        catch (UnidentifiedMethodException _exception)
+        {
+            success = ([_exception exceptionMethodName] == "z")
+        }
+        catch (Exception _exception)
+        {
+            subSuccess1 = false
+        }
+
+        subSuccess2 = false
+
+        try
+        {
+            [tester setZ: 5]
+            subSuccess2 = true
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        if (!success or !subSuccess1 or !subSuccess2)
+        {
+            io put: "fail 3\n"
+            return (false)
+        }
+
+        //
+        // finally test meta-class attach
+        //
+        EmptyTester attach: SliceA
+        return ([EmptyTester.ClassA variable] == nil
+                and [EmptyTester.ClassB variableB] == nil)
+    }
+
+    (@) testNeedSliceException
+    {
+        success = false
+
+        // attach an object
+        try
+        {
+            tester = new EmptyTester
+            tester attach: 1
+        }
+        catch (NeedSliceException _exception)
+        {
+            success = true
+        }
+
+        if (! success)
+        {
+            return (false)
+        }
+
+        // attach another class
+        try
+        {
+            tester = new EmptyTester
+            tester attach: ReaderTester
+        }
+        catch (NeedSliceException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testClassAttach
+    {
+        success = false
+
+        if ([[Receptacle objects] size] == 0)
+        {
+            Receptacle attach: SliceB
+
+            if ([[Receptacle objects] size] == 2)
+            {
+                try
+                {
+                    new Receptacle.ChildlessClass
+                    instance = new Receptacle.ClassWithChild.Child
+
+                    success = ([instance reader] == nil
+                               and [instance setWriter: 5] == 5
+                               and [instance writer] == 5)
+                }
+                catch (Exception _exception)
+                {
+                    // aww man :(
+                    io putLine: [_exception asString]
+                }
+            }
+        }
+
+        return (success)
+    }
+}

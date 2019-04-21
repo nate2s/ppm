@@ -1,0 +1,101 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+class TestClass
+{
+    @readWriteVariable, @rw
+    @readVariable, @r
+    @writeVariable, @w
+    @variableMe, @rw
+    @UpperCaseVariable, @rw
+    @UpPeRcAsEvArIaBlE, @rw
+
+    @@metaVariable, @rw
+
+    (@) one
+    {
+        return (1)
+    }
+
+    (@) two
+    {
+        return (2)
+    }
+
+    (@) firstMethod
+    {
+        @variableMe = 1
+    }
+
+    (@) secondMethod
+    {
+        return (@variableMe)
+    }
+
+    (@@) metaMethod
+    {
+        value = new TestClass
+        return (value)
+    }
+
+  @public
+
+    class PublicClass
+    {
+        (@) six
+        {
+            return (6)
+        }
+
+        (@) seven
+        {
+            return (7)
+        }
+    }
+
+    (@) publicClassTest
+    {
+        // TODO: make this accessible directly
+        publicClass = new TestClass.PublicClass
+
+        return ([publicClass six] == 6)
+    }
+
+  @protected
+
+    @protectedVariable, @rw
+
+    class ProtectedClass
+    {
+        (@) four
+        {
+            return (4)
+        }
+
+        (@) five
+        {
+            return (5)
+        }
+
+        class ProtectedPublicClass
+        {
+        }
+    }
+}

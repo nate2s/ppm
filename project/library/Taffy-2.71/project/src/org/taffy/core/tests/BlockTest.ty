@@ -1,0 +1,133 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.Exception
+import org.taffy.core.exception.InvalidNumberArgumentsException
+
+class BlockTest
+{
+    (@) testSimple
+    {
+        block = ^{ 1 }
+        return ([block call] == 1)
+    }
+
+    (@) testOneArgument
+    {
+        block = ^{ <value> value + 1 }
+        return ([block callWith: [2]] == 3)
+    }
+
+    (@) testMultipleArguments
+    {
+        block = ^{ <value1, value2, value3, value4>
+            return (value1 + value2 + value3 + value4)
+        }
+
+        return ([block callWith: [2,3,4,5]] == 14)
+    }
+
+    (@) testMultiLineDisplay
+    {
+        myBlock = ^{ io putLine: "entering!"
+                    io putLine: "leaving!"
+        }
+
+        return ([myBlock asString]
+                == "#Block {[io putLine: \"entering!\"]; [io putLine: \"leaving!\"]}")
+    }
+
+    (@) testMultipleReturn
+    {
+        block = ^{ <startValue>
+            incrementBlock = ^{ <iterator>
+                if (iterator == 100)
+                {
+                    return (iterator)
+                }
+            }
+
+            result = [startValue upTo: 10000 do: incrementBlock]
+            return (result)
+        }
+
+        result = [block callWith: [1]]
+        return (result == 100)
+    }
+
+    (@) testHash
+    {
+        block1 = { 1 + 2 + 3 + 4 + 5 }
+        block2 = block1
+        block3 = { 1 + 2 + 3 + 4 + 5 }
+
+        // blocks are atomic so assignment does not copy address
+        return ([block1 hash] != [block2 hash]
+                and [block1 hash] != [block3 hash])
+    }
+
+    (@) testPlusPlusPrint
+    {
+        block = ^{x++}
+        return ([block asString] == "#Block {x++}")
+    }
+
+    (@) testPlusMinusMinus
+    {
+        block = ^{x--}
+        return ([block asString] == "#Block {x--}")
+    }
+
+    (@) testMethodCallListPrint
+    {
+        block = ^{ [[[pair first] second] first] }
+        return ([block asString] == "#Block {[[[pair first] second] first]}")
+    }
+
+    (@) testAsString
+    {
+        block0 = ^{x}
+        block1 = ^{<x> x + 3}
+        block2 = ^{<x,y> x + y}
+        return ([block0 asString] == "#Block {x}"
+                and [block1 asString] == "#Block {<x> x + 3}"
+                and [block2 asString] == "#Block {<x, y> x + y}")
+    }
+
+    (@) testEachWithEmptyBlock
+    {
+        result = false
+
+        try
+        {
+            [1, 2, 3, 4] each: ^{ io putLine: "hi there" }
+        }
+        catch (InvalidNumberArgumentsException _exception)
+        {
+            result = ([_exception expected] == 1 and [_exception given] == 0)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing
+        }
+
+        return result
+    }
+}

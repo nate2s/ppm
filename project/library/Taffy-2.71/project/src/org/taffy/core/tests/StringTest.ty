@@ -1,0 +1,467 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+///////////////////////////
+//                       //
+// test_string.ty        //
+//                       //
+// unit tests for String //
+//                       //
+///////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+
+class StringTest
+{
+    (@) testAppend
+    {
+        str = "the quick brown"
+        appended = str + " fox jumped"
+
+        str2 = "the quick brown"
+        appended2 = [str2 append: " fox jumped"]
+
+        // verify the original was not updated as well
+        return (str == "the quick brown"
+                and appended == "the quick brown fox jumped"
+                and str2 == "the quick brown"
+                and appended2 == "the quick brown fox jumped")
+    }
+
+    (@) testAppendBang
+    {
+        str = "the quick brown"
+        str += " fox jumped"
+
+        return (str == "the quick brown fox jumped")
+    }
+
+    (@) testClear
+    {
+        str = "hi there!"
+        str clear
+        return (str == "")
+    }
+
+    (@) testCompare
+    {
+        str = "this is a"
+        str2 = "this is a test"
+        str3 = "this is z test"
+
+        return ([str compare: str2] == 'lessThan
+                and [str2 compare: str] == 'greaterThan
+                and [str compare: str] == 'equal
+                and [str3 compare: str2] == 'greaterThan)
+    }
+
+    (@) testDowncase
+    {
+        str = "tHe qUiCk BrOwn Fox JumpEd"
+        downcase = [str downcase]
+
+        return (str == "tHe qUiCk BrOwn Fox JumpEd" and
+                downcase == "the quick brown fox jumped")
+    }
+
+    (@) testDowncaseBang
+    {
+        str = "tHe qUiCk BrOwn Fox JumpEd"
+        str downcase!
+        return (str == "the quick brown fox jumped")
+    }
+
+    (@) testEqualEqual
+    {
+        str1 = "the quick brown fox jumped"
+        str2 = "the quick brown fox jumped"
+        str3 = "the qu9ick brown fox jumped"
+
+        nonStr1 = 1
+        nonStr2 = ()
+
+        return (str1 == str2 and
+                str1 != str3 and
+                str1 != nonStr1 and
+                str1 != nonStr2)
+    }
+
+    (@) testGreaterThan
+    {
+        str1 = "abc"
+        str2 = "bcd"
+        return (str2 > str1)
+    }
+
+    (@) testGreaterThanOrEqual
+    {
+        str1 = "abc"
+        str2 = "bcd"
+        str3 = "abc"
+        return (str2 >= str1 and str1 >= str3)
+    }
+
+    (@) testIndexOf
+    {
+        str = "the quick brown fox jumped"
+        return ([str indexOf: "t"] == 0
+                and [str indexOf: "quick"] == 4
+                and [str indexOf: "brownCar"] == -1)
+    }
+
+    (@) testLastIndexOf
+    {
+        str = "zthe quick brown fox jumped"
+        return ([str lastIndexOf: "z"] == 0
+                and [str lastIndexOf: "e"] == 25
+                and [str lastIndexOf: " "] == 20
+                and [str lastIndexOf: "yyy"] == -1)
+    }
+
+    (@) testLength
+    {
+        str = "the quick brown fox jumped"
+        emptyStr = ""
+        oneStr = "a"
+
+        return ([str length] == 26 and
+                [emptyStr length] == 0 and
+                [oneStr length] == 1)
+    }
+
+    (@) testLessThan
+    {
+        str1 = "abc"
+        str2 = "bcd"
+        return (str1 < str2)
+    }
+
+    (@) testLessThanOrEqual
+    {
+        str1 = "abc"
+        str2 = "bcd"
+        str3 = "abc"
+        return (str1 <= str2 and str1 <= str3)
+    }
+
+    (@) testObjectAtIndex
+    {
+        str = "the quick brown fox jumped"
+        return (str[1] == "h" and str[2] == "e")
+    }
+
+    (@) testCharacterAtIndexOutOfBoundsException
+    {
+        program1 = "string = \"hi\" ; string[100]"
+        program2 = "string = \"hi\" ; string characterAtIndex: -0.1"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 100]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: -0.1])
+    }
+
+    (@) testCharacterAtIndexNeedIntegerException
+    {
+        program1 = "string = \"hi\" ; string[1.1]"
+        program2 = "string = \"hi\" ; string[123456789123456789123456789123456789123456789123456789]"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789123456789123456789123456789123456789])
+    }
+
+    (@) testReverse
+    {
+        str = "the quick brown fox jumped"
+        reverse = [str reverse]
+
+        return (reverse == "depmuj xof nworb kciuq eht" and
+                str == "the quick brown fox jumped")
+    }
+
+    (@) testReverseBang
+    {
+        str = "the quick brown fox jumped"
+        str reverse!
+        return (str == "depmuj xof nworb kciuq eht")
+    }
+
+    (@) testSetObjectAtIndex
+    {
+        str = "the quick brown fox jumped"
+        str[0] = "sir, "
+        str[2] = "hello, "
+        return (str == "sihello, r, the quick brown fox jumped")
+    }
+
+    (@) testInsertStringAtIndex
+    {
+        str = "the quick brown fox jumped"
+        str insertString: "sir, " atIndex: 0
+        str insertString: "hello, " atIndex: 1
+        return (str == "shello, ir, the quick brown fox jumped")
+    }
+
+    (@) testInsertStringAtIndexIndexOutOfBoundsException
+    {
+        program1 = ("str = \"the quick\" ;"
+                    + "str insertString: \"sir\" atIndex: 1000")
+        program2 = ("str = \"the quick\" ;"
+                    + "str insertString: \"sir\" atIndex: -0.1")
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 1000]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                     withValue: -0.1])
+    }
+
+    (@) testInsertStringAtIndexNeedIntegerException
+    {
+        program1 = ("str = \"the quick\" ;"
+                    + "str insertString: \"sir\" atIndex: 1.1")
+        program2 = ("str = \"the quick\" ;"
+                    + "str insertString: \"sir\" atIndex: 123456789123456789123456789123456789")
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789123456789123456789])
+    }
+
+    (@) testSplit
+    {
+        str = "the quick brown fox jumped"
+        splits = [str split: " "]
+
+        return ([splits size] == 5 and
+                splits[0] == "the" and
+                splits[1] == "quick" and
+                splits[2] == "brown" and
+                splits[3] == "fox" and
+                splits[4] == "jumped")
+    }
+
+    (@) testSwapcase
+    {
+        str = "tHe qUiCk BrOwn Fox JumpEd"
+        swapped = [str swapcase]
+
+        empty = ""
+        emptySwapped = [empty swapcase]
+
+        return (str == "tHe qUiCk BrOwn Fox JumpEd" and
+                empty == "" and
+                swapped == "ThE QuIcK bRoWN fOX jUMPeD" and
+                emptySwapped == "")
+    }
+
+    (@) testSwapcaseBang
+    {
+        str = "tHe qUiCk BrOwn Fox JumpEd"
+        str swapcase!
+
+        empty = ""
+        empty swapcase!
+
+        return (str == "ThE QuIcK bRoWN fOX jUMPeD" and empty == "")
+    }
+
+
+    (@) testUpcase
+    {
+        str = ["test" upcase]
+        str2 = ["the quick brown fox jumped" upcase]
+        return (str == "TEST" and str2 == "THE QUICK BROWN FOX JUMPED")
+    }
+
+    (@) testUpcaseBang
+    {
+        str = "the quick brown fox jumped"
+        str upcase!
+        return (str == "THE QUICK BROWN FOX JUMPED")
+    }
+
+    (@) testEval
+    {
+        x = 2
+        return (["2 + 2 + x" eval] == 6)
+    }
+
+    (@) testAsSymbol
+    {
+        hiSymbol = 'hi
+        symbol = ["hi" asSymbol]
+        return (hiSymbol == symbol
+                and [hiSymbol address] == [symbol address])
+    }
+
+    (@) testSubstring
+    {
+        string = "this is a test of the emergency"
+        return ([string substring: 0] == nil
+                and [string substring: 1] == "t"
+                and [string substring: 5] == "this ")
+    }
+
+    (@) testIndexOutOfBoundsSubstringException
+    {
+        program1 = "string = \"hi\" ; string substring: 1000"
+        program2 = "string = \"hi\" ; string substring: -1.1"
+
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 1000]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: -1.1])
+    }
+
+    (@) testNeedIntegerSubstringException
+    {
+        program1 = "string = \"hi\" ; string substring: 1.1"
+        program2 = "string = \"hi\" ; string substring: 123456789123456789123456789123456789"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 123456789123456789123456789123456789])
+    }
+
+    (@) testSubstringFromTo
+    {
+        string = "this is a test of the emergency"
+        return ([string substringFrom: 0 to: 0] == nil
+                and [string substringFrom: 1 to: 1] == nil
+                and [string substringFrom: 0 to: 15] == "this is a test ")
+    }
+
+    (@) testIndexOutOfBoundsSubstringFromToException
+    {
+        program1 = "string = \"hi\" ; string substringFrom: 0 to: 1000"
+        program2 = "string = \"hi\" ; string substringFrom: 1001 to: 0"
+        return ([ExceptionHelper testIndexOutOfBoundsException: program1
+                                                     withIndex: 1000]
+                and [ExceptionHelper testIndexOutOfBoundsException: program2
+                                                         withIndex: 1001])
+    }
+
+    (@) testNeedIntegerSubstringFromToException
+    {
+        program1 = "string = \"hi\" ; string substringFrom: 1.1 to: 1"
+        program2 = "string = \"hi\" ; string substringFrom: 0 to: 0.1"
+        program3 = "string = \"hi\" ; string substringFrom: 2.1 to: 3.1"
+        program4 = "string = \"hi\" ; string substringFrom: 0 to: 123456789123456789123456789123456789"
+        program5 = "string = \"hi\" ; string substringFrom: 123456789123456789123456789123456789 to: 0"
+
+        return ([ExceptionHelper testNeedIntegerException: program1
+                                                withValue: 1.1]
+                and [ExceptionHelper testNeedIntegerException: program2
+                                                    withValue: 0.1]
+                and [ExceptionHelper testNeedIntegerException: program3
+                                                    withValue: 2.1]
+                and [ExceptionHelper testNeedIntegerException: program4
+                                                    withValue: 123456789123456789123456789123456789]
+                and [ExceptionHelper testNeedIntegerException: program5
+                                                    withValue: 123456789123456789123456789123456789])
+    }
+
+    (@) testEachCharacter
+    {
+        wantedResult = ["t", "h", "i", "s", " ",
+                        "i", "s", " ",
+                        "a", " ",
+                        "t", "e", "s", "t"]
+        string = "this is a test"
+        result = [org.taffy.core.container.Array createWithSize: 14]
+
+        k = 0
+        string eachCharacter: ^{ <character>
+            result[k] = character
+            k++
+        }
+
+        return (result == wantedResult)
+    }
+
+    (@) testEachCharacterBreak
+    {
+        string = "this z a test of the emergency broadcasting system"
+        wantedCharacter = "z"
+        result = ""
+
+        string eachCharacter: ^{ <character>
+            result = character
+
+            if (character == wantedCharacter)
+            {
+                break
+            }
+        }
+
+        return (result == wantedCharacter)
+    }
+
+    (@) testEachWord
+    {
+        wantedResult = ["this", "is", "a", "test", "of", "the", "emergency",
+                        "broadcasting", "system"]
+        string = "this is a test of the emergency broadcasting system"
+        result = [org.taffy.core.container.Array createWithSize: 9]
+
+        k = 0
+        string eachWord: ^{ <word>
+            result[k] = word
+            k++
+        }
+
+        return (result == wantedResult)
+    }
+
+    (@) testEachWordBreak
+    {
+        wantedWord = "is"
+        string = "this is a test of the emergency broadcasting system"
+        result = ""
+
+        string eachWord: ^{ <word>
+            result = word
+
+            if (word == wantedWord)
+            {
+                break
+            }
+        }
+
+        return (result == wantedWord)
+    }
+
+    (@) testLeftShift
+    {
+        string = "hi "
+        other = "there #[1]"
+        return (string << other == "hi there 1")
+    }
+
+    (@) testTernaryOperator
+    {
+        string = "hello #[(1 == 1 ? "there" : "sir")]"
+        return (string == "hello there")
+    }
+}

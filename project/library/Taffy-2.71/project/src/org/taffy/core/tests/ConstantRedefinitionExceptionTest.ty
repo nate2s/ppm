@@ -1,0 +1,95 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+//////////////////////////////////////////////////
+//                                              //
+// ConstantRedefinitionExceptionTest.ty         //
+//                                              //
+// unit tests for ConstantRedefinitionException //
+//                                              //
+//////////////////////////////////////////////////
+
+package org.taffy.core.tests
+import org.taffy.core.exception.ConstantRedefinitionException
+
+class ConstantRedefinitionExceptionTest
+{
+    (@) testConstantRedefinitionSimple
+    {
+        const a = 1
+        success = false
+        bad = false
+
+        try
+        {
+            a = 3
+        }
+        catch (ConstantRedefinitionException _e)
+        {
+            success = true
+        }
+        catch (Exception _e)
+        {
+            bad = true
+        }
+
+        return (success and !bad)
+    }
+
+    (@) testConstantRedefinitionShadow
+    {
+        a = 1
+
+        success1 = true
+        success2 = false
+
+        bad1 = false
+        bad2 = false
+
+        try
+        {
+            // set a to const //
+            const a = 3
+        }
+        catch (ConstantRedefinitionException _e)
+        {
+            success1 = false
+        }
+        catch (Exception _e)
+        {
+            bad1 = true
+        }
+
+        try
+        {
+            // a is now const, and setting it
+            // should throw an exception
+            a = 4
+        }
+        catch (ConstantRedefinitionException _e)
+        {
+            success2 = true
+        }
+        catch (Exception _e)
+        {
+            bad2 = true
+        }
+
+        return (success1 and success2 and !bad1 and !bad2)
+    }
+}

@@ -1,0 +1,304 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.container
+
+class Array(LineContainer)
+{
+@protected
+    (@) indexHelper: _object
+              last?: _last
+    #const,
+    #containerLoop
+    {
+        index = -1
+        size = [self size]
+
+        for (a = 0; a < size; a++)
+        {
+            if (self[a] == _object)
+            {
+                index = a
+
+                if (! _last)
+                {
+                    break
+                }
+            }
+        }
+
+        return (index)
+    }
+
+    (@) arithmeticWithObject: _object
+                    operator: _operator
+    #containerLoop
+    {
+        result = [Array createWithSize: [self size]]
+
+        self eachIndex: ^{ <_index>
+            result[_index] = [kernel eval: "upSelf[_index] #[_operator] _object"]
+        }
+
+        return result
+    }
+
+    (@) assignmentArithmeticWithObject: _object
+                              operator: _operator
+    #containerLoop
+    {
+        self eachIndex: ^{ <_index>
+            upSelf[_index] = [kernel eval: "upSelf[_index] #[_operator] _object"]
+        }
+
+        return self
+    }
+
+    (@) arithmeticWithOperator: _operator
+    #containerLoop
+    {
+        result = [Array createWithSize: [self size]]
+
+        self eachIndex: ^{ <_index>
+            result[_index] = [kernel eval: "upSelf[_index] #[_operator]"]
+        }
+
+        return result
+    }
+
+    (@) arithmeticWithSettingOperator: _operator
+    #containerLoop
+    {
+        self eachIndex: ^{ <_index>
+            upSelf[_index] = [kernel eval: "upSelf[_index] #[_operator]"]
+        }
+
+        return self
+    }
+
+    (@) quicksortLow: _low high: _high
+    {
+        if (_low < _high)
+        {
+            partition = [self partitionLow: _low high: _high]
+            [self quicksortLow: _low high: partition - 1]
+            [self quicksortLow: partition + 1 high: _high]
+        }
+    }
+
+    (@) partitionLow: _low high: _high
+    {
+        pivot = self[_high]
+        a = _low
+
+        for (j = _low; j < _high; j++)
+        {
+            if (self[j] <= pivot)
+            {
+                [self swapIndex: a withIndex: j]
+                a++
+            }
+        }
+
+        [self swapIndex: a withIndex: _high]
+        return a
+    }
+
+@public
+    (@) lastIndexOf: _object
+    {
+        return ([self indexHelper: _object last?: true])
+    }
+
+    (@) indexOf: _object
+    {
+        return ([self indexHelper: _object last?: false])
+    }
+
+    (@) vectorize: _function
+    #containerLoop
+    {
+        result = [Array createWithSize: [self size]]
+
+        self eachIndex: ^{ <_index>
+            result[_index] = _function(upSelf[_index])
+        }
+
+        return result
+    }
+
+    (@) vectorize!: _function
+    #containerLoop
+    {
+        self eachIndex: ^{ <_index>
+            upSelf[_index] = _function(upSelf[_index])
+        }
+
+        return self
+    }
+
+    (@) #operator(*): _object
+    {
+        return [self arithmeticWithObject: _object operator: "*"]
+    }
+
+    (@) #operator(/): _object
+    {
+        return [self arithmeticWithObject: _object operator: "/"]
+    }
+
+    (@) #operator(+): _object
+    {
+        return [self arithmeticWithObject: _object operator: "+"]
+    }
+
+    (@) #operator(-): _object
+    {
+        return [self arithmeticWithObject: _object operator: "-"]
+    }
+
+    (@) #operator(^): _object
+    {
+        return [self arithmeticWithObject: _object operator: "^"]
+    }
+
+    (@) #operator(<<): _object
+    {
+        return [self arithmeticWithObject: _object operator: "<<"]
+    }
+
+    (@) #operator(>>): _object
+    {
+        return [self arithmeticWithObject: _object operator: ">>"]
+    }
+
+    (@) #operator(%): _object
+    {
+        return [self arithmeticWithObject: _object operator: "%"]
+    }
+
+    (@) #operator(&): _object
+    {
+        return [self arithmeticWithObject: _object operator: "&"]
+    }
+
+    (@) #operator(|): _object
+    {
+        return [self arithmeticWithObject: _object operator: "|"]
+    }
+
+    (@) #operator(^^): _object
+    {
+        return [self arithmeticWithObject: _object operator: "^^"]
+    }
+
+    //
+    // assignment arithmetic
+    //
+    (@) #operator(*=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "*"]
+    }
+
+    (@) #operator(/=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "/"]
+    }
+
+    (@) #operator(+=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "+"]
+    }
+
+    (@) #operator(-=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "-"]
+    }
+
+    (@) #operator(^=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "^"]
+    }
+
+    (@) #operator(<<=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "<<"]
+    }
+
+    (@) #operator(>>=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: ">>"]
+    }
+
+    (@) #operator(%=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "%"]
+    }
+
+    (@) #operator(&=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "&"]
+    }
+
+    (@) #operator(|=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "|"]
+    }
+
+    (@) #operator(^^=): _object
+    {
+        return [self assignmentArithmeticWithObject: _object operator: "^^"]
+    }
+
+    //
+    // standalone operators
+    //
+    (@) #operator(!)
+    {
+        return [self arithmeticWithOperator: "!"]
+    }
+
+    (@) #operator(--)
+    {
+        return [self arithmeticWithSettingOperator: "--"]
+    }
+
+    (@) #operator(++)
+    {
+        return [self arithmeticWithSettingOperator: "++"]
+    }
+
+    (@) swapIndex: _index1 withIndex: _index2
+    {
+        temp = self[_index1]
+        self[_index1] = self[_index2]
+        self[_index2] = temp
+    }
+
+    (@) sort
+    {
+        copy = [self copy]
+        return [copy sort!]
+    }
+
+    (@) sort!
+    {
+        self quicksortLow: 0 high: ([self size] - 1)
+        return self
+    }
+}

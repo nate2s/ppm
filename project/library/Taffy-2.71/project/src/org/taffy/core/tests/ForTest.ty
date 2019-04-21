@@ -1,0 +1,293 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+////////////////////////
+//                    //
+// ForTest.ty         //
+//                    //
+// unit tests for for //
+//                    //
+////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+
+class ForTest
+{
+    (@) testSimpleFor
+    {
+        b = 0
+        for (b = 1; b < 2; b++) {}
+        return (b == 2)
+    }
+
+    (@) testForWithBody
+    {
+        b = 0
+        c = 1
+
+        for (b = 0; b < 2; b++)
+        {
+            c *= 2
+        }
+
+        return (c == 4)
+    }
+
+    (@) testForWithLargerBody
+    {
+        a = 1
+        b = ()
+        c = ()
+        result = false
+
+        for (a = 0; a < 10; a = a + 1)
+        {
+            c[a] = a
+            b[a] = a
+            b[a] = b[a] + 1
+            b[a] = b[a] * 2
+        }
+
+        f(x) = (x + 1) * 2
+
+        for (a = 0; a < 10; a = a + 1)
+        {
+            result = (b[a] == f(c[a]))
+
+            if (!result)
+            {
+                break
+            }
+        }
+
+        return (result)
+    }
+
+    (@) testNoFor
+    {
+        b = 0
+        c = 1
+
+        for (b = 0; b < 0; b = b - 1)
+        {
+            test = 1
+            test2 = 2
+            test33 = ()
+            c = "doh"
+        }
+
+        return (c == 1)
+    }
+
+    (@) testNegativeFor
+    {
+        b = 0
+        c = 1
+
+        for (b = 2; b > 0; b--)
+        {
+            c *= 10
+        }
+
+        return (c == 100)
+    }
+
+    (@) testForInFor
+    {
+        b = 0
+        c = 1
+        d = 0
+
+        for (b = 0; b < 10; b++)
+        {
+            for (c = 0; c < 10; c++)
+            {
+                d++
+            }
+        }
+
+        return (d == 100 and b == 10 and c == 10)
+    }
+
+    (@) testForScope
+    {
+        success = false
+
+        for (a = 1; a < 10; a++)
+        {
+        }
+
+        try
+        {
+            io put: a
+        }
+        catch (UnidentifiedObjectException exception)
+        {
+            success = true
+        }
+        catch (Exception exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testForMultiScope
+    {
+        success = false
+
+        for (a = 1, b = 0; a < 10; a++)
+        {
+        }
+
+        try
+        {
+            io put: b
+        }
+        catch (UnidentifiedObjectException exception)
+        {
+            success = true
+        }
+        catch (Exception exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testForExceptionCatchMiddle
+    {
+        success = false
+
+        try
+        {
+            for (a = 1; asdf < 10; a++)
+            {
+            }
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "asdf")
+        }
+        catch (Exception exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testForExceptionCatchEnd
+    {
+        success = false
+
+        try
+        {
+            for (a = 1; a < 10; asdf++)
+            {
+            }
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "asdf")
+        }
+        catch (Exception exception)
+        {
+            // do nothing
+        }
+
+        return (success)
+    }
+
+    (@) testBlankInitial
+    {
+        a = 0
+
+        for ( ; a < 10; a++)
+        {
+        }
+
+        return (a == 10)
+    }
+
+    (@) testBlankIncrement
+    {
+        a = 0
+
+        for (a = 0; a < 10;)
+        {
+            a++
+        }
+
+        return (a == 10)
+    }
+
+    (@) testBlank
+    {
+        a = 0
+
+        for (; a < 10;)
+        {
+            a++
+        }
+
+        return (a == 10)
+    }
+
+    (@) testMultiInitial
+    {
+        // initialize to something other than 0
+        a = "hi"
+        b = "hello"
+
+        for (a = 0, b = 0; a < 10; a++)
+        {
+        }
+
+        return (a == 10 and b == 0)
+    }
+
+    (@) testMultiIncrement
+    {
+        a = "hi"
+        b = 0
+
+        for (a = 0; a < 10; a++, b += 2)
+        {
+        }
+
+        return (a == 10 and b == 20)
+    }
+
+    (@) testMulti
+    {
+        // initialize to something other than 0
+        a = "hi"
+        b = "hello"
+
+        for (a = 0, b = 0; a < 10; a++, b += 2)
+        {
+        }
+
+        return (a == 10 and b == 20)
+    }
+}

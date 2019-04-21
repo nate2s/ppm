@@ -1,0 +1,672 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+import org.taffy.core.exception.*
+import org.taffy.core.maths.Matrix
+
+class MatrixTest
+{
+    (@) testSimpleNew
+    {
+        return ((new Matrix) != nil)
+    }
+
+    (@) testEqualEqual
+    {
+        matrix1 = ||1,2,3,4||
+        matrix2 = ||1,2,3,4||
+        matrix3 = ||1,2;3,4||
+        matrix4 = ||1
+                    2
+                    3
+                    4||
+        matrix5 = ||0 + 1
+                    2
+                    3
+                    4||
+
+        return (matrix1 == matrix2
+                and matrix1 != matrix3
+                and matrix2 != matrix3
+                and matrix2 != matrix4
+                and matrix4 == matrix4
+                and matrix4 == matrix5)
+    }
+
+    (@) testEye
+    {
+        return (eye(1) * eye(1) == eye(1)
+                and eye(2) * eye(2) == eye(2)
+                and eye(3) * eye(3) == eye(3)
+                and eye(4) * eye(4) == eye(4)
+                and eye(5) * eye(5) == eye(5)
+                and eye(6) * eye(6) == eye(6))
+    }
+
+    (@) testAdd
+    {
+        matrix1 = ||1,2
+                    3,4||
+        matrix2 = ||1,0
+                    0,1||
+        matrix3 = ||2,2
+                    3,5||
+        matrix4 = ||2,3
+                    4,5||
+        matrix5 = ||3,4
+                    5,6||
+
+        return (matrix1 + matrix2 == matrix3
+                and matrix1 + 1 == matrix4
+                and matrix4 + matrix5 == ||5,7 ; 9,11||)
+    }
+
+    (@) testMultiply
+    {
+        matrix2 = ||1,2
+                    3,4||
+
+        matrix3 = ||1,2,3
+                    4,5,6
+                    7,8,9||
+
+        matrix4 = ||2
+                    2
+                    2||
+
+        matrix5 = ||12
+                    30
+                    48||
+
+        return (matrix2 * eye(2) == matrix2
+                and matrix3 * eye(3) == matrix3
+                and matrix3 * matrix4 == matrix5)
+    }
+
+    (@) testLongMatrixInParens
+    {
+        return (||1; 2; 3|| == ||1
+                                 2
+                                 3||)
+    }
+
+    (@) testMultiply3x1by1x3
+    {
+        left = ||1; 2; 3||
+        right = ||2, 3, 4||
+
+        return (left * right == (||2, 3, 4
+                                   4, 6, 8
+                                   6, 9, 12||))
+    }
+
+    (@) testSubtract
+    {
+        return ((||1, 2, 3|| - ||1, 3, 4||
+                 == ||0, -1, -1||)
+                and (||2, 3, 4|| - 1
+                     == ||1, 2, 3||))
+    }
+
+    (@) testRaise
+    {
+        a = ||10, 11 ; 12, 13||
+        b = ||10, 11, 12; 13, 14, 15; 16, 17, 18||
+
+        return (a^2 == ||232, 253; 276, 301||
+                and a^3 == ||5356, 5841; 6372, 6949||
+                and b^2 == ||435, 468, 501 ; 552, 594, 636 ; 669, 720, 771||
+                and b^3 == ||18450, 19854, 21258 ; 23418, 25200, 26982 ; 28386, 30546, 32706||)
+    }
+
+    (@) testZeroModulusExceptionCatch
+    {
+        success = false
+
+        try
+        {
+            ||1000, 0, 22|| % (1-1)
+        }
+        catch (DivideByZeroException _exception)
+        {
+            success = true
+        }
+
+        return (success)
+    }
+
+    (@) testAssociate
+    {
+        matrix1 = ||1,2  ; 3,4||
+        matrix2 = ||5,6  ; 7,8||
+        matrix3 = ||9,10 ; 11,12||
+
+        number = 10
+
+        return ((matrix1 * (matrix2 * matrix3)
+                 == (matrix1 * matrix2) * matrix3)
+                and (number * (matrix1 * matrix2)
+                     == (number * matrix1) * matrix2))
+    }
+
+    (@) testRotation2PI
+    {
+        rotation(x) = ||cos(x), -sin(x)
+                        sin(x), cos(x)||
+        pi2Matrix = ||PI/2
+                      PI/2||
+
+        return (rotation(2*PI) * pi2Matrix ~= pi2Matrix
+                and !(rotation(2*PI) * pi2Matrix ~= ||PI/2 ; PI||)
+                and ((rotation(PI/2) * rotation(PI/2) * pi2Matrix)
+                     ~= (rotation(PI) * pi2Matrix))
+                and !((rotation(PI/2) * rotation(PI/2) * pi2Matrix)
+                      ~= (rotation(PI) * pi2Matrix + 1)))
+    }
+
+    (@) testObjectAtIndex
+    {
+        matrix1 = ||1,2 ; 3,4 ; 5,6||
+        matrix2 = ||1,2,3,4,5,6||
+
+        return (matrix1[1,0] == matrix2[2]
+                and matrix1[2,1] == matrix2[5])
+    }
+
+    (@) testRowAndColumnCount
+    {
+        matrix1 = ||1,2,3,4;5,6,7,8||
+        matrix2 = ||1||
+        matrix3 = ||1;2;3;4;5;6;7;8||
+
+        return ([matrix1 rowCount] == 2
+                and [matrix1 columnCount] == 4
+                and [matrix2 rowCount] == 1
+                and [matrix2 columnCount] == 1
+                and [matrix3 rowCount] == 8
+                and [matrix3 columnCount] == 1)
+    }
+
+    (@) testObjectAtIndexesIndexOutOfBoundsException
+    {
+        program1 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[0, 5000]
+                   }
+        program2 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[4000, 0]
+                   }
+        program3 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[-4000, 0]
+                   }
+
+        return ([ExceptionTest testIndexOutOfBoundsException: program1
+                                               expectedIndex: 5000]
+                and [ExceptionTest testIndexOutOfBoundsException: program2
+                                                   expectedIndex: 4000])
+    }
+
+    (@) testObjectAtIndexesNeedIntegerException
+    {
+        program1 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[0, 5.1]
+                   }
+
+        program2 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[5.2, 0]
+                   }
+
+        return ([ExceptionTest testNeedIntegerException: program1
+                                         expectedValue: 5.1]
+                and [ExceptionTest testNeedIntegerException: program2
+                                             expectedValue: 5.2])
+    }
+
+    (@) testInvalidMatrixSizeException
+    {
+        matrix1 = ||1,2,3;4,5,6||
+        matrix2 = ||1,2,3,4,5,6||
+        matrix3 = ||1;2;3;4||
+
+        success1 = false
+        success2 = false
+
+        try
+        {
+            matrix1 * matrix2
+        }
+        catch (InvalidMatrixSizeException _exception)
+        {
+            success1 = ([_exception wantedRows] == [matrix1 rowCount]
+                        and [_exception wantedColumns] == 0
+                        and [_exception haveRows] == [matrix2 rowCount]
+                        and [_exception haveColumns] == [matrix2 columnCount])
+        }
+
+        try
+        {
+            matrix2 + matrix3
+        }
+        catch (InvalidMatrixSizeException _exception)
+        {
+            success2 = ([_exception wantedRows] == [matrix2 rowCount]
+                        and [_exception wantedColumns] == [matrix2 columnCount]
+                        and [_exception haveRows] == [matrix3 rowCount]
+                        and [_exception haveColumns] == [matrix3 columnCount])
+        }
+
+        return (success1 == true and success2 == true)
+    }
+
+    (@) testSetter
+    {
+        matrix = ||0, 1, 2||
+        success = false
+
+        try
+        {
+            matrix[0, 0] = 2
+            matrix[0, 2] = 0
+            success = (matrix == ||2, 1, 0||)
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return (success)
+    }
+
+    (@) testSetterIndexOutOfBoundsException
+    {
+        program1 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[0, 5000] = 1
+                   }
+        program2 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[4000, 0] = 3
+                   }
+
+        return ([ExceptionTest testIndexOutOfBoundsException: program1
+                                               expectedIndex: 5000]
+                and [ExceptionTest testIndexOutOfBoundsException: program2
+                                                   expectedIndex: 4000])
+    }
+
+    (@) testSetterNeedIntegerException
+    {
+        program1 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[0, 5.1] = 1
+                   }
+
+        program2 = ^{
+                       matrix = ||0, 1, 2||
+                       matrix[5.2, 0] = 2
+                   }
+
+        return ([ExceptionTest testNeedIntegerException: program1
+                                         expectedValue: 5.1]
+                and [ExceptionTest testNeedIntegerException: program2
+                                             expectedValue: 5.2])
+    }
+
+    (@) testAsString
+    {
+        simple = ||1||
+        double = ||1, 2||
+        multiRow = ||1, 2 ; 3, 4||
+
+        return ([simple asString] == "||1||"
+                and [double asString] == "||1, 2||"
+                and [multiRow asString] == "||1, 2 ; 3, 4||")
+    }
+
+    (@) testEach
+    {
+        matrix1 = ||1, 2, 3||
+        matrix2 = ||1, 2, 3 ;
+                    3, 4, 5||
+        result1 = 0
+        result2 = 0
+
+        matrix1 each: ^{ <_value>
+            result1 += _value
+        }
+
+        matrix2 each: ^{ <_value>
+            result2 += _value
+        }
+
+        return (result1 == 6 and result2 == 18)
+    }
+
+    (@) testTranspose
+    {
+        return ([||1, 2, 3|| transpose] == ||1; 2; 3||
+                and [||1; 2; 3|| transpose] == ||1, 2, 3||
+                and [||1, 2; 3, 4|| transpose] == ||1, 3; 2, 4||)
+    }
+
+    (@@) testIndexes: _indexes forMatrix: _matrix
+    {
+        k = 0
+
+        _matrix eachIndex: ^{ <x, y>
+            if (_indexes[k] != [x, y])
+            {
+                return false
+            }
+
+            k++
+        }
+
+        return true
+    }
+
+    (@) testEachIndex
+    {
+
+        matrix1 = ||1, 2, 3||
+        matrix1Indexes = [[0, 0], [0, 1], [0, 2]]
+
+        matrix2 = ||1, 2; 3, 4; 5, 6||
+        matrix2Indexes = [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]]
+
+        matrix3 = ||1; 2; 3||
+        matrix3Indexes = [[0, 0], [1, 0], [2, 0]]
+
+        if (! [MatrixTest testIndexes: matrix1Indexes forMatrix: matrix1])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testIndexes: matrix2Indexes forMatrix: matrix2])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testIndexes: matrix3Indexes forMatrix: matrix3])
+        {
+            return false
+        }
+
+        return true
+    }
+
+    (@@) testNeedVectorException: _program
+    {
+        success = false
+
+        try
+        {
+            _program eval
+        }
+        catch (NeedVectorException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing but we must catch it
+        }
+
+        return (success)
+    }
+
+    (@) testDot
+    {
+        return ([||12|| dot: ||16||] == 192
+                and [||1, 2|| dot: ||3, 4||] == 11
+                and [||12, 20|| dot: ||16, -5||] == 92
+                and [||12; 20|| dot: ||16; -5||] == 92
+                and [||12, 20|| dot: ||16, -5.5||] == 82)
+    }
+
+    (@) testDotNeedVectorException
+    {
+        return ([MatrixTest testNeedVectorException: "||1, 2|| dot: ||1; 2||"]
+                and [MatrixTest testNeedVectorException: "||1, 2; 3, 4|| dot: ||1, 2||"]
+                and [MatrixTest testNeedVectorException: "||1, 2, 3, 4|| dot: ||1; 2||"])
+    }
+
+    (@) testMagnitude
+    {
+        return ([||2, 3, 4|| magnitude] ~= 5.385164
+                and [||20|| magnitude] == 20
+                and [||20.2, 30.3, 40.4, 50.5|| magnitude] ~= 74.219539)
+    }
+
+    (@) testMagnitudeNeedVectorException
+    {
+        return ([MatrixTest testNeedVectorException: "||1, 2; 3, 4|| magnitude"]
+                and [MatrixTest testNeedVectorException: "||1, 2; 3, 4; 4, 5|| magnitude"])
+    }
+
+    (@) testSubMatrix
+    {
+        matrix = ||1, 2; 3, 4; 5, 6||
+        return (([matrix subMatrixFromRow: 0 column: 0 toRow: 2 column: 0]
+                 == ||1; 3; 5||)
+                and ([matrix subMatrixFromRow: 0 column: 1 toRow: 2 column: 1]
+                     == ||2; 4; 6||)
+                and ([matrix subMatrixFromRow: 0 column: 0 toRow: 0 column: 0]
+                     == ||1||)
+                and ([matrix subMatrixFromRow: -1 column: -1 toRow: -1 column: -1]
+                     == ||6||))
+    }
+
+    (@) testSubMatrixIndexOutOfBoundsException
+    {
+        program1 = ^{
+                       matrix = ||1, 2; 3, 4; 5, 6||
+                       matrix subMatrixFromRow: 3 column: 0 toRow: 0 column: 0
+                   }
+        program2 = ^{
+                       matrix = ||1, 2; 3, 4; 5, 6||
+                       matrix subMatrixFromRow: 0 column: 2 toRow: 0 column: 0
+                   }
+        program3 = ^{
+                       matrix = ||1, 2; 3, 4; 5, 6||
+                       matrix subMatrixFromRow: 0 column: 0 toRow: 3 column: 0
+                   }
+        program4 = ^{
+                       matrix = ||1, 2; 3, 4; 5, 6||
+                       matrix subMatrixFromRow: 0 column: 0 toRow: 0 column: 2
+                   }
+        program5 = ^{
+                       matrix = ||1, 2; 3, 4; 5, 6||
+                       matrix subMatrixFromRow: 2 column: 0 toRow: 1 column: 0
+                   }
+        program6 = ^{
+                       matrix = ||1, 2, 3; 4, 5, 6; 7, 8, 9||
+                       matrix subMatrixFromRow: 0 column: 2 toRow: 0 column: 1
+                   }
+
+        return ([ExceptionTest testIndexOutOfBoundsException: program1
+                                               expectedIndex: 3]
+                and [ExceptionTest testIndexOutOfBoundsException: program2
+                                                   expectedIndex: 2]
+                and [ExceptionTest testIndexOutOfBoundsException: program3
+                                                   expectedIndex: 3]
+                and [ExceptionTest testIndexOutOfBoundsException: program4
+                                                   expectedIndex: 2]
+                and [ExceptionTest testIndexOutOfBoundsException: program5
+                                                   expectedIndex: 1]
+                and [ExceptionTest testIndexOutOfBoundsException: program6
+                                                   expectedIndex: 1])
+    }
+
+    (@) testVectorSet
+    {
+        a = ||1, 2, 3, 4||
+        a[0] = 55
+        a[1] = 66
+
+        b = ||1; 2; 3; 4||
+        b[0] = 55
+        b[-1] = 66
+
+        return (a == ||55, 66, 3, 4||
+                and b == ||55; 2; 3; 66||)
+    }
+
+    (@) testVectorSetIndexOutOfBoundsException
+    {
+        return ([ExceptionTest testIndexOutOfBoundsException: ^{c = ||1, 2; 3, 4||; c[3] = 55}
+                                               expectedIndex: 3])
+    }
+
+    (@) testVectorize
+    {
+        f(x) = x^2
+
+        a = ||1, 2, 3||
+        b = ||2, 3, 4||
+
+        c = ||1, 2; 3, 4; 5, 6||
+        d = ||1, 2, 3; 4, 5, 6||
+
+        return ([a vectorize: f] == ||1, 4, 9||
+                and a == ||1, 2, 3||
+                and [b vectorize!: f] == ||4, 9, 16||
+                and b == ||4, 9, 16||
+                and [c vectorize: f] == ||1, 4; 9, 16; 25, 36||
+                and [d vectorize: f] == ||1, 4, 9; 16, 25, 36||)
+    }
+
+    (@) testHadamard
+    {
+        return ([||1, 2|| hadamard: ||2, 3||] == ||2, 6||
+                and [||1; 2; 3|| hadamard: ||2; 3; 4||] == ||2; 6; 12||)
+    }
+
+    (@) testHadamardNeedVectorException
+    {
+        return ([MatrixTest testNeedVectorException: "||1, 2|| hadamard: ||1; 2||"]
+                and [MatrixTest testNeedVectorException: "||1; 2|| hadamard: ||1, 2||"]
+                and [MatrixTest testNeedVectorException: "||1, 2; 3, 4|| hadamard: ||2, 3; 4, 5||"])
+    }
+
+    (@@) testArithmeticWithLeft: _left
+                       operator: _operator
+                          right: _right
+                   wantedResult: _wantedResult
+    {
+        result = [kernel eval: "_left #[_operator] _right"]
+
+        if (result != _wantedResult)
+        {
+            io putLine: ("#[_left] #[_operator] #[_right] = #[result], "
+                         + "which is not what's wanted: #[_wantedResult]")
+            return false
+        }
+
+        return true
+    }
+
+    (@) testArithmetic
+    {
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "+"
+                                          right: 2
+                                   wantedResult: ||3, 4, 5; 6, 7, 8||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "-"
+                                          right: 2
+                                   wantedResult: ||-1, 0, 1; 2, 3, 4||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "*"
+                                          right: 2
+                                   wantedResult: ||2, 4, 6; 8, 10, 12||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 4; 6, 8, 10||
+                                       operator: "/"
+                                          right: 2
+                                   wantedResult: ||0.5, 1, 2; 3, 4, 5||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "<<"
+                                          right: 2
+                                   wantedResult: ||4, 8, 12; 16, 20, 24||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 8||
+                                       operator: ">>"
+                                          right: 2
+                                   wantedResult: ||0, 0, 0; 1, 1, 2||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "%"
+                                          right: 3
+                                   wantedResult: ||1, 2, 0; 1, 2, 0||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "|"
+                                          right: 2
+                                   wantedResult: ||3, 2, 3; 6, 7, 6||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "&"
+                                          right: 2
+                                   wantedResult: ||0, 2, 2; 0, 0, 2||])
+        {
+            return false
+        }
+
+        if (! [MatrixTest testArithmeticWithLeft: ||1, 2, 3; 4, 5, 6||
+                                       operator: "^^"
+                                          right: 2
+                                   wantedResult: ||3, 0, 1; 6, 7, 4||])
+        {
+            return false
+        }
+
+        return true
+    }
+}

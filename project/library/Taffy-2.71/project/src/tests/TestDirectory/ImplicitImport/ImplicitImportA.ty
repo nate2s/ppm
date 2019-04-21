@@ -1,0 +1,5 @@
+package src.tests.TestDirectory.ImplicitImport
+
+class ImplicitImportA
+{
+}

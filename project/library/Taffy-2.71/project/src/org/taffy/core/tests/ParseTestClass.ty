@@ -1,0 +1,70 @@
+//
+// ParseTestClass.ty
+//
+
+package org.taffy.core.tests
+
+class DooBaDoo
+{
+    (@) one: _one
+        two: _two
+        tre: _tre
+    {
+    }
+}
+
+class ParseTestClass
+{
+    (@) testCommentAtEndOfLineInMethodCall
+    {
+        doo = new DooBaDoo
+        result = true
+
+        try
+        {
+            [doo one: 1  // one
+                 two: 2  // two
+                 tre: 3] // tre
+        }
+        catch (Exception _exception)
+        {
+            result = false
+        }
+
+        return (result)
+    }
+
+    (@) testCommentAtEndOfLineInArithmetic
+    {
+        result = false
+
+        try
+        {
+            result = (true == true // yes
+                      and false != true)
+        }
+        catch (Exception _exception)
+        {
+            result = false
+        }
+
+        return (result)
+    }
+
+    (@) testCommentInStringExpression
+    {
+        result = true
+
+        try
+        {
+            string = "hi there #[1 + // one
+                                 2]"
+        }
+        catch (Exception _exception)
+        {
+            result = false
+        }
+
+        return (result)
+    }
+}

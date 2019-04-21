@@ -1,0 +1,157 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.maths
+
+atomic class ComplexNumber
+{
+    (@) absoluteValue
+    {
+        real = [self real]
+        imaginary = [self imaginary]
+        return (sqrt(real^2 + imaginary^2))
+    }
+
+    // re^(is)^(x + iy)
+    (@) #operator(^): _other
+    {
+        // self = r*e^(i*theta)
+        r = abs(self)
+        theta = angle(self)
+        return (r^_other * e^(i * theta * _other))
+    }
+
+    (@) #operator(^=): _other
+    {
+        // TODO: speed me up
+        value = (self ^ _other)
+
+        if ([value class] == ComplexNumber)
+        {
+            self setValue: value
+        }
+        else
+        {
+            self setReal: value
+            self setImaginary: 0
+        }
+
+        return (self)
+    }
+
+    (@) #prefixOperator(-)
+    {
+        return (self * -1)
+    }
+
+    (@) negate
+    {
+       return (self * -1)
+    }
+
+    (@) #operator(==): _other
+    {
+        real = [self real]
+        imaginary = [self imaginary]
+
+        if ([_other class] == Number)
+        {
+            if (_other == NaN and (real == NaN or imaginary == NaN))
+            {
+                return (true)
+            }
+            else if (imaginary == 0)
+            {
+                return (real == _other)
+            }
+            else
+            {
+                return (false)
+            }
+        }
+        else
+        {
+            return ([self trulyEquals: _other])
+        }
+    }
+
+    (@) #operator(~=): _arguments
+    {
+        other = _arguments[0]
+
+        if ([other class] == Number)
+        {
+            real = [self real]
+            imaginary = [self imaginary]
+
+            if (other == NaN and (real == NaN or imaginary == NaN))
+            {
+                return (true)
+            }
+            else if (! (imaginary ~= 0))
+            {
+                return (false)
+            }
+
+            return ([real perform: "#operator(~=):"
+                             with: [_arguments]])
+        }
+        else
+        {
+            return ([self deltaEquals: _arguments])
+        }
+    }
+
+    (@) doOperation: _operation
+                for: _value
+    {
+        value = [_value castAs: Number]
+        return ([[self real] perform: _operation with: [value]]
+                + ([[self imaginary] perform: _operation with: [value]]) * i)
+    }
+
+    (@) #operator(%): _other
+    {
+        return ([self doOperation: "realModulus:"
+                              for: _other])
+    }
+
+    (@) #operator(<<): _other
+    {
+        return ([self doOperation: "realLeftShift:"
+                              for: _other])
+    }
+
+    (@) #operator(>>): _other
+    {
+        return ([self doOperation: "realRightShift:"
+                              for: _other])
+    }
+
+    (@) #operator(&): _other
+    {
+        return ([self doOperation: "realBitAnd:"
+                              for: _other])
+    }
+
+    (@) #operator(|): _other
+    {
+        return ([self doOperation: "realBitOr:"
+                              for: _other])
+    }
+}

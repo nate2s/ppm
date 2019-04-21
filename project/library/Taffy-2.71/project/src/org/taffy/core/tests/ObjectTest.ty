@@ -1,0 +1,330 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.maths.Number
+import org.taffy.core.container.Array
+import org.taffy.core.container.Hash
+import org.taffy.core.container.Pair
+import org.taffy.core.Object
+import org.taffy.core.Symbol
+import org.taffy.core.exception.NeedMetaClassException
+
+class ObjectTest
+{
+    (@) testClass
+    {
+        return ([1 class] == Number
+                and [() class] == Hash
+                and [(new TestClass) class] == TestClass)
+    }
+
+    (@) testClassName
+    {
+        a = 1
+        b = []
+        c = ()
+        d = new TestClass
+        f = new TestClass.PublicClass
+
+        return ([a className] == "Number"
+                and [b className] == "Array"
+                and [c className] == "Hash"
+                and [d className] == "TestClass"
+                and [f className] == "PublicClass")
+    }
+
+    (@) testGetter
+    {
+        testClass = new TestClass
+        nilValue = [testClass readVariable]
+
+        return (nilValue == nil)
+    }
+
+    (@) testKindOf
+    {
+        array = []
+        hash = ()
+
+        return ([array kindOf?: Array]
+                and [hash kindOf?: Hash]
+                and !([array kindOf?: Hash])
+                and [hash kindOf?: Object])
+    }
+
+    (@) testKindOfException
+    {
+        success = false
+
+        try
+        {
+            a = "hi there"
+            a kindOf?: "hehe"
+        }
+        catch (NeedMetaClassException _exception)
+        {
+            success = true
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we need to catch it
+        }
+
+        return (success)
+    }
+
+    (@) testMethods
+    {
+        testClass = new TestClass.PublicClass
+        testClassMethods = [testClass methods]
+
+        oneResult = [testClass perform: testClassMethods[-1]]
+        twoResult = [testClass perform: testClassMethods[0]]
+
+        return (oneResult == 6
+                and twoResult == 7
+                and [testClassMethods size] == 2)
+    }
+
+    (@) testMetaMethods
+    {
+        methods = [Number methods]
+        return ([methods size] > 0)
+    }
+
+    (@) testObjects
+    {
+        testClass = new TestClass
+        objects = [testClass objects]
+
+        testClass setWriteVariable: 31337
+
+        pair1 = [Pair left: "@readWriteVariable" right: nil]
+        pair2 = [Pair left: "@writeVariable" right: 31337]
+
+        return ([objects contains?: ^{ <val>
+                    val == pair1 or val == pair2
+                }])
+    }
+
+    class ClassObjectTest1
+    {
+        @value1, @rw
+    }
+
+    class ClassObjectTest2(ClassObjectTest1)
+    {
+        @value2, @rw
+    }
+
+    (@) testAllObjects
+    {
+        test2 = new ObjectTest.ClassObjectTest2
+        allObjects = [test2 allObjects]
+        return ([allObjects contains?: ^{ <value>
+                    value == [Pair left: "@value1" right: nil]
+                }]
+                and [allObjects contains?: ^{ <value>
+                        value == [Pair left: "@value2" right: nil]
+                    }])
+    }
+
+    (@) testAllMethods
+    {
+        allMethods = [1 allMethods]
+        return ([allMethods contains?: ^{ <value>
+                    value == "kindOf?:"
+                }]
+                and [allMethods contains?: ^{ <value>
+                        value == "#operator(++)"
+                    }])
+    }
+
+    (@) testMetaMethodMemoryLeak1
+    {
+        kernel eval: "TestClass metaMethod"
+
+        // this method should be tested with a memory checker like valgrind
+        // all hail valgrind!
+        return (true)
+    }
+
+    (@) testMetaMethodMemoryLeak2
+    {
+        TestClass setMetaVariable: [1,2,3,4]
+
+        // this method should be tested with a memory checker like valgrind
+        return (true)
+    }
+
+    (@) testPerform
+    {
+        list = new org.taffy.core.container.List
+        list push: 3
+        list push: 2
+        list push: 1
+
+        list perform: "pop"
+        list perform: "pop"
+
+        hash = (1 => 2)
+        hashSize = [hash perform: "size"]
+
+        return ([list size] == 1 and hashSize == 1)
+    }
+
+    (@) testPerformWith
+    {
+        list = new org.taffy.core.container.List
+        list push: 1
+        list perform: "push:" with: [2]
+
+        return ([list size] == 2 and
+                [list head] == 1 and
+                [list tail] == 2)
+    }
+
+    (@) testSuper
+    {
+        return ([super className] == "Object")
+    }
+
+    (@) testSuperSuperSuperToTheMax
+    {
+        subBasey = new SubBaseClass
+        basey = new BaseClass
+        supery = new SuperClass
+        superyToTheMax = new SuperSuperClass
+
+        return ([[basey super] className] == "SuperClass"
+                and [[[basey super] super] className] == "SuperSuperClass"
+                and [[[[basey super] super] super] className] == "Object"
+                and [[supery super] className] == "SuperSuperClass"
+                and [[[supery super] super] className] == "Object"
+                and [[superyToTheMax super] className] == "Object"
+                and [[subBasey super] className] == "BaseClass"
+                and [[[subBasey super] super] className] == "SuperClass"
+                and [[[[subBasey super] super] super] className] == "SuperSuperClass"
+                and [[[[[subBasey super] super] super] super] className] == "Object")
+    }
+
+    (@) testSuperMethodCall
+    {
+        a = 1
+        s = [a super]
+
+        return ([s className] == "Object")
+    }
+
+    (@) testSetter
+    {
+        testClass = new TestClass
+        testClass setReadWriteVariable: 1
+
+        oneNumber = [testClass readWriteVariable]
+        nilValue = [testClass readVariable]
+
+        return (oneNumber == 1 and nilValue == nil)
+    }
+
+    (@) testMethodSetterGetterForBuiltInClass
+    {
+        // memory leak test, will always return true //
+        class Array { @yyz, @rw }
+        return (true)
+    }
+
+    (@) testCastAs
+    {
+        object = new TestClassD
+        casted = [object castAs: TestClassA]
+        return ([casted hasMethod?: "testClassAMethod"]
+                and [object hasMethod?: "testClassDMethod"]
+                and !([casted hasMethod?: "testClassDMethod"]))
+    }
+
+    (@) testCastAsEquals
+    {
+        a = 1
+        b = [a castAs: Object]
+        return (b != a
+                and b == [a castAs: Object])
+    }
+
+    (@) testCastAsFullyQualified
+    {
+        a = 1
+        return ([a castAs: Object]
+                == [a castAs: org.taffy.core.Object])
+    }
+
+    (@) testHash
+    {
+        first = new TestClass
+        second = new TestClass
+
+        firstHash1 = [first hash]
+        firstHash2 = [first hash]
+        secondHash1 = [second hash]
+        secondHash2 = [second hash]
+
+        return (firstHash1 == firstHash2
+                and secondHash1 == secondHash2
+                and firstHash1 != secondHash1)
+    }
+
+    (@) testHasMethod
+    {
+        return ([() hasMethod?: "size"]
+                and [[] hasMethod?: "isEmpty?"]
+                and [1 hasMethod?: "#operator(+):"]
+                and !([1 hasMethod?: "asdf"]))
+    }
+
+    (@) testSetValueForObject
+    {
+        test = new TestClass
+        test setValue: 334 forObject: "@readWriteVariable"
+        return ([test readWriteVariable] == 334)
+    }
+
+    (@@) returner
+    {
+        return (true)
+    }
+
+    (@) testReturnMethodCall
+    {
+        return ([ObjectTest returner])
+    }
+
+    (@) testKindOf?
+    {
+        a = 1
+        return ([a kindOf?: Number] and ! [a kindOf?: Hash])
+    }
+
+    (@) globalVariableUpdate
+    {
+        globalVariableSave = globalVariable
+        globalVariable++
+        return (globalVariable == globalVariableSave + 1)
+    }
+}

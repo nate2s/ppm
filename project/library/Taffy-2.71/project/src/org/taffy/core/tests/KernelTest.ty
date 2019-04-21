@@ -1,0 +1,256 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+///////////////////////////
+//                       //
+// KernelTest.ty         //
+//                       //
+// unit tests for Kernel //
+//                       //
+///////////////////////////
+
+package org.taffy.core.tests
+
+import org.taffy.core.tests.*
+import org.taffy.core.exception.*
+import org.taffy.core.tests.InfinitePrinter
+import org.taffy.core.exception.Exception
+import org.taffy.core.exception.SingletonInstantiationException
+
+class KernelTest
+{
+    (@) testSecondTimeIncreasing
+    {
+        first = [kernel getSecondTime]
+        [kernel sleepSeconds: 1]
+        second = [kernel getSecondTime]
+        return (first < second)
+    }
+
+~(
+    (@) testSaveState
+    {
+        // create a thread and save a bunch of variables
+        thread = [Thread new: {
+                     array = [1, 2, 3, 4, 5]
+                     hash = ('a => "a", 'b => "b", 3 => "c")
+
+                     pair = new Pair
+                     pair setFirst: 1
+                     pair setSecond: []
+
+                     list = new List
+                     list push: ()
+                     list push: []
+                     list push: new Array
+
+                     kernel saveState: "kernelTestSaveState.tySave"
+                 }]
+
+        thread start
+        thread wait
+
+        result = false
+
+        thread = [Thread new: { <result>
+                     kernel loadState: "kernelTestSaveState.tySave"
+
+                     result = ([array size] == 5
+                               and array[0] == 1
+                               and array[4] == 5
+                               and [pair left] == 1
+                               and [pair right] == []
+                               and [list size] == 3
+                               and [list head] == ()
+                               and [list tail] == [])
+                 }]
+
+        thread startWith: [result]
+        thread wait
+
+        return (result)
+    }
+)~
+
+    (@) testConstify
+    {
+        a = 1
+        kernel constify: "a"
+        result = false
+
+        try
+        {
+            a = 2
+        }
+        catch (ConstantRedefinitionException _exception)
+        {
+            result = ([_exception objectName] == "a")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but must catch it
+        }
+
+        try
+        {
+            kernel constify: "a"
+        }
+        catch (Exception _exception)
+        {
+            result = false
+        }
+
+        return result
+    }
+
+    (@) testConstructObjectWithFields
+    {
+        test = [kernel constructObject: (new TestConstructClass)
+                            withFields: ("@rwVariable1" => "1",
+                                         "@rwVariable2" => "2",
+                                         "@rwVariable3" => "3",
+                                         "@rwVariable4" => "4")]
+        return ([test rwVariable1] == "1"
+                and [test rwVariable2] == "2"
+                and [test rwVariable3] == "3"
+                and [test rwVariable4] == "4")
+    }
+
+    (@) testConstructObjectWithFieldsExceptionFromObject
+    {
+        result = false
+
+        try
+        {
+            test = [kernel constructObject: (new TestClassOmgOmgOmg)
+                                withFields: ('readWriteVariable => 33,
+                                             'writeVariable => [44])]
+        }
+        catch (UnidentifiedClassException _exception)
+        {
+            result = ([_exception className] == "TestClassOmgOmgOmg")
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (result)
+    }
+
+    (@) testConstructObjectWithFieldsExceptionFromFields
+    {
+        result = false
+
+        try
+        {
+            test = [kernel constructObject: (new TestConstructClass)
+                                withFields: ("@rVariable" => 33)]
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            result = ([_exception objectName] == "@rVariable")
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (result)
+    }
+
+    (@) testEvalException
+    {
+        result = false
+
+        try
+        {
+            kernel eval: asdf
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            result = ([_exception objectName] == "asdf")
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (result)
+    }
+
+    (@) testStackOverflow
+    {
+        result = false
+
+        try
+        {
+            io putLine: (new InfinitePrinter)
+        }
+        catch (StackOverflowException _exception)
+        {
+            result = true
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return (result)
+    }
+
+    (@) testAssert
+    {
+        result = false
+        passed = false
+
+        try
+        {
+            kernel assert: [] != nil
+            passed = true
+            kernel assert: 1 == 2
+        }
+        catch (AssertFailedException _exception)
+        {
+            result = true
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return (passed and result)
+    }
+
+    (@) testSingleton
+    {
+        result = false
+
+        try
+        {
+            new org.taffy.core.Kernel
+        }
+        catch (SingletonInstantiationException exception)
+        {
+            result = ([exception className] == "Kernel")
+        }
+        catch (Exception exception)
+        {
+        }
+
+        return result
+    }
+}

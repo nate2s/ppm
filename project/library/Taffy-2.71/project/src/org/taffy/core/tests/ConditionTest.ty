@@ -1,0 +1,93 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.threading.*
+import org.taffy.core.container.Array
+import org.taffy.core.container.List
+
+class ConditionTest
+{
+    class Tester
+    {
+        @condition, @r
+        @started, @r
+        @mutex
+        @result, @r
+        @stop, @rw
+        @going
+
+        (@) init
+        {
+            @result = 0
+            @condition = new Condition
+            @started = new Condition
+            @mutex = new Mutex
+            @stop = false
+            @going = false
+        }
+
+        (@) wait
+        {
+            while (! @stop)
+            {
+                @mutex lock
+                @going = true
+                @started signal
+                @condition wait: @mutex
+                @result++
+                @mutex unlock
+            }
+        }
+
+        (@) test
+        {
+            for (a = 0; a < 50; a++)
+            {
+                @mutex lock
+
+                while (! @going)
+                {
+                    @condition signal
+                    @started wait: @mutex
+                }
+
+                @going = false
+                @mutex unlock
+            }
+        }
+    }
+
+    (@) testSignal
+    {
+        tester = new Tester
+        waitThread = [Thread new: ^{ <tester> tester wait }]
+        waitThread startWith: [tester]
+
+        testThread = [Thread new: ^{ <tester> tester test }]
+        testThread startWith: [tester]
+        testThread wait
+
+        tester setStop: true
+        [[tester condition] signal]
+        waitThread wait
+
+        return ([tester result] == 50)
+    }
+}

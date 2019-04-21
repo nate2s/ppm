@@ -1,0 +1,181 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.*
+import org.taffy.core.maths.Number
+
+class ExceptionTest
+{
+    (@@) testNeedIntegerException: _program expectedValue: _expectedValue
+    {
+        success = false
+
+        try
+        {
+            _program call
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == _expectedValue)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, success is false already
+        }
+
+        return (success)
+    }
+
+    (@@) testIndexOutOfBoundsException: _program
+                         expectedIndex: _expectedIndex
+    {
+        success = false
+
+        try
+        {
+            _program call
+        }
+        catch (IndexOutOfBoundsException _exception)
+        {
+            success = ([_exception index] == _expectedIndex)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, success is false already
+        }
+
+        return (success)
+    }
+
+    (@) testException
+    {
+        success = false
+
+        try
+        {
+            Number pushDigitLimit: 0.1
+        }
+        catch (NeedIntegerException _exception)
+        {
+            success = ([_exception value] == 0.1)
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but we need to catch it
+        }
+
+        return (success)
+    }
+
+    (@) testUnidentifedObjectExceptionRollUp
+    {
+        success = false
+
+        try
+        {
+            try
+            {
+                // produce an UnidentifiedObjectException
+                asdf
+            }
+            // produce another UnidentifiedObjectException
+            // this exception should trump the previous
+            catch (AsdfClass _exception)
+            {
+            }
+        }
+        catch (UnidentifiedObjectException _exception)
+        {
+            success = ([_exception objectName] == "AsdfClass")
+        }
+        catch (Exception _exception)
+        {
+            // do nothing, but must catch
+        }
+
+        return (success)
+    }
+
+    (@) testReturnOutOfCatch
+    {
+        try
+        {
+            asdf
+        }
+        catch (Exception _exception)
+        {
+            return (true)
+        }
+
+        return (false)
+    }
+
+    (@) testReturnOutOfTry
+    {
+        try
+        {
+            return (true)
+        }
+        catch (Exception _exception)
+        {
+            return (false)
+        }
+
+        return (false)
+    }
+
+    (@) testThrowCatchString
+    {
+        success = false
+
+        try
+        {
+            throw "asdf"
+        }
+        catch (org.taffy.core.String _exception)
+        {
+            success = (_exception == "asdf")
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return success
+    }
+
+    (@) testThrowCatchNewException
+    {
+        success = false
+
+        try
+        {
+            throw new org.taffy.core.exception.FinalClassUpdateException
+        }
+        catch (org.taffy.core.String _exception)
+        {
+        }
+        catch (FinalClassUpdateException _exception)
+        {
+            success = true
+        }
+
+        return success
+    }
+}

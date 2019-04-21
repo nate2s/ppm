@@ -1,0 +1,86 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+///////////////////////////////////
+//                               //
+// AndOrTest.ty                  //
+//                               //
+// unit tests for 'and' and 'or' //
+//                               //
+///////////////////////////////////
+
+package org.taffy.core.tests
+
+class AndOrTest
+{
+    //
+    // and tests
+    //
+    (@) testTrueAndFalse
+    {
+        return ((true and false) == false)
+    }
+
+    (@) testTrueAndTrue
+    {
+        return ((true and true) == true)
+    }
+
+    (@) testFalseAndFalse
+    {
+        return ((false and false) == false)
+    }
+
+    (@) test1AndTrue
+    {
+        return ((1 and true) == false)
+    }
+
+    (@) test1AndFalse
+    {
+        return ((1 and false) == false)
+    }
+
+    //
+    // or tests
+    //
+    (@) testTrueOrFalse
+    {
+        return ((true or false) == true)
+    }
+
+    (@) testTrueOrTrue
+    {
+        return ((true or true) == true)
+    }
+
+    (@) testFalseOrFalse
+    {
+        return ((false or false) == false)
+    }
+
+    (@) test1OrTrue
+    {
+        return ((1 or true) == true)
+    }
+
+    (@) test1OrFalse
+    {
+        return ((1 or false) == false)
+    }
+}

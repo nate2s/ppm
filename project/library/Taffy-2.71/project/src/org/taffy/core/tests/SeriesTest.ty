@@ -1,0 +1,110 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.tests
+
+import org.taffy.core.exception.InvalidArraySizeException
+import org.taffy.core.exception.InvalidIndexesException
+import org.taffy.core.maths.Series
+
+class SeriesTest
+{
+    (@) testSimple
+    {
+        series = [Series createWithBlock: ^{<x> x}]
+        return (series[1, 10] == 55)
+    }
+
+    (@) testInvalidIndexes
+    {
+        success = false
+
+        try
+        {
+            series = [Series createWithBlock: ^{ <a> a }]
+            series[1, -10]
+        }
+        catch (InvalidIndexesException _exception)
+        {
+            success = ([_exception indexes] == [1, -10])
+        }
+        catch (Exception _exception)
+        {
+        }
+
+        return (success)
+    }
+
+    (@) testPI
+    {
+        // The following reproduces a well-known function for computing PI
+        // by Srinivasa Ramanujan
+
+        numerator(k) = (4k)! * (1103 + 26390k)
+        denominator(k) = ((k)!)^4 * 396^(4k)
+
+        piSeries = [Series createWithBlock: ^{<k> numerator(k) / denominator(k)}]
+        result = 1 / (((2 * sqrt(2)) / 9801) * piSeries[0, 20])
+
+        return (result ~= PI)
+    }
+
+    (@) testE
+    {
+        eSeries1 = [Series createWithBlock: ^{<k> 1 / (k)!}]
+        eSeries2 = [Series createWithBlock: ^{<k> (3 - 4k^2) / (2k + 1)!}]
+        eSeries3 = [Series createWithBlock: ^{<k> (1 - 2k) / (2k)!}]
+
+        eSeries4 = [Series createWithBlock: ^{<k> (4k + 3) / (2^(2k + 1) * (2k + 1)!)}]
+        eSeries4Fail = [Series createWithBlock: ^{<k> (4k + 3) / (2^(2k + 1) * (2k + 2)!)}]
+                                                         //^^^^^^^
+        return (eSeries1[0, 10] ~= e
+                and eSeries2[0, 200] ~= e
+                and eSeries3[0, 10]^(-1) ~= e
+                and eSeries4[0, 10]^2 ~= e
+                and !(eSeries4Fail[0, 10]^2 ~= e))
+    }
+
+    (@) testInvalidArraySizeException
+    {
+        success = false
+
+        try
+        {
+            series = [Series createWithBlock: ^{<a> a}]
+            series[0, 1, 2, 2, 3]
+        }
+        catch (InvalidArraySizeException _exception)
+        {
+            success = ([_exception expected] == 2
+                       and [_exception given] == 5)
+        }
+        catch (Exception _exception)
+        {
+            // failure
+        }
+
+        return (success)
+    }
+
+    (@) testAsString
+    {
+        series = [Series createWithBlock: ^{<x> x^2}]
+        return ([series asString] == "#Series(x) = x^2")
+    }
+}

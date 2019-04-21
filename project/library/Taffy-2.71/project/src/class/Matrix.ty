@@ -1,0 +1,317 @@
+//
+// This file is part of Taffy, a mathematical programming language.
+// Copyright (C) 2016-2017 Arithmagic, LLC
+//
+// Taffy is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Taffy is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package org.taffy.core.maths
+
+import org.taffy.core.exception.*
+
+class Matrix
+{
+  @protected
+    (@) isMatchingVector: _matrix
+    #const,
+    #synchronizedRead
+    {
+        return (([self rowCount] == 1
+                 and [_matrix rowCount] == 1)
+                or ([self columnCount] == 1
+                    and [_matrix columnCount] == 1))
+    }
+
+    (@) arbitraryMathOperation: _operation
+                        object: _object
+    #const
+    {
+        result = [self copy]
+
+        self eachIndex: ^{ <x, y>
+             result[x, y] = [kernel eval: "upSelf[x, y] #[_operation] _object"]
+        }
+
+        return result
+    }
+
+  @public
+    (@) #operator(+): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self mathOperation: "#operator(+):"
+                             object: _object])
+    }
+
+    (@) #operator(-): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self mathOperation: "#operator(-):"
+                             object: _object])
+    }
+
+    (@) #operator(/): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "/"
+                                      object: _object])
+    }
+
+    (@) #operator(<<): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "<<"
+                                      object: _object])
+    }
+
+    (@) #operator(>>): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: ">>"
+                                      object: _object])
+    }
+
+    (@) #operator(%): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "%"
+                                      object: _object])
+    }
+
+    (@) #operator(&): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "&"
+                                      object: _object])
+    }
+
+    (@) #operator(|): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "|"
+                                      object: _object])
+    }
+
+    (@) #operator(^^): _object
+    #const,
+    #synchronizedRead
+    {
+        return ([self arbitraryMathOperation: "^^"
+                                      object: _object])
+    }
+
+    (@) #operator(^): _count
+    #const,
+    #synchronizedRead
+    {
+        result = self
+
+        for (count = _count; count > 1; count--)
+        {
+            result = result * self
+        }
+
+        return result
+    }
+
+    (@) dimensions
+    #synchronizedRead
+    {
+        return [[self rowCount], [self columnCount]]
+    }
+
+    (@) #operator([]): _index
+    #const,
+    #synchronizedRead
+    {
+        if ([self rowCount] == 1)
+        {
+            return self[0, _index]
+        }
+        else if ([self columnCount] == 1)
+        {
+            return self[_index, 0]
+        }
+        else
+        {
+            throw [IndexOutOfBoundsException index: _index]
+        }
+    }
+
+    (@) #operator([]=): _values
+    #const
+    {
+        index = _values[0]
+        value = _values[1]
+
+        if ([self rowCount] == 1)
+        {
+            self[0, index] = value
+        }
+        else if ([self columnCount] == 1)
+        {
+            self[index, 0] = value
+        }
+        else
+        {
+            throw [IndexOutOfBoundsException index: index]
+        }
+    }
+
+    (@) each: _block
+    #const,
+    #breakthrough,
+    #synchronizedRead
+    {
+        __rows__ = [self rowCount]
+        __columns__ = [self columnCount]
+
+        for (__row__ = 0; __row__ < __rows__; __row__++)
+        {
+            for (__column__ = 0; __column__ < __columns__; __column__++)
+            {
+                [_block callWith: [self[__row__, __column__]]]
+            }
+        }
+    }
+
+    // row and column counts are unchangeable so no synchronization is needed
+    (@) eachIndex: _block
+    #breakthrough,
+    #const
+    {
+        __rows__ = [self rowCount]
+        __columns__ = [self columnCount]
+
+        for (__row__ = 0; __row__ < __rows__; __row__++)
+        {
+            for (__column__ = 0; __column__ < __columns__; __column__++)
+            {
+                [_block callWith: [__row__, __column__]]
+            }
+        }
+    }
+
+    (@) dot: _matrix
+    #synchronizedRead
+    {
+        result = 0
+
+        if ([self isMatchingVector: _matrix])
+        {
+            self eachIndex: ^{ <x, y>
+                 result += upSelf[x, y] * _matrix[x, y]
+            }
+        }
+        else
+        {
+            throw new NeedVectorException
+        }
+
+        return result
+    }
+
+    (@) hadamard: _matrix
+    #synchronizedRead
+    {
+        result = [Matrix createWithRows: [self rowCount]
+                                columns: [self columnCount]]
+
+        if ([self isMatchingVector: _matrix])
+        {
+            self eachIndex: ^{ <x, y>
+                 result[x, y] = upSelf[x, y] * _matrix[x, y]
+            }
+        }
+        else
+        {
+            throw new NeedVectorException
+        }
+
+        return result
+    }
+
+    (@) magnitude
+    #synchronizedRead
+    {
+        result = 0
+
+        if ([self rowCount] == 1
+            or [self columnCount] == 1)
+        {
+            self each: ^{ <value>
+                 result += value^2
+            }
+
+            result = sqrt(result)
+        }
+        else
+        {
+            throw new NeedVectorException
+        }
+
+        return result
+    }
+
+    (@) getRow: _index
+    #synchronizedRead
+    {
+        columns = [self columnCount]
+        result = [Matrix createWithRows: 1 columns: columns]
+
+        for (a = 0; a < columns; a++)
+        {
+            result[0, a] = self[_index, a]
+        }
+
+        return (result)
+    }
+
+    (@) getColumn: _index
+    #synchronizedRead
+    {
+        rows = [self rowCount]
+        result = [Matrix createWithRows: rows columns: 1]
+
+        for (a = 0; a < rows; a++)
+        {
+            result[a, 0] = self[a, _index]
+        }
+
+        return (result)
+    }
+
+    (@) vectorize: _function
+    #breakthrough
+    {
+        return [[self copy] vectorize!: _function]
+    }
+
+    (@) vectorize!: _function
+    {
+        [self eachIndex: ^{ <row, count>
+           upSelf[row, count] = _function(upSelf[row, count])
+        }]
+
+        return self
+    }
+}

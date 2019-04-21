@@ -1,0 +1,47 @@
+////////////////////////////
+//                        //
+// slice.ty               //
+//                        //
+// a slice example        //
+//                        //
+////////////////////////////
+
+//
+// define a slice that we will mix in later
+//
+
+slice Mandarin
+{
+    @pressure, @r
+
+    (@) drink
+    {
+        io put: "Ahh, this is refreshing\n"
+    }
+
+    (@) shake
+    {
+        @pressure = 'exploding
+    }
+}
+
+//
+// define a class that we'll mix with slice Mandarin
+//
+class Soda
+{
+}
+
+soda = new Soda
+soda attach: Mandarin
+
+//
+// now soda has the method drink
+//
+soda drink
+
+//
+// soda also has the variable pressure
+//
+soda shake
+io put: "After shaking the soda, its pressure is: #[soda pressure]\n"
