@@ -1,4 +1,4 @@
-## <b>ppm</b> is a pretty printer for mathematics
+## <b>ppm</b> is an ASCII printer for arithmetic
 
 ![alt text](doc/img/sin_blended.png)
 
