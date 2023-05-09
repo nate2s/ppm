@@ -14,7 +14,7 @@ Like:
 
 ### Fonts and Colors
 
-ppm supports a number of different fonts (see the full list with ppm --help). Color can either be alternating (the default), or grouped. The `--no-random` flag disables random colors.
+ppm supports a number of different fonts (see the full list with `ppm --help`). Color can either be alternating (the default), or grouped. The `--no-random` flag disables random colors.
 
 Example:
 
