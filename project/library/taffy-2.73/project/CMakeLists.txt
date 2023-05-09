@@ -15,7 +15,6 @@ add_library(taffy
 	src/evaluator/dcFileEvaluator.c
 	src/evaluator/dcCallStackData.c
 	src/evaluator/dcStringEvaluator.c
-	src/org/taffy/core/exception/dcParseErrorExceptionClass.c
 	src/io/dcCommandLineArguments.c
 	src/io/dcCommandLineArgument.c
 	src/graph/dcAssignment.c
@@ -78,74 +77,6 @@ add_library(taffy
 	src/maths/dcUnsignedInt64.c
 	src/maths/dcDecNumber.c
 	src/maths/dcInt32.c
-	src/class/dcMutexClass.c
-	src/class/dcProcedureClass.c
-	src/class/dcMatrixClass.c
-	src/class/dcNumberClass.c
-	src/class/CompiledMatrix.c
-	src/class/CompiledHash.c
-	src/class/dcThreadClass.c
-	src/class/CompiledFunction.c
-	src/class/CompiledReentrantMutex.c
-	src/class/CompiledContainer.c
-	src/class/dcIOClass.c
-	src/class/CompiledList.c
-	src/class/org/taffy/core/exception/dcParseErrorExceptionClass.c
-	src/class/dcExceptions.c
-	src/class/CompiledMathConstants.c
-	src/class/CompiledFuture.c
-	src/class/dcFileClass.c
-	src/class/dcPairClass.c
-	src/class/dcYesClass.c
-	src/class/CompiledSequence.c
-	src/class/dcSymbolClass.c
-	src/class/CompiledMath.c
-	src/class/dcContainerClass.c
-	src/class/CompiledPair.c
-	src/class/CompiledArray.c
-	src/class/CompiledHeap.c
-	src/class/special/dcSuppliedArgumentClass.c
-	src/class/special/dcWildClass.c
-	src/class/CompiledString.c
-	src/class/dcMathClass.c
-	src/class/CompiledIO.c
-	src/class/dcBlockClass.c
-	src/class/CompiledThreader.c
-	src/class/dcKernelClass.c
-	src/class/dcConstantClass.c
-	src/class/CompiledSeries.c
-	src/class/dcSequenceClass.c
-	src/class/dcFunctionRepeater.c
-	src/class/dcListClass.c
-	src/class/CompiledNil.c
-	src/class/dcClassManager.c
-	src/class/dcNoClass.c
-	src/class/dcDateClass.c
-	src/class/CompiledNumber.c
-	src/class/dcFutureClass.c
-	src/class/dcConditionClass.c
-	src/class/dcHeapClass.c
-	src/class/dcClassTemplate.c
-	src/class/dcFunctionClass.c
-	src/class/dcComplexNumberClass.c
-	src/class/dcClass.c
-	src/class/CompiledMain.c
-	src/class/CompiledKernel.c
-	src/class/CompiledLineContainer.c
-	src/class/CompiledInvalidArraySizeException.c
-	src/class/dcObjectClass.c
-	src/class/dcSeriesClass.c
-	src/class/dcNilClass.c
-	src/class/dcExceptionClass.c
-	src/class/dcArrayClass.c
-	src/class/dcPackageContents.c
-	src/class/dcEquationClass.c
-	src/class/dcStringClass.c
-	src/class/CompiledExceptions.c
-	src/class/CompiledComplexNumber.c
-	src/class/dcHashClass.c
-	src/class/dcMainClass.c
-	src/class/dcLineContainerClass.c
 	src/global/dcCFunctionArgument.c
 	src/global/dcStringCache.c
 	src/global/dcObjectStackList.c
@@ -229,7 +160,6 @@ add_library(taffy
 	src/class/CompiledContainer.c
 	src/class/dcIOClass.c
 	src/class/CompiledList.c
-	src/class/org/taffy/core/exception/dcParseErrorExceptionClass.c
 	src/class/dcExceptions.c
 	src/class/CompiledMathConstants.c
 	src/class/CompiledFuture.c
@@ -313,13 +243,6 @@ include_directories(
         src/org/taffy/help
         src
         src/taffy/text)
-
-configure_file(
-        config.h.in
-        config.h)
-
-file(COPY config.h
-     DESTINATION src/global)
 
 if (UNIX)
   target_link_libraries(taffy pthread dl)

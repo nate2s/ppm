@@ -17,7 +17,6 @@
 //
 
 #include "FontFactory.h"
-#include "config.h"
 
 #include <sstream>
 #include <fstream>

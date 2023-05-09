@@ -18,10 +18,6 @@ target_compile_features(ppm PRIVATE cxx_std_17)
 
 target_link_libraries(ppm taffy)
 
-configure_file(
-        config.h.in
-        config.h)
-
 include_directories(
         .
         src
