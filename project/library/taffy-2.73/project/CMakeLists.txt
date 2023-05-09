@@ -81,7 +81,6 @@ add_library(taffy
 	src/global/dcStringCache.c
 	src/global/dcObjectStackList.c
 	src/global/dcGarbageCollector.c
-	src/global/dcBootstrapClasses.c
 	src/global/dcTaffyCMethodPointer.c
 	src/global/dcVoid.c
 	src/global/dcThreadId.c
@@ -90,7 +89,6 @@ add_library(taffy
 	src/global/dcNode.c
 	src/global/dcVoidContainer.c
 	src/global/dcMarshaller.c
-	src/global/dcError.c
 	src/global/dcFutureManager.c
 	src/global/dcDoubleVoid.c
 	src/global/dcFilePackageData.c

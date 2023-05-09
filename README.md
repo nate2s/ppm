@@ -34,5 +34,5 @@ Example:
 ```
  cd ..
  cp build/project/ppm .
- ./examples.sh
+ sh examples.sh
 ```
