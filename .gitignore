@@ -81,7 +81,6 @@ scopeTest
 stringEvaluatorTest
 stringTest
 stringCacheTest
-taffy
 taffyAndPieArgumentsTest
 taffyFuzzTest
 taffyFuzzTest.ty
