@@ -11,10 +11,6 @@ add_library(taffy
         src/io/dcCommandLineArgument.c
         src/io/dcFileManagement.c
         src/io/dcSocket.c
-	src/evaluator/dcNodeEvaluator.c
-	src/evaluator/dcFileEvaluator.c
-	src/evaluator/dcCallStackData.c
-	src/evaluator/dcStringEvaluator.c
 	src/io/dcCommandLineArguments.c
 	src/io/dcCommandLineArgument.c
 	src/graph/dcAssignment.c
@@ -55,10 +51,6 @@ add_library(taffy
 	src/graph/dcSelf.c
 	src/graph/dcNil.c
 	src/graph/dcTrue.c
-	src/scope/dcScope.c
-	src/scope/dcScopeData.c
-	src/taffy/text/CompiledTaffyUsage.c
-	src/taffy/text/CompiledTaffyVersion.c
 	src/container/dcAVLTree.c
 	src/container/dcTree.c
 	src/container/dcList.c
@@ -67,16 +59,6 @@ add_library(taffy
 	src/container/dcHeap.c
 	src/container/dcArray.c
 	src/container/dcHash.c
-	src/third_party/decNumber/decNumber.c
-	src/third_party/decNumber/decContext.c
-	src/maths/dcUnsignedInt32.c
-	src/maths/dcMatrix.c
-	src/maths/dcFloat.c
-	src/maths/dcNumber.c
-	src/maths/dcComplexNumber.c
-	src/maths/dcUnsignedInt64.c
-	src/maths/dcDecNumber.c
-	src/maths/dcInt32.c
 	src/global/dcCFunctionArgument.c
 	src/global/dcStringCache.c
 	src/global/dcObjectStackList.c
@@ -101,41 +83,11 @@ add_library(taffy
 	src/global/dcRootMarkFunction.c
 	src/global/dcCondition.c
 	src/global/dcMemory.c
-	src/graph/dcIdentifier.c
-	src/graph/dcSymbol.c
-	src/graph/dcCatchBlock.c
-	src/graph/dcGraphDataTree.c
-	src/graph/dcImport.c
-	src/graph/dcMethodCall.c
-	src/graph/dcThrow.c
-	src/graph/dcBreak.c
-	src/graph/dcIf.c
-	src/graph/dcString.c
-	src/graph/dcLexer.c
-	src/graph/dcExit.c
-	src/graph/dcCharacterGraph.c
-	src/graph/dcOr.c
-	src/graph/dcFlatArithmetic.c
-	src/graph/dcFunctionUpdate.c
-	src/graph/dcMethodHeader.c
-	src/graph/dcSuper.c
-	src/graph/dcWhile.c
-	src/graph/dcSelf.c
-	src/graph/dcNil.c
-	src/graph/dcTrue.c
 	src/scope/dcScope.c
 	src/scope/dcScopeData.c
 	src/taffy/dcTaffyCommandLineArguments.c
 	src/taffy/text/CompiledTaffyUsage.c
 	src/taffy/text/CompiledTaffyVersion.c
-	src/container/dcAVLTree.c
-	src/container/dcTree.c
-	src/container/dcList.c
-	src/container/dcBinarySearchTree.c
-	src/container/dcPair.c
-	src/container/dcHeap.c
-	src/container/dcArray.c
-	src/container/dcHash.c
 	src/third_party/decNumber/decNumber.c
 	src/third_party/decNumber/decContext.c
 	src/maths/dcUnsignedInt32.c
@@ -227,7 +179,6 @@ include_directories(
         src/evaluator
         src/org/taffy/core/exception
         src/io
-        src/graph
 	src/scope
 	src/taffy
 	src/container
