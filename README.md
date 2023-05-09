@@ -1,6 +1,8 @@
-## <b>ppm</b> is a pretty printer for mathematics
+## <b>ppm</b> is a console-based pretty printer for mathematics
 
 ![alt text](doc/img/sin_blended.png)
+
+![alt text](doc/img/tan.png)
 
 ### Usage
 
