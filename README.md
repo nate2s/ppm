@@ -20,10 +20,17 @@ Example:
 
 ### Building
 
-Run `build.sh` to create the <b>ppm</b> executable.<br>
-Then run `examples.sh` to see <b>ppm</b> in action.
+```
+ mkdir build
+ cd build
+ cmake ..
+ make
+```
 
-### Optional Installation
+### Running Examples
 
-cd project<br>
-(sudo) make install
+```
+ cd ..
+ cp build/project/ppm .
+ ./examples.sh
+```

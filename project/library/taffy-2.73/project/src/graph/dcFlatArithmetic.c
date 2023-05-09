@@ -123,7 +123,7 @@ dcNode *getTail(dcNode *_node)
 
 // forward declarations
 typedef dcNode *(*IntegrateOperation)(dcNode *_node, const char *_symbol);
-TAFFY_DEBUG(static const char *indent(void));
+static const char *indent(void);
 static dcNode *integrate(dcNode *_shrunk,
                          const char *_symbol,
                          IntegrateOperation _exceptThis);
@@ -6051,7 +6051,7 @@ TAFFY_HIDDEN bool parseMultiplicationWithX(const char *_token,
                                 thoseWithout))));
 }
 
-TAFFY_DEBUG(static uint8_t getIntegrateDepth(void));
+static uint8_t getIntegrateDepth(void);
 
 TAFFY_HIDDEN bool parseDistribute(const char *_token,
                                   dcNode **_result,
@@ -6069,14 +6069,12 @@ TAFFY_HIDDEN bool parseDistribute(const char *_token,
         return false;
     }
 
-#ifdef ENABLE_DEBUG
     char *preInput = NULL;
 
     if (dcLog_isEnabled(FLAT_ARITHMETIC_INTEGRATION_LOG))
     {
         preInput = dcNode_display(input);
     }
-#endif
 
     input = dcFlatArithmetic_distribute(input, NULL);
     input = dcFlatArithmetic_distributeDivide(input, NULL);
@@ -9033,12 +9031,10 @@ bool dcFlatArithmetic_orderForIlate(dcNode *_left,
     return result;
 }
 
-#ifdef ENABLE_DEBUG
 static uint8_t getIntegrateDepth(void)
 {
     return getIntegrationData(NULL)->depth;
 }
-#endif
 
 // TODO: use me!
 //static dcList *getDescription(void)
@@ -9046,7 +9042,6 @@ static uint8_t getIntegrateDepth(void)
 //    return getIntegrationData()->description;
 //}
 
-#ifdef ENABLE_DEBUG
 static const char *indent(void)
 {
     if (getIntegrationData(NULL) == NULL)
@@ -9060,7 +9055,6 @@ static const char *indent(void)
     assert(level <= MAX_INTEGRATE_DEPTH + 1);
     return sIndents[level];
 }
-#endif
 
 dcNode *dcFlatArithmetic_integrateByParts(dcNode *_node, const char *_symbol)
 {
@@ -9070,7 +9064,7 @@ dcNode *dcFlatArithmetic_integrateByParts(dcNode *_node, const char *_symbol)
     }
 
     IntegrationData *integrationData = getIntegrationData(NULL);
-    TAFFY_DEBUG(uint32_t depth = integrationData->depth);
+    uint32_t depth = integrationData->depth;
 
     if (integrationData->integrateByPartsDepth >= MAX_INTEGRATE_BY_PARTS_DEPTH)
     {
