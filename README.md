@@ -2,8 +2,6 @@
 
 ![alt text](doc/img/sin_blended.png)
 
-![alt text](doc/img/tan.png)
-
 ### Usage
 
 ppm <b>input</b>
@@ -19,6 +17,8 @@ ppm supports a number of different fonts (see the full list with `ppm --help`). 
 Example:
 
 `ppm --font ivrit --color grouped "tan(y) / x"`
+
+![alt text](doc/img/tan.png)
 
 ### Building
 
