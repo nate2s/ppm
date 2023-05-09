@@ -69,7 +69,7 @@ Font *FontFactory::findFont(const std::string &type) const
     std::string fontFile = type + ".flf";
 
     const std::vector<std::string> dirs = {
-        buildPath({std::string(QUOTED_INSTALL_DIR), "share", std::string(PACKAGE_NAME), fontFile}),
+        buildPath({std::string(QUOTED_INSTALL_DIR), "share", "ppm", fontFile}),
         buildPath({"fonts", fontFile}),
         buildPath({"project", "fonts", fontFile})
     };

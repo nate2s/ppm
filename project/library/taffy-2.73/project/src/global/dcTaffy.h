@@ -137,7 +137,6 @@ extern "C"
     #include "dcScopeData.h"
     #include "dcStringEvaluator.h"
     #include "dcTaffyCommandLineArguments.h"
-    #include "dcTaffyApplication.h"
     #include "dcUnsignedInt32.h"
 }
 

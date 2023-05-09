@@ -1,5 +1,12 @@
 # http://www.gnu.org/software/autoconf
 
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+
+install-sh
+ltmain.sh
+
 autom4te.cache
 stamp-h1
 .deps

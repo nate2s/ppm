@@ -21,26 +21,6 @@
 
 #include "dcDefines.h"
 
-#ifndef ENABLE_DEBUG
-
-//
-// no debug
-//
-#define dcLog_configure(_type, _yesno)
-#define dcLog_configureFromList(_list, _yesno) false
-#define dcLog_configureFromString(_type, _yesno) false
-#define dcLog_configureFromCommandLineArguments(_arguments) false
-#define dcLog_isEnabled(_type) false
-#define dcLog_log(_type, _format, ...)
-#define dcLog_logLine(_type, _format, ...)
-#define dcLog_append(_type, _format, ...)
-
-#else // ENABLE_DEBUG
-
-//
-// yes to debug
-//
-
 #define NO_LOG_TYPE                            0
 #define GARBAGE_COLLECTOR_LOG                  BITS(0)
 #define GARBAGE_COLLECTOR_TICK_LOG             BITS(1)
@@ -91,5 +71,4 @@ void dcLog_log(dcLogType _type, const char *_format, ...);
 void dcLog_logLine(dcLogType _type, const char *_format, ...);
 void dcLog_append(dcLogType _type, const char *_format, ...);
 
-#endif // ENABLE_DEBUG
 #endif // __DC_LOG_H__

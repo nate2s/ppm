@@ -839,7 +839,6 @@ void dcLexer_cleanup(void)
     dcMemory_free(sLexPointers);
 }
 
-#ifdef ENABLE_DEBUG
 static const char * const lexerStateStrings[] = {
     "LEXER_NORMAL_STATE",
     "LEXER_STRING_STATE",
@@ -852,7 +851,6 @@ static const char * const lexerStateStrings[] = {
     "LEXER_PUBLIC_CLASS_STATE",
     "LEXER_PRIVATE_CLASS_STATE"
 };
-#endif
 
 void dcLexer_pushState(dcLexer *_lexer, dcLexer_state _state)
 {

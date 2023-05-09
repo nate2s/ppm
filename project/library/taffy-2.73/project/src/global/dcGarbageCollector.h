@@ -60,6 +60,8 @@ typedef enum
     TAFFY_GARBAGE_COLLECTOR_FREE          = 3
 } dcGarbageCollectorDebugState;
 
+#define GARBAGE_COLLECTOR_OBJECT_TIP 6000000
+
 typedef void (*dcGarbageCollectorWatcher)(struct dcNode_t *_node,
                                           dcGarbageCollectorDebugState _state);
 
